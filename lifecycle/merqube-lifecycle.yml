@@ -1,0 +1,101 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://api.merqube.com/api (info.version, deprecated flags),
+  https://merqube.com/governance (index governance, announcements, consultations, policies),
+  https://github.com/merqube/merqube-client-lib/blob/main/Changelog.md,
+  live probes of status.merqube.com (no DNS record) on 2026-08-25
+provider: MerQube
+api: MerQube API
+versioning:
+  scheme: semver
+  current_version: 4.40.0
+  version_location: openapi info.version
+  in_path: false
+  in_header: false
+  in_media_type: false
+  pinnable: false
+  note: >-
+    There is exactly one live contract at https://api.merqube.com/api and no way for a caller to ask
+    for an older one. No /v1/ prefix, no Accept-Version header, no dated versions.
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  deprecated_operations: []
+  deprecated_operation_count: 0
+  in_band_signal:
+    field: deprecation_warnings
+    location: response body, top level
+    observed: '2026-08-25'
+    observed_value: empty array
+    note: >-
+      The response envelope carries a `deprecation_warnings` array on every call. It was empty on
+      every observation, and it is not described in the OpenAPI or the docs, so its vocabulary is
+      unknown. It is nonetheless a real in-band deprecation channel, which is more than most
+      providers ship - it just has no published policy behind it.
+  legacy_surface:
+    tag: legacy_equity_security
+    paths:
+    - /security/equity_legacy/{secname}/metrics
+    - /security/equity_legacy/{secname}/metrics/{name}
+    - /security/equity_legacy/{secname}/metrics/{name}/data
+    - /security/equity_legacy/{secname}/stats
+    note: >-
+      Four operations are grouped under a tag literally named `legacy_equity_security` and sit under
+      an /equity_legacy/ path segment, but NONE of them carries `deprecated: true` and no sunset
+      date is published. The naming is the only signal that these are superseded by /security/{type}.
+status_page:
+  published: false
+  url: null
+  probes:
+  - url: https://status.merqube.com/
+    result: no DNS record
+    checked: '2026-08-25'
+  - url: https://merqube.statuspage.io/
+    result: redirects to atlassian.com/software/statuspage - not a MerQube page
+    checked: '2026-08-25'
+  note: MerQube publishes no public status or uptime page.
+sla:
+  published: false
+  url: null
+  note: >-
+    No public SLA. Availability and calculation-deadline commitments are handled contractually; the
+    index manifest does expose per-index operational deadlines (administrative.deadlines with
+    time_of_day, deadline_type and og_priority P1/P2/P3), which is an index-level operational
+    guarantee rather than an API-level one.
+changelog:
+  api_changelog_published: false
+  sdk_changelog:
+    url: https://github.com/merqube/merqube-client-lib/blob/main/Changelog.md
+    format: Keep a Changelog
+    versioning: SemVer
+    latest_dated_entry: '0.23.1 (2025-05-28)'
+  note: >-
+    MerQube publishes no changelog for the API itself. The only dated change record is the client
+    library's, which tracks the SDK rather than the contract.
+governance:
+  url: https://merqube.com/governance
+  surfaces:
+  - https://merqube.com/governance/announcements
+  - https://merqube.com/governance/consultations
+  - https://merqube.com/governance/policies
+  - https://merqube.com/governance/supplemental-data
+  note: >-
+    MerQube runs a formal index-governance process - published announcements, methodology
+    consultations and policies - as a benchmark administrator. This governs INDEX methodology
+    changes, not API contract changes; the two lifecycles are separate and only the index one is
+    published.
+run_state:
+  endpoint: GET /index/{uuid}/run_state
+  helper: GET /helper/index/run-states
+  statuses:
+  - PENDING_CREATION
+  - SUCCEEDED
+  - FAILED
+  - RUNNING
+  note: >-
+    Per-index calculation lifecycle is fully observable through the API, including an `error` string
+    when status is FAILED. This is the operational health surface MerQube ships in place of a
+    status page.

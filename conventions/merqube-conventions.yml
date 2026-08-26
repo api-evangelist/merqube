@@ -1,0 +1,231 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://api.merqube.com/api (published OpenAPI 3.1, info.version 4.40.0),
+  https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication,
+  https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md,
+  and live unauthenticated response headers observed on GET https://api.merqube.com/index
+provider: MerQube
+api: MerQube API
+base_url: https://api.merqube.com
+auth:
+  style: api-key-header
+  header: Authorization
+  format: 'APIKEY {key}'
+  anonymous_allowed: true
+  detail: see authentication/merqube-authentication.yml
+pagination:
+  style: page-number
+  parameters:
+  - name: page
+    in: query
+    default: 1
+    minimum: 1
+    description: page number to load
+  - name: page_size
+    in: query
+    default: 1000
+    minimum: 1
+    description: size of the page to load
+  response_fields: []
+  note: >-
+    Declared as reusable OpenAPI components (pageParam, pageSizeParam). The 200 envelope does not
+    document a total-count or next-page field, so a client paginates by incrementing `page` until a
+    short page comes back.
+filtering_and_projection:
+- name: filter
+  in: query
+  description: substring search across name and title
+  example: MQU
+- name: ids
+  in: query
+  description: comma-delimited list of ids; ignored when ?names is supplied
+- name: name
+  in: query
+  description: exact-match name lookup
+- name: names
+  in: query
+  description: comma-delimited list of exact names
+- name: namespace
+  in: query
+  description: restrict results to one permissioning namespace
+- name: fields
+  in: query
+  description: sparse fieldset - return only these fields plus id and namespace
+  example: title,description
+- name: debug
+  in: query
+  description: 'inject a debug section at the top level (enum: true)'
+- name: format
+  in: query
+  description: 'return csv instead of the default json (enum: csv)'
+- name: prefer_read_replica
+  in: query
+  default: false
+  description: >-
+    Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and
+    bypasses SecAPI full-query caches for stronger read-after-write consistency. This is an
+    explicit, documented consistency control - unusually good practice for an agent that must read
+    its own write.
+response_envelope:
+  shape: >-
+    Collection reads return a JSON object with `results` (array), `error_codes` (array of
+    {code,message}) and, observed live, `deprecation_warnings` (array) and `linked_resources`
+    (object). Errors on 4xx/5xx are described in the contract by `description` only - no response
+    body schema and no media type is declared for any error status.
+  fields:
+  - results
+  - error_codes
+  - deprecation_warnings
+  - linked_resources
+  rfc9457: false
+  detail: see errors/merqube-problem-types.yml
+request_id_tracing:
+  header: x-request-id
+  direction: response
+  observed: '2026-08-25'
+  example_source: GET https://api.merqube.com/index
+  documented: false
+  note: >-
+    Every response observed carried an `x-request-id`. It is a real, usable correlation id for
+    support, but it is not mentioned anywhere in the OpenAPI or the docs.
+idempotency:
+  supported: false
+  idempotency_key_header: null
+  note: >-
+    MerQube publishes no Idempotency-Key header and no request-replay semantics. What it does
+    publish is OPTIMISTIC CONCURRENCY: every object carries a `status` block (created_at, created_by,
+    last_modified, last_modified_by) which must be supplied on PUT or PATCH, and the write is only
+    accepted if the block matches the copy in storage. That prevents lost updates on a stale copy;
+    it does not make a retried POST safe. POST /index and POST /security/{type} return 409 on
+    duplicate name, which makes create effectively name-idempotent by rejection rather than by
+    replay.
+  concurrency_control:
+    mechanism: status-block compare-and-set
+    field: status
+    applies_to: [PUT, PATCH]
+    source: https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md
+  duplicate_protection:
+    mechanism: uniqueness on (name, namespace) enforced with HTTP 409
+    applies_to:
+    - POST /index
+    - POST /security/{type}
+locking:
+  field: status.locked_after
+  description: >-
+    When `status.locked_after` is set on an index manifest, the manifest is locked against all edits
+    to any other field after that timestamp. A PUT or PATCH may first unlock it by setting the field
+    (to at most one hour in the future) or back to null, then make other edits.
+  source: components.schemas.Status in https://api.merqube.com/api
+versioning:
+  scheme: semver-in-contract
+  current_version: 4.40.0
+  transport: none
+  detail: >-
+    info.version in the OpenAPI is 4.40.0, but there is no version segment in any path, no version
+    header, and no media-type versioning. Callers cannot pin a version; the only version signal is
+    the number in the spec document itself.
+  deprecation_signal:
+    field: deprecation_warnings
+    location: response body (top level)
+    observed_empty: true
+    note: >-
+      The live envelope reserves a `deprecation_warnings` array. It was empty on every call
+      observed. No RFC 8594 Deprecation or Sunset response header was seen.
+rate_limit_signaling:
+  headers_published: false
+  headers_observed: []
+  status_on_exhaustion: null
+  detail: see rate-limits/merqube-rate-limits.yml - no limits are documented and no RateLimit-*,
+    X-RateLimit-* or Retry-After header appeared on any observed response.
+content_negotiation:
+  request: application/json
+  response: application/json
+  alternatives:
+  - format=csv query parameter on collection reads
+  - multipart upload on PUT /index-documents
+reversibility:
+  grade: documented
+  applies: true
+  read_only: false
+  summary: >-
+    Every write surface has an inverse operation published in the contract - DELETE for each
+    created resource, PUT/PATCH to restore a previous manifest, and a documented unlock path. What
+    MerQube does NOT publish anywhere is a WINDOW: no retention period, no undelete, no grace
+    period, and no statement of what happens to an index's history when the index is deleted. That
+    is why this grades `documented` and not `verified`.
+  surfaces:
+  - write: POST /index
+    reversal: DELETE /index/{uuid}
+    operation_id: null
+    window: null
+    window_source: null
+    note: >-
+      Deletion is by UUID. The SDK Overview states ids are permanent and that "the only way to
+      'change' the id of an object is to delete it, and make another with the same name" - deletion
+      is therefore destructive of the identifier, and no restore path is published.
+  - write: PUT /index/{uuid}
+    reversal: PUT /index/{uuid} with the prior manifest
+    operation_id: null
+    window: null
+    window_source: null
+    note: >-
+      Reversal is a re-PUT of the previous manifest, guarded by the `status` compare-and-set block.
+      MerQube does not publish manifest version history, so the caller must have kept the prior copy.
+  - write: PATCH /index/{uuid}
+    reversal: PATCH /index/{uuid} with the prior field values
+    window: null
+    window_source: null
+  - write: PUT /index/{uuid}/target_portfolio
+    reversal: DELETE /index/{uuid}/target_portfolio/{target_portfolio_uuid}
+    window: >-
+      Effective only before the index has computed that date. MerQube's docs state "Make sure to
+      create a TargetPortfolio for date T before the index has computed date T. TargetPortfolios
+      with dates in the past will be ignored."
+    window_source: https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication
+    note: >-
+      This is the one write on the API with a stated boundary, and it is a computation cutoff rather
+      than a retention window. Uploads are keyed on `eff_ts`: re-PUT with the same eff_ts replaces
+      the portfolio for that timestamp, which is itself the reversal mechanism.
+  - write: POST /identifier/{provider}
+    reversal: DELETE /identifier/{provider}/{uuid}
+    window: null
+    window_source: null
+  - write: POST /security/{type}
+    reversal: DELETE /security/{type}/{secid}
+    window: null
+    window_source: null
+  - write: POST /security/{type}/data
+    reversal: POST /security/{type}/data/delete
+    window: null
+    window_source: null
+    note: An explicit inverse endpoint for uploaded metric data.
+  - write: POST /security_list
+    reversal: DELETE /security_list/{uuid}
+    window: null
+    window_source: null
+  - write: POST /target_portfolio_handler
+    reversal: DELETE /target_portfolio_handler/{uuid}
+    window: null
+    window_source: null
+  - write: PUT /index-documents
+    reversal: DELETE /index-documents
+    window: null
+    window_source: null
+  gaps:
+  - No retention or undelete window is stated for any DELETE.
+  - No dry-run / preview mode on any write operation.
+  - No documented effect of index deletion on the two SecAPI securities it auto-creates.
+dry_run_mode:
+  supported: false
+  note: >-
+    No preview, validate-only or dry-run parameter exists on any write. The closest surface is the
+    POST /helper/index-template/* family, which returns a generated index manifest WITHOUT creating
+    it - a caller can render and inspect a definition before POSTing it to /index. That is a
+    templating aid, not a dry-run of the write itself.
+cross_links:
+  authentication: authentication/merqube-authentication.yml
+  errors: errors/merqube-problem-types.yml
+  lifecycle: lifecycle/merqube-lifecycle.yml
+  rate_limits: rate-limits/merqube-rate-limits.yml
+  data_model: data-model/merqube-data-model.yml

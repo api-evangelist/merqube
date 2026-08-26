@@ -1,0 +1,234 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the MerQube API
+  version: 1.0.0
+extends: openapi/merqube-api-openapi.json
+x-provenance:
+  generated: '2026-08-25'
+  method: generated
+  source: >-
+    Authored by API Evangelist against MerQube's own published contract
+    (https://api.merqube.com/api, OpenAPI 3.1, info.version 4.40.0). Every action below either
+    encodes a fact MerQube states in prose but omits from the contract, or repairs a defect that is
+    demonstrably present in the published document. Nothing here invents behaviour. The original
+    specification is never mutated.
+actions:
+- target: $
+  description: >-
+    Declare the API-key security scheme. MerQube's Authentication document specifies an
+    Authorization header carrying "APIKEY {key}", but the published contract has no
+    components.securitySchemes at all, so a generated client has no way to authenticate.
+  update:
+    components:
+      securitySchemes:
+        apiKeyAuth:
+          type: apiKey
+          in: header
+          name: Authorization
+          description: >-
+            MerQube API key. Send as `Authorization: APIKEY {your_api_key}` - note the literal
+            "APIKEY " prefix, not "Bearer". Keys are issued by support@merqube.com after
+            registering at https://merqube.com/register. Requests without a key are accepted and
+            resolve to the world-readable `default` namespace only.
+            Source: https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication
+- target: $
+  description: >-
+    Apply the scheme as an OPTIONAL default. An empty requirement object is included first because
+    MerQube genuinely serves anonymous callers - dropping it would misrepresent the public read
+    surface as gated.
+  update:
+    security:
+    - {}
+    - apiKeyAuth: []
+- target: $.components.schemas.CountryCode
+  description: >-
+    Repair a YAML 1.1 boolean coercion defect. The published enum contains a JSON `false` where the
+    ISO 3166-1 alpha-2 code for Norway, "NO", belongs - the source YAML at
+    https://api.merqube.com/api-raw writes it unquoted. As published, Norway is unrepresentable and
+    every generated client emits a boolean enum member. This overlay restores "NO"; the fix in
+    MerQube's source is simply to quote it.
+  update:
+    enum:
+    - AE
+    - AR
+    - AT
+    - AU
+    - BD
+    - BE
+    - BG
+    - BH
+    - BR
+    - BW
+    - CA
+    - CH
+    - CI
+    - CL
+    - CN
+    - CO
+    - CY
+    - CZ
+    - DE
+    - DK
+    - EC
+    - EG
+    - ES
+    - FI
+    - FR
+    - GB
+    - GR
+    - HK
+    - HR
+    - HU
+    - ID
+    - IE
+    - IL
+    - IN
+    - IS
+    - IT
+    - JP
+    - KH
+    - KR
+    - KW
+    - LK
+    - LU
+    - MX
+    - MY
+    - NL
+    - 'NO'
+    - NZ
+    - PE
+    - PH
+    - PK
+    - PL
+    - PT
+    - QA
+    - RU
+    - SA
+    - SE
+    - SG
+    - SI
+    - SK
+    - TH
+    - TN
+    - TR
+    - TT
+    - TW
+    - US
+    - VN
+    - ZA
+    - ZM
+    x-api-evangelist-note: >-
+      Only the boolean `false` member is replaced with the string "NO"; every other member is
+      reproduced verbatim from the published enum.
+- target: $.info
+  description: >-
+    Record the canonical, machine-readable locations of this contract, which MerQube states in its
+    SDK Overview but not in the document itself.
+  update:
+    x-spec-locations:
+      resolved: https://api.merqube.com/api
+      raw: https://api.merqube.com/api-raw
+      rendered: https://www.merqube.com/api
+      docs: https://merqube.stoplight.io/
+    x-support-contact: support@merqube.com
+- target: $.info
+  description: >-
+    Document the response envelope, which is uniform across the API but described nowhere.
+  update:
+    x-response-envelope:
+      results: array of the requested resource
+      error_codes: >-
+        array of {code, message} carrying PARTIAL failures on an HTTP 200 - e.g. code "00001"
+        message "RESULTS_WERE_FILTERED" when namespace permissions withheld rows
+      deprecation_warnings: array reserved for in-band deprecation notices; observed empty
+      linked_resources: object of related resource references
+      x-observed: '2026-08-25 on GET https://api.merqube.com/index'
+- target: $.info
+  description: >-
+    Encode the concurrency contract. MerQube's SDK Overview states the `status` block must be sent
+    on PUT/PATCH and the write is rejected unless it matches storage - a compare-and-set that no
+    reader of the OpenAPI alone would discover.
+  update:
+    x-concurrency:
+      mechanism: compare-and-set
+      token_field: status
+      required_on:
+      - PUT
+      - PATCH
+      on_mismatch: write rejected
+      idempotency_key_header: null
+      duplicate_create: HTTP 409 on a duplicate (name, namespace)
+      lock_field: status.locked_after
+      source: https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md
+- target: $.info
+  description: >-
+    Encode the authorization model - namespaces, not scopes - so an agent can reason about why a
+    result set is short.
+  update:
+    x-authorization-model:
+      primitive: namespace
+      public_namespace: default
+      anonymous_access: true
+      scopes: none
+      partial_filtering_signal: error_codes[].code == "00001"
+      grant_process: request namespace access from support@merqube.com
+- target: $.servers
+  description: >-
+    Note that the staging host named in MerQube's Stoplight-hosted copy of this spec
+    (staging.api.merqube.com) is stale; the live document names api.staging.merqube.com, which
+    responds. Recorded so a reader of the docs portal is not sent to a dead host.
+  update:
+  - url: https://api.merqube.com
+    description: Production server
+    x-verified: '2026-08-25 - GET /api returned 200'
+  - url: https://api.staging.merqube.com
+    description: Testing server for next generation features
+    x-verified: '2026-08-25 - GET /api returned 200 with the same document'
+    x-superseded-alias: https://staging.api.merqube.com
+- target: $
+  description: >-
+    Flag the two path keys published without a leading slash. They are invalid against the OpenAPI
+    path-templating rules and they are why MerQube's own Stoplight Prism mock refuses to start
+    (422 UNPROCESSABLE_ENTITY, "Malformed path 'index/{uuid}/identifier/{provider}'"). The repair
+    is to rename each key with a leading "/"; that is a key rename rather than a value patch, so it
+    is recorded here as a finding rather than applied.
+  update:
+    x-api-evangelist-findings:
+      malformed_path_keys:
+      - index/{uuid}/identifier/{provider}
+      - index/{uuid}/identifier/{provider}/{identifier_name}
+      impact: >-
+        Breaks the hosted mock at https://stoplight.io/mocks/merqube/api/445185098 and any strict
+        OpenAPI 3.1 validator.
+      fix: prefix each key with "/"
+      x-observed: '2026-08-25'
+- target: $
+  description: >-
+    Declare the tags MerQube uses on operations but does not define, so a rendered reference groups
+    correctly instead of dropping operations into an untitled bucket.
+  update:
+    tags:
+    - name: index
+      description: Index manifests, their portfolios, documents, data collections and run state.
+    - name: identifier
+      description: >-
+        Vendor dissemination tickers binding an index to Bloomberg, Reuters, Morningstar, FactSet,
+        Nasdaq or Wind.
+    - name: security
+      description: SecAPI - security metrics, levels and statistics.
+    - name: security_list
+      description: Named, permissioned collections of securities.
+    - name: portfolio_handler
+      description: Target-portfolio selection, validation, locking and dissemination policy.
+    - name: options
+      description: Listed-option pricing, strike solving and availability.
+    - name: legacy_equity_security
+      description: >-
+        Superseded equity metric endpoints under /security/equity_legacy/. Named "legacy" by
+        MerQube but not marked deprecated and carrying no sunset date.
+    - name: helper
+      description: >-
+        Server-side index templating and solvers. These render a complete index manifest WITHOUT
+        creating it - the closest thing this API has to a dry-run.
+    - name: api
+      description: Self-description - GET /api returns this OpenAPI document.

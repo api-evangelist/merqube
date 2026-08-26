@@ -1,0 +1,51 @@
+generated: '2026-08-25'
+method: generated
+source: >-
+  Authored by API Evangelist from MerQube's published contract (https://api.merqube.com/api,
+  OpenAPI 3.1, info.version 4.40.0) and its Authentication / TargetPortfolio documentation at
+  https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication. MerQube publishes no skills,
+  AGENTS.md or llms.txt of its own. Every operation referenced was grepped out of the live spec;
+  none is invented.
+provider: MerQube
+api: MerQube API
+base_url: https://api.merqube.com
+skill_count: 4
+skills:
+- name: merqube-discover-public-indices
+  file: skills/merqube-discover-public-indices.md
+  description: >-
+    Search and read MerQube index manifests with no credential, using the world-readable `default`
+    namespace, and resolve a name to the permanent UUID every other call needs.
+  mutating: false
+  authentication: optional
+- name: merqube-retrieve-index-levels
+  file: skills/merqube-retrieve-index-levels.md
+  description: >-
+    Pull index level history from the SecAPI and portfolio composition, allocations, caps and
+    statistics from the IndexAPI, then confirm freshness via run_state.
+  mutating: false
+  authentication: optional
+- name: merqube-rehearse-index-creation
+  file: skills/merqube-rehearse-index-creation.md
+  description: >-
+    Render a full index manifest from a strategy template without creating anything, solve for
+    strikes and prices, and review before any write. Stops short of POST /index by design.
+  mutating: false
+  authentication: required
+- name: merqube-update-target-portfolio
+  file: skills/merqube-update-target-portfolio.md
+  description: >-
+    Upload or correct the constituents an index rebalances into, respecting the "before the index
+    computes date T" cutoff and the status compare-and-set token.
+  mutating: true
+  authentication: required
+safety_notes:
+- >-
+  MerQube publishes no dry-run mode on any write and no retention or undelete window on any DELETE.
+  The write-bearing skill here is deliberately scoped to target portfolios, whose replace-by-eff_ts
+  semantics make correction natural; index creation and deletion are left as a human-approved step.
+- >-
+  There is no Idempotency-Key header. Retry safety comes from the `status` compare-and-set block,
+  which rejects a stale write rather than merging it.
+- >-
+  No rate limits and no Retry-After header are published, so an agent has no runtime backoff signal.

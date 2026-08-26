@@ -1,0 +1,366 @@
+generated: '2026-08-25'
+method: derived
+source: >-
+  Derived from components.schemas and paths in https://api.merqube.com/api (OpenAPI 3.1,
+  info.version 4.40.0); relationship semantics corroborated by
+  https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md
+provider: MerQube
+api: MerQube API
+identifier_conventions:
+  primary_key: uuid
+  key_note: >-
+    Every addressable resource is keyed by an opaque `id`/`uuid`. MerQube's own docs are explicit
+    that ids are permanent and names are not - "the only way to 'change' the id of an object is to
+    delete it, and make another with the same name" - so a UUID is the only safe stored reference.
+  natural_key: (name, namespace)
+  natural_key_note: >-
+    `name` is unique across a resource type and `namespace` is the permissioning boundary. Both
+    are mutable. Lookup by name is supported via ?name / ?names but should not be persisted.
+  id_prefixes: none
+  metadata_block:
+    field: status
+    fields:
+    - 'created_at'
+    - 'created_by'
+    - 'last_modified'
+    - 'last_modified_by'
+    - 'locked_after'
+
+    role: >-
+      Doubles as an optimistic-concurrency token - it must be supplied on PUT/PATCH and the write is
+      rejected if it does not match storage.
+entities:
+- name: Index
+  description: >-
+    An index manifest - a computation configured to run periodically and publish computed values,
+    most often an index methodology producing a daily level.
+  schemas:
+  - 'IndexDefinitionPost'
+  - 'IndexDefinitionPatchPutGet'
+  - 'Index Manifest'
+  - 'IndexSpec'
+
+  paths:
+  - '/index'
+  - '/index/{uuid}'
+
+  operations:
+  - 'index'
+  - 'index_uuid'
+  - 'index_portfolio'
+  - 'index_portfolio_allocations'
+  - 'index_stats'
+  - 'index_caps'
+
+  key_fields:
+  - 'id'
+  - 'name'
+  - 'namespace'
+  - 'title'
+  - 'description'
+  - 'stage'
+  - 'launch_date'
+  - 'base_date'
+  - 'currency'
+  - 'calc_freq'
+  - 'rebal_freq'
+  - 'family'
+  - 'index_class_uuid'
+  - 'portfolio_handler_id'
+  - 'identifiers'
+  - 'intraday'
+  - 'run_configuration'
+  - 'calculation_check'
+  - 'benchmark'
+  - 'status'
+
+- name: TargetPortfolio
+  description: >-
+    The set of constituents an index should rebalance into on a stated future effective date.
+  schemas:
+  - 'BasketPortfolio'
+  - 'BasketPortfolioPutIn'
+  - 'BasketPortfolioPatchIn'
+  - 'DatedBasketPosition'
+
+  paths:
+  - '/index/{uuid}/target_portfolio'
+  - '/index/{uuid}/target_portfolio/{target_portfolio_uuid}'
+
+  key_fields:
+  - 'eff_ts'
+  - 'positions'
+  - 'external_id'
+
+- name: TargetPortfolioHandler
+  description: >-
+    A reusable policy object controlling how target portfolios are selected, validated, locked and
+    disseminated for the indices bound to it.
+  schemas:
+  - 'TargetPortfolioHandlerPost'
+  - 'TargetPortfolioHandlerPatchPutGet'
+  - 'TargetPortfolioHandlerNotificationConfig'
+
+  paths:
+  - '/target_portfolio_handler'
+  - '/target_portfolio_handler/{uuid}'
+
+  key_fields:
+  - 'name'
+  - 'namespace'
+  - 'auto_select'
+  - 'selection_window'
+  - 'validation_window'
+  - 'validator_fn'
+  - 'eod_final_portfolio_lock_enabled'
+  - 'event_notification_config'
+
+- name: Identifier
+  description: >-
+    A vendor dissemination ticker bound to an index - the row that makes an index appear on
+    Bloomberg, Reuters, Morningstar, FactSet, Nasdaq or Wind.
+  schemas:
+  - 'IdentifierUUIDPost'
+  - 'IdentifierUUIDPatchPutGet'
+  - 'IdentifierUUIDRef'
+  - 'BloombergProviderKwargs'
+  - 'ReutersProviderKwargs'
+  - 'NasdaqProviderKwargs'
+  - 'SecapiProviderKwargs'
+
+  paths:
+  - '/identifier'
+  - '/identifier/{provider}'
+  - '/identifier/{provider}/{uuid}'
+  - 'index/{uuid}/identifier/{provider}'
+
+  key_fields:
+  - 'name'
+  - 'namespace'
+  - 'provider'
+  - 'ticker'
+  - 'metric'
+  - 'index_name'
+  - 'rounding_decimals'
+  - 'provider_kwargs'
+  - 'enabled'
+
+- name: Security
+  description: >-
+    A SecAPI object holding time-series metrics. Types include index, intraday_index, futures_root
+    and others addressed through the {type} path segment.
+  schemas:
+  - 'NewSecurity'
+  - 'SecurityMetrics'
+  - 'SecurityCreationResponse'
+  - 'MetricsSchema'
+  - 'MetricsDef'
+  - 'Stats'
+
+  paths:
+  - '/security'
+  - '/security/{type}'
+  - '/security/{type}/{secid}'
+  - '/security/{type}/metrics'
+  - '/security/{type}/data'
+  - '/security/{type}/data/delete'
+
+  key_fields:
+  - 'id'
+  - 'name'
+  - 'namespace'
+  - 'eff_ts'
+  - 'prov_ts'
+  - 'source'
+  - 'metric'
+  - 'value'
+  - 'lineage'
+
+- name: SecurityList
+  description: A named, permissioned collection of securities, optionally real-time.
+  schemas:
+  - 'SecurityListPost'
+  - 'SecurityListPatchPutGet'
+
+  paths:
+  - '/security_list'
+  - '/security_list/{uuid}'
+
+  key_fields:
+  - 'name'
+  - 'namespace'
+  - 'realtime'
+  - 'securities'
+
+- name: IndexClass
+  description: A class/share-class definition grouping index variants.
+  schemas:
+  - 'IndexClassDefinitionPost'
+  - 'IndexClassDefinitionPatchPutGet'
+
+  paths:
+
+  note: >-
+    Schemas are published in the contract and the field index_class_uuid references it, but no
+    /index-class path is exposed on the public API surface.
+- name: IndexDocument
+  description: Methodology and supplemental documents attached to an index manifest.
+  schemas:
+
+  paths:
+  - '/index-documents'
+  - '/index/{uuid}/documents'
+
+  key_fields:
+  - 'document type'
+  - 'multipart upload'
+  - 'overwrite flag'
+
+- name: DataCollection
+  description: Named input datasets an index draws on, plus their retrievable raw and parsed data.
+  schemas:
+  - 'ListDataCollections'
+  - 'DataCollectionsSpec'
+
+  paths:
+  - '/index/{uuid}/data_collections'
+  - '/index/{uuid}/data_collections/data'
+  - '/index/{uuid}/data_collections/raw'
+
+- name: RunState
+  description: Calculation lifecycle of the last index run.
+  schemas:
+  - 'RunState'
+  - 'RunStateStatus'
+  - 'RunConfig'
+  - 'Schedule'
+  - 'IndexReport'
+
+  paths:
+  - '/index/{uuid}/run_state'
+  - '/helper/index/run-states'
+
+  key_fields:
+  - 'status'
+  - 'calculation_start_ts'
+  - 'error'
+
+- name: Option
+  description: Listed-option pricing, strike solving and availability.
+  schemas:
+  - 'OptionPosition'
+  - 'OptionRoot'
+  - 'Option Response Schema'
+  - 'Find Strike Response Schema'
+  - 'OptionSpecific'
+
+  paths:
+  - '/optionprice'
+  - '/findstrike'
+  - '/options/availability_dates/{fysm_id}/{country_code}'
+  - '/helper/options_underlier'
+
+  operations:
+  - 'get_option_price'
+  - 'find_strike_for_given_budget'
+
+- name: IndexTemplate
+  description: >-
+    Server-side templating that renders a complete index manifest for a strategy family without
+    creating it.
+  schemas:
+  - 'ClientTemplateResponse'
+  - 'ClientIndexConfigBase'
+  - 'ClientEquityBasketConfigBase'
+  - 'ClientDecrementConfig'
+  - 'ClientSSTRConfig'
+  - 'ClientMultiEBConfig'
+  - 'ClientBufferConfig'
+  - 'ClientSingleOptionConfig'
+
+  paths:
+  - '/helper/index-template/decrement'
+  - '/helper/index-template/equity_index'
+  - '/helper/index-template/single_option'
+  - '/helper/index-template/multi_eb'
+  - '/helper/index-template/multi_eb_portfolios'
+  - '/helper/index-template/buffer_simple'
+  - '/helper/index-template/defined_outcome'
+  - '/helper/index-template/option_strategies'
+  - '/helper/index-template/sstr'
+  - '/helper/index-template/static_basket'
+  - '/helper/index-template/vol_target'
+  - '/helper/solver/defined_outcome'
+
+relationships:
+- from: Index
+  to: TargetPortfolio
+  type: has_many
+  via: path nesting /index/{uuid}/target_portfolio, keyed by eff_ts
+- from: Index
+  to: TargetPortfolioHandler
+  type: belongs_to
+  via: portfolio_handler_id
+- from: Index
+  to: Identifier
+  type: has_many
+  via: identifiers[] (name + provider), and 'index/{uuid}/identifier/{provider}'
+- from: Index
+  to: IndexClass
+  type: belongs_to
+  via: index_class_uuid
+- from: Index
+  to: Security
+  type: has_many
+  via: >-
+    Creation side effect - POST /index returns security_id (SecAPI type `index`) and
+    intraday_security_id (SecAPI type `intraday_index`). The SDK Overview states the two securities
+    share the index's name and namespace and are renamed in lockstep with it.
+- from: Index
+  to: Index
+  type: references
+  via: benchmark.ticker using the "MQI:<name>" form, to benchmark one index against another
+- from: Index
+  to: DataCollection
+  type: has_many
+  via: path nesting /index/{uuid}/data_collections
+- from: Index
+  to: RunState
+  type: has_one
+  via: path nesting /index/{uuid}/run_state
+- from: Index
+  to: IndexDocument
+  type: has_many
+  via: path nesting /index/{uuid}/documents and the documents property on the manifest
+- from: Index
+  to: IndexReport
+  type: has_many
+  via: run_configuration.index_report_uuids
+- from: TargetPortfolio
+  to: Security
+  type: references
+  via: >-
+    Positions are polymorphic and each variant carries a different identifier scheme -
+    RicEquityPosition (RIC), FsymEquityPosition (fsym_id), SecapiBasketPosition (SecAPI id),
+    MerqubeIndexPosition (MerQube index), OptionPosition and FuturesPosition.
+- from: SecurityList
+  to: Security
+  type: has_many
+  via: securities[]
+- from: Identifier
+  to: Index
+  type: belongs_to
+  via: index_name
+- from: TargetPortfolioHandler
+  to: DisseminationDestinations
+  type: has_one
+  via: event_notification_config.diss_destinations (sftp_ids, vendor targets)
+polymorphism:
+  note: >-
+    The heaviest modelling in this contract is positional polymorphism - a portfolio position is one
+    of RicEquityPosition, FsymEquityPosition, SecapiBasketPosition, MerqubeIndexPosition,
+    OptionPosition or FuturesPosition, each with its own identifier field, plus Dated* variants.
+    There is no discriminator declared, so a client must branch on which identifier field is
+    present rather than on a type tag.
+  discriminator_declared: false
+render: null

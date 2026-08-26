@@ -1,0 +1,39 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication (MerQube's only API prose doc),
+  https://api.merqube.com/api (OpenAPI 3.1, info.version 4.40.0), and live response headers observed
+  on GET https://api.merqube.com/index on 2026-08-25
+provider: MerQube
+api: MerQube API
+limit_count: 0
+limits: []
+headers_published: false
+headers_observed: []
+status_on_exhaustion: null
+retry_after: false
+note: >-
+  MerQube publishes no rate limits. The Authentication document - the only prose reference in the
+  Stoplight portal - covers keys, resources and the namespace authorization model and says nothing
+  about throttling. The OpenAPI declares no 429 response on any of its 76 operations and no
+  rate-limit response headers. A live unauthenticated GET https://api.merqube.com/index returned
+  HTTP 200 with an 11.8 MB body and headers date, content-type, content-length, x-request-id, vary
+  and access-control-allow-origin only - no RateLimit-*, no X-RateLimit-*, no Retry-After. An honest
+  zero: an agent integrating here has no published budget and no runtime signal to back off on.
+observations:
+- probe: GET https://api.merqube.com/index?limit=1
+  observed: '2026-08-25'
+  status: 200
+  response_bytes: 11788368
+  rate_limit_headers: []
+  note: >-
+    The `limit` query parameter is not part of the contract - pagination is page/page_size - so the
+    full unpaginated collection came back. An unauthenticated caller can pull an 11.8 MB payload in
+    one request with no throttle signal, which is itself the finding.
+related:
+  conventions: conventions/merqube-conventions.yml
+  pagination_controls:
+  - page
+  - page_size
+  - fields
+  - format=csv

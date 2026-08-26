@@ -1,0 +1,53 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication (MerQube's own Authentication
+  document), corroborated by
+  https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md
+docs: https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication
+provider: MerQube
+spec_declares_security: false
+spec_note: >-
+  The published OpenAPI (https://api.merqube.com/api, info.version 4.40.0) declares NO
+  components.securitySchemes and no top-level or per-operation `security` block, so the scheme below
+  is read from MerQube's prose Authentication document rather than derived from the contract. This
+  is a real contract gap: an agent reading only the OpenAPI cannot discover how to authenticate.
+schemes:
+- name: apiKeyAuth
+  type: apiKey
+  in: header
+  parameter: Authorization
+  value_format: 'APIKEY {your_api_key}'
+  description: >-
+    Every MerQube API key is bound to a User. Requests carry the key in the Authorization header
+    with the literal prefix "APIKEY " (note: not Bearer). Requests sent with no key are accepted but
+    are treated as anonymous.
+  source: https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication
+key_provisioning:
+  self_serve: false
+  steps:
+  - Create an account at https://merqube.com/register (company email address where applicable).
+  - Email support@merqube.com requesting an API key, stating the registration email and the intended
+    use so the correct permissions can be configured.
+  - MerQube emails a one-time-use link that reveals the key once; the key is not recoverable
+    afterwards by the customer or by MerQube.
+  contact: support@merqube.com
+  note: >-
+    Key issuance is human-gated - there is no self-service key creation in the public flow. The SDK
+    Overview additionally names an /apikey endpoint for key management, which is not present in the
+    published OpenAPI paths.
+authorization_model:
+  style: namespace-scoped permissions
+  anonymous_access: true
+  anonymous_scope: >-
+    Unauthenticated callers receive only world-readable resources - everything in the `default`
+    namespace, which is where MerQube-branded public indices live (e.g. the MerQube US Index Series).
+  authenticated_scope: >-
+    An API key resolves to the union of the `default` namespace and every customer namespace the key
+    is permissioned for. Objects carry `namespace` and permissioning is applied per namespace, not
+    per object.
+  scopes_published: false
+  scopes_note: >-
+    No OAuth 2.0 scopes exist. Namespaces are the authorization primitive and MerQube does not
+    publish the namespace list; access changes are requested from support@merqube.com.
+  source: https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md

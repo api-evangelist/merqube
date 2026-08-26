@@ -1,0 +1,34 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  Route manifest of the merqube.com single-page application
+  (https://merqube.com/assets/index-DALZyDUj.js, the client-side router table),
+  https://merqube.com/contact, and
+  https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication
+provider: MerQube
+plan_count: 0
+plans: []
+pricing_published: false
+pricing_url: null
+model: enterprise-contact-sales
+free_tier:
+  exists: false
+  public_read: true
+  detail: >-
+    There is no free plan, but there IS a genuinely open read surface: everything in the `default`
+    namespace - MerQube-branded public indices such as the MerQube US Index Series - is readable
+    from https://api.merqube.com without any credential at all. That is an unpriced public-data
+    surface, not a tier.
+note: >-
+  MerQube publishes no pricing, no plans and no self-service checkout. Its SPA route table contains
+  no /pricing or /plans route, and access is gated on a human step: register at merqube.com/register,
+  then email support@merqube.com stating the intended use so the correct namespace permissions can be
+  configured, after which a one-time-use link reveals the API key. Commercial terms for index design,
+  calculation and administration are negotiated per client. Recording plan_count 0 rather than
+  omitting the file, because "no published price" is the measurement.
+onboarding:
+  self_serve_signup: true
+  signup_url: https://merqube.com/register
+  self_serve_api_key: false
+  api_key_request: support@merqube.com
+  human_gate: true

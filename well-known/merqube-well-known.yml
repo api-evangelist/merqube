@@ -1,0 +1,68 @@
+generated: '2026-08-25'
+method: probed
+source: live unauthenticated HTTPS probes, 2026-08-25
+note: >-
+  No pointer is emitted for this file. Every /.well-known/ path probed either returned 404 (the API
+  host, which serves genuine 404s from its AWS ALB) or returned HTTP 200 with the merqube.com
+  single-page-application HTML shell (the marketing site is a Vite SPA with a catch-all route, so a
+  200 there is NOT a served document). robots.txt on merqube.com is the only real file found and it
+  is a permissive stub. Recorded absence, not a presence.
+hosts:
+- host: api.merqube.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+  - path: /llms.txt
+    status: 404
+    file: null
+- host: merqube.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell, not a security.txt - treated as a miss
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell - treated as a miss
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell - treated as a miss
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell - treated as a miss
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell, not a JSON AgentCard - treated as a miss
+  - path: /.well-known/agent.json
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell, not a JSON AgentCard - treated as a miss
+  - path: /llms.txt
+    status: 200
+    file: null
+    note: SPA catch-all returned text/html shell, not an llms.txt - treated as a miss
+  - path: /robots.txt
+    status: 200
+    file: null
+    note: >-
+      real file, permissive ("User-agent: *" with an empty Disallow) - not a /.well-known/ document

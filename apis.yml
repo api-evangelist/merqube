@@ -1,23 +1,181 @@
 aid: merqube
 name: MerQube
-description: 'MerQube is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  MerQube is an index technology company that designs, calculates and administers rules-based
+  investment strategies and custom indices for banks, asset managers and ETF issuers. Its
+  cloud-native platform is API-first: the public MerQube API (api.merqube.com) exposes an IndexAPI
+  for creating, editing, running and deleting index manifests, target portfolios, index documents
+  and identifiers, and a SecAPI for retrieving security metrics, index levels, portfolios and
+  statistics across equities, futures, options and MerQube indices. The company publishes a
+  link-resolved OpenAPI 3.1 description from the API host itself, a browsable rendering at
+  merqube.com/api, a Stoplight documentation portal, and a first-party Apache-2.0 Python client
+  library on PyPI and GitHub.
 url: https://raw.githubusercontent.com/api-evangelist/merqube/refs/heads/main/apis.yml
+image: https://merqube.com/MerQube_Favicon_apple-touch-icon.png
+accessModel:
+  pricing: unknown
+  onboarding: request
+  trial: false
+  try_now: true
+  public: true
+  label: Public read, human-gated API key
+  confidence: high
+  source:
+  - authentication
+  - plans
+  generated: '2026-08-25'
+  method: derived
+  note: >-
+    The `default` namespace is readable from https://api.merqube.com with no credential at all, so
+    the read surface is genuinely public. Write access and customer namespaces require a key that
+    support@merqube.com issues by hand after registration; there is no self-service key and no
+    published price.
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-25'
 modified: '2026-08-25'
 tags:
 - Company
-apis: []
+- Financial Services
+- Index Data
+- Market Data
+- Capital Markets
+- Investment Strategies
+- Asset Management
+- ETF
+- Structured Products
+- Quantitative Finance
+- OpenAPI
+tags_raw:
+- company
+- financial-services
+- index-data
+- market-data
+- capital-markets
+- investment-strategies
+- asset-management
+- etf
+- structured-products
+- quantitative-finance
+- openapi
+apis:
+- name: MerQube API
+  description: >-
+    Public REST API covering the MerQube IndexAPI (index manifests, target portfolios, index
+    documents, identifiers, portfolio handlers, index templating helpers and run state) and the
+    SecAPI (security metrics, index levels, portfolios, statistics, security lists and options
+    pricing). Authenticated with an API key sent as `Authorization: APIKEY <key>`; unauthenticated
+    callers see only resources in the world-readable `default` namespace.
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - Index Data
+  - Market Data
+  - Capital Markets
+  - Investment Strategies
+  - Financial Services
+  - OpenAPI
+  tags_raw:
+  - index-data
+  - market-data
+  - capital-markets
+  - investment-strategies
+  - financial-services
+  - openapi
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-api-openapi.json
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Overlay
+    url: overlays/merqube-api-openapi-overlay.yaml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+common:
+- type: DomainSecurity
+  url: security/merqube-domain-security.yml
+- type: Website
+  url: https://merqube.com/
+- type: DeveloperPortal
+  url: https://merqube.stoplight.io/
+- type: Documentation
+  url: https://merqube.stoplight.io/
+- type: APIReference
+  url: https://www.merqube.com/api
+- type: GettingStarted
+  url: https://merqube.stoplight.io/docs/api/p6s6m4p35ehfv-authentication
+- type: Support
+  url: https://support.merqube.com/
+- type: Blog
+  url: https://merqube.com/news/blog
+- type: GitHubOrganization
+  url: https://github.com/merqube
+- type: SignUp
+  url: https://merqube.com/register
+- type: Login
+  url: https://merqube.com/login
+- type: TermsOfService
+  url: https://merqube.com/terms-of-use
+- type: PrivacyPolicy
+  url: https://merqube.com/privacy-notice
+- type: Contact
+  url: https://merqube.com/contact
+- type: FAQ
+  url: https://merqube.com/faqs
+- type: Governance
+  url: https://merqube.com/governance
+- type: OpenAPI
+  url: openapi/merqube-api-openapi.json
+- type: Authentication
+  url: authentication/merqube-authentication.yml
+- type: Conventions
+  url: conventions/merqube-conventions.yml
+- type: ErrorCatalog
+  url: errors/merqube-problem-types.yml
+- type: DataModel
+  url: data-model/merqube-data-model.yml
+- type: Overlay
+  url: overlays/merqube-api-openapi-overlay.yaml
+- type: Conformance
+  url: conformance/merqube-conformance.yml
+- type: Lifecycle
+  url: lifecycle/merqube-lifecycle.yml
+- type: Packages
+  url: packages/merqube-packages.yml
+- type: SDKs
+  url: packages/merqube-packages.yml
+- type: CLI
+  url: cli/merqube-cli.yml
+- type: RateLimits
+  url: rate-limits/merqube-rate-limits.yml
+- type: Plans
+  url: plans/merqube-plans-pricing.yml
+- type: ChangeLog
+  url: changelog/merqube-changelog.yml
+- type: Sandbox
+  url: sandbox/merqube-sandbox.yml
+- type: LLMsTxt
+  url: llms/merqube-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
-common:
-- type: Website
-  url: https://www.nasdaqprivatemarket.com/
+x-enrichment:
+  date: '2026-08-25'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v1

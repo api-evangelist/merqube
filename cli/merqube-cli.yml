@@ -1,0 +1,34 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://raw.githubusercontent.com/merqube/merqube-client-lib/main/pyproject.toml
+  ([tool.poetry.scripts] block), https://github.com/merqube/merqube-client-lib
+provider: MerQube
+name: merqube-client-lib console scripts
+status: published
+note: >-
+  MerQube does not ship a standalone named CLI binary. Its first-party Python client library
+  installs three console entry points via Poetry; they are the command-line surface of the SDK, and
+  the distributable itself is catalogued in packages/merqube-packages.yml.
+install:
+- method: pip
+  command: pip install merqube-client-lib
+  source: https://github.com/merqube/merqube-client-lib/blob/main/docs/Overview.md
+commands:
+- name: create
+  entry_point: merqube_client_lib.templates.bin.create_index:main
+  purpose: Create an index from a MerQube index template.
+- name: get_example
+  entry_point: merqube_client_lib.templates.bin.get_example:main
+  purpose: Fetch an example template payload for an index type.
+- name: update_portfolio
+  entry_point: merqube_client_lib.templates.equity_baskets.bin.update_portfolio:main
+  purpose: >-
+    Update the target portfolio of an equity-basket index. pyproject.toml notes this is "currently
+    EB specific but might move".
+scripts:
+- name: generate_types.sh
+  path: bin/generate_types.sh
+  purpose: >-
+    Pulls the live production OpenAPI from https://api.merqube.com/api and regenerates
+    merqube_client_lib/pydantic_types.py with datamodel-code-generator. Contract-driven codegen.

@@ -1,0 +1,2338 @@
+openapi: 3.1.0
+info:
+  version: 4.40.0
+  title: MerQube API
+  description: MerQube APIs
+  contact:
+    name: API Support
+    url: 'https://www.merqube.com/contact'
+    email: support@merqube.com
+servers:
+  - url: 'https://api.merqube.com'
+    description: Production server
+  - url: 'https://staging.api.merqube.com'
+    description: Testing server for next generation features
+paths:
+  /index:
+    get:
+      tags:
+        - index
+      summary: Get all MerQube indices.
+      description: Get all MerQube indices.
+      operationId: index
+      parameters:
+        - $ref: '#/components/parameters/filterParam'
+        - $ref: '#/components/parameters/idsParam'
+        - $ref: '#/components/parameters/nameParam'
+        - $ref: '#/components/parameters/namesParam'
+        - $ref: '#/components/parameters/namespaceParam'
+        - $ref: '#/components/parameters/fieldsParam'
+        - $ref: '#/components/parameters/debugParam'
+        - $ref: '#/components/parameters/formatParam'
+        - name: type
+          in: query
+          description: By default only "prod" indices are shown; comma delimited list of other "types"
+          required: false
+          schema:
+            type: string
+            examples:
+              - 'test,prod'
+        - name: fetch_identifiers
+          in: query
+          description: 'will return an additional section, linked_resources, that contains all identifier objects that the calling user has permission to that are linked to this index'
+          required: false
+          schema:
+            const: 'true'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IndexDefinitionPatchPutGet'
+                  error_codes:
+                    $ref: '#/components/schemas/ErrorCodes'
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    post:
+      tags:
+        - index
+      summary: Create a new MerQube index
+      description: Create a new MerQube index
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/IndexDefinitionPost'
+                - $ref: '#/components/schemas/CopyFromManifest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Index Creation Response Schema
+                properties:
+                  id:
+                    type: string
+                    description: the uuid of this index
+                  security_id:
+                    type: string
+                    description: the uuid of the secapi (type index) security for this index
+                  intraday_security_id:
+                    type: string
+                    description: the uuid of the secapi (type intraday_index) security for this index
+                  status:
+                    type: string
+        '400':
+          description: illegal request body
+        '403':
+          description: not authorized to perform this operation
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+  '/index/{uuid}':
+    get:
+      tags:
+        - index
+      summary: Returns the MerQube index with this uuid
+      description: Returns the MerQube index with this uuid
+      operationId: index_uuid
+      parameters:
+        - $ref: '#/components/parameters/uuidParam'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexDefinitionPatchPutGet'
+        '403':
+          description: not authorized to perform this operation
+        '404':
+          description: index does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    put:
+      tags:
+        - index
+      summary: Replace a MerQube index
+      description: Replace a MerQube index.
+      parameters:
+        - $ref: '#/components/parameters/uuidParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndexDefinitionPatchPutGet'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: illegal request body
+        '403':
+          description: not authorized
+        '404':
+          description: index does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    patch:
+      tags:
+        - index
+      summary: Partially update a MerQube index
+      description: Partialy update a MerQube index.
+      parameters:
+        - $ref: '#/components/parameters/uuidParam'
+      requestBody:
+        description: any fields from an Index Manifest
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: illegal request body
+        '403':
+          description: not authorized
+        '404':
+          description: index does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    delete:
+      tags:
+        - index
+      summary: Delete a MerQube index.
+      description: Delete a MerQube index. Also tries to delete its identifiers.
+      parameters:
+        - $ref: '#/components/parameters/uuidParam'
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: not authorized
+        '404':
+          description: index does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+  '/index/{uuid}/portfolio':
+    get:
+      tags:
+        - index
+      summary: Get the portfolio of a MerQube index over time
+      description: Get the portfolio of a MerQube index over time
+      operationId: index_portfolio
+      parameters:
+        - name: dates_only
+          in: query
+          description: include only dates and no portfolio data
+          required: false
+          schema:
+            const: 'true'
+        - $ref: '#/components/parameters/startDateParam'
+        - $ref: '#/components/parameters/endDateParam'
+        - name: time
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: download
+          in: query
+          schema:
+            type: string
+            description: either true or false
+        - $ref: '#/components/parameters/uuidParam'
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: 'currently, the date'
+                          examples:
+                            - '2005-07-15T00:00:00'
+                        date:
+                          type: string
+                          description: date
+                          examples:
+                            - '2005-07-15T00:00:00'
+                        portfolio:
+                          type: object
+                          description: object where each key is a holding
+                          examples:
+                            - 'OPTION:SPY:CALL:0.0:2006-07-21:BUY':
+                                buy_sell: BUY
+                                exchgcntry: US
+                                exercise_type: European
+                                expiry: '2006-07-21'
+                                mic: XCME
+                                option_type: CALL
+                                price: 120.31612463831256
+                                price_date: '2005-07-15'
+                                root: SPY
+                                shares: 8.143322475570033
+                                strike: '0.0'
+                                strike_percentage: 0
+                                symbol: 'OPTION:SPY:CALL:0.0:2006-07-21:BUY'
+                                weight: 8.143322475570033
+                              'OPTION:SPY:CALL:143.4491457664114:2006-07-21:SELL':
+                                buy_sell: SELL
+                                exchgcntry: US
+                                exercise_type: European
+                                expiry: '2006-07-21'
+                                mic: XCME
+                                option_type: CALL
+                                price: 0.5857132916126346
+                                price_date: '2005-07-15'
+                                root: SPY
+                                shares: -8.143322475570033
+                                strike: '143.4491457664114'
+                                strike_percentage: 116.81526528209396
+                                symbol: 'OPTION:SPY:CALL:143.4491457664114:2006-07-21:SELL'
+                                weight: 8.143322 475570033
+        '400':
+          description: 'illegal query arg value (e.g., time is not a date-time)'
+        '403':
+          description: not authorized
+        '404':
+          description: index or portfolio does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+  '/index/{uuid}/target_portfolio':
+    get:
+      tags:
+        - index
+      description: get the timeseries of target portfolios for an index
+      parameters:
+        - $ref: '#/components/parameters/startDateParam'
+        - $ref: '#/components/parameters/endDateParam'
+        - $ref: '#/components/parameters/uuidParam'
+        - name: statuses
+          in: path
+          description: a comma seperated list of portfolio statuses to filter by
+          required: false
+          schema:
+            type: string
+            default: FINAL
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        eff_ts:
+                          $ref: '#/components/schemas/IsoTS'
+                        target_portfolio:
+                          $ref: '#/components/schemas/BasketPortfolio'
+        '403':
+          description: not authorized to see this namespace
+        '404':
+          description: index or portfolio does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    put:
+      tags:
+        - index
+      description: replace the portfolio for this index. Will eventually but not immediately affect /index/uuid/portfolio.
+      parameters:
+        - $ref: '#/components/parameters/uuidParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketPortfolioPutIn'
+      responses:
+        '200':
+          description: 'OK, portfolio successfully written and validated.'
+        '400':
+          description: bad portfolio or request
+        '403':
+          description: not authorized
+        '404':
+          description: index does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+  '/index/{uuid}/target_portfolio/{target_portfolio_uuid}':
+    get:
+      tags:
+        - index
+      description: Get an existing target portfolio
+      responses:
+        '200':
+          description: 'OK, portfolio successfully retrieved'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eff_ts:
+                    $ref: '#/components/schemas/IsoTS'
+                  target_portfolio:
+                    $ref: '#/components/schemas/BasketPortfolio'
+        '400':
+          description: Bad request
+        '403':
+          description: Not authorized
+        '404':
+          description: Index or target portfolio does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    patch:
+      tags:
+        - index
+      description: Update an existing target portfolio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketPortfolioPatchIn'
+      responses:
+        '200':
+          description: 'OK, portfolio successfully updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasketPortfolio'
+        '400':
+          description: Bad request
+        '403':
+          description: Not authorized
+        '404':
+          description: Index or target portfolio does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+    delete:
+      tags:
+        - index
+      description: Deletes an existing target portfolio
+      responses:
+        '200':
+          description: 'OK, target_portfolio deleted'
+        '403':
+          description: Not authorized
+        '404':
+          description: Index or target_portfolio with the provided UUIDs does not exist
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+  '/security/{type}':
+    get:
+      tags:
+        - security
+      summary: get one or more metrics for one or more securities
+      description: get one or more metrics for one or more securities
+      parameters:
+        - $ref: '#/components/parameters/nameParam'
+        - $ref: '#/components/parameters/namesParam'
+        - name: id
+          in: query
+          description: single id to pull
+          schema:
+            type: string
+        - $ref: '#/components/parameters/idsParam'
+        - name: metrics
+          in: query
+          description: comma delimited list of metrics
+          schema:
+            type: string
+            examples:
+              - 'Level,Portfolio'
+          examples:
+            default:
+              value: 'Level,Portfolio'
+        - name: securityfilter
+          in: query
+          description: |
+            a tiny query language that allows filtering securities by their metric values.
+            For example, 'get all futures contracts with expiry < x and root == Y'.
+
+            This is not a row-level filter.
+            This is intended for 'metadata' like metrics and not for metrics with many values, as the results could be surprising.
+            For example, 'get me prices for this week for all stocks that have ever closed above 1000' will contain this weeks results, and those prices may be < 1000;
+              however, given this filter, those stocks *at one point* closed > 1000.
+
+            Parenthesis and logicl ors between clauses are not currently supported.
+            An arbitrary number of and clauses is supported, and or within a clause is supported, IE 'root = X or Y'
+
+            The supported value oeprators are '!=', '==', '>=', '<=', '<', '>'
+
+            The first parsed operator in each `^` seperated clause is used as the operator - no additional checking is performed, so something like
+            `==<=` will be parsed as "is equal to `<=`" which is probably not what you want (and is likely to return an empty result set).
+
+            The supported logical operators are '^' (and, since & conflicts with URL query args) and ',' (or)
+
+            When the target value is a list (contains ','), the only two valid operators are != and ==. IE you cannot use <=X,Y etc.
+
+            When the operator is '==' and the value is '*', it means "the security has this metric defined at least once" (ie, we don't care about the value, just that the row exists)
+
+            Examples -
+
+              futures_contract...&securityfilter=root==BTC,B6 - all contracts with root euql to BTC or B6
+
+              futures_contract...&securityfilter=root==BTC^expiry.merq>=2022-01-01T00:00:00 - all contracts with BTC root expiring in 2022 or later
+
+              futures_root...&securityfilter=cme_limit_scaling_factor!=1.0 - all roots with a special/custom scaling factor such as cents
+
+            It can also replace the names= parameter, e.g.,
+
+               futures_root...&securityfilter=name==A6,B6 - get the roots named either A6 or B6 (returns 2 records)
+          schema:
+            type: string
+        - name: namespace
+          in: query
+          description: only return securities in this namespace
+          schema:
+            type: string
+            examples:
+              - mybank
+          examples:
+            default:
+              value: mybank
+        - $ref: '#/components/parameters/startDateParam'
+        - $ref: '#/components/parameters/endDateParam'
+        - $ref: '#/components/parameters/formatParam'
+        - name: as_of
+          in: query
+          description: view the database as_of a certain timestamp; data corrections that were backdated but inserted after this timestamp are ignored
+          schema:
+            type: string
+            description: should be a date-time as a string; YYYY-mm-dd HH-mm-ss
+        - name: since
+          in: query
+          description: 'view only data that was received since this timestamp. Note that because data could be corrected for previous days (eff_ts), this does not necessarily mean that eff_ts >= the since date. This will obtain data that was known about on or after the since date, but that data could be a correction for previous days.'
+          schema:
+            type: string
+            description: should be a date-time as a string; YYYY-mm-dd HH-mm-ss
+        - name: raw
+          in: query
+          description: 'only applies when format!=csv. Includes additional information about the raw security api records, such as the provider timestamp and the source of the data. This is an employee only feature.'
+          schema:
+            type: boolean
+        - name: show_full_history
+          in: query
+          description: 'Shows the full history of records including corrected records (that is, no `max(prov_ts)`)). This is an employee only feature. Also implies raw=true automatically. NOTE, this breaks the typical unique index of `id/eff_ts/metric` because if there were corrections, the metric may have changed multiple times - the new unique index includes `prov_ts` in this case.'
+          schema:
+            type: boolean
+        - name: debug
+          in: query
+          description: turns on debugging information by injecting a debug section at the top level
+          required: false
+          schema:
+            const: 'true'
+        - $ref: '#/components/parameters/sectypeParam'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SecurityMetrics'
+                  error_codes:
+                    $ref: '#/components/schemas/ErrorCodes'
+            text/csv:
+              examples:
+                default:
+                  value: 'ts,index,Level,Portfolio 2021-07-21T00:00:00,XXX,1,[...]'
+        '403':
+          description: not authorized
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+  /api:
+    get:
+      tags:
+        - api
+      description: serves this api in json format
+      responses:
+        '200':
+          description: 200 response
+          content:
+            application/json:
+              schema:
+                type: object
+      servers:
+        - url: 'https://api.merqube.com'
+          description: Production server
+        - url: 'https://staging.api.merqube.com'
+          description: Testing server for next generation features
+tags:
+  - name: identifier
+    description: tickers for various providers
+  - name: index
+    description: APIs for MerQube Indices
+  - name: index-class
+    description: APIs for MerQube Index classes
+  - name: legacy_equity_security
+    description: Equity securities (legacy non secapi)
+  - name: options
+    description: Option Pricing APIs
+    externalDocs:
+      url: 'https://merqube.com/api'
+      description: More details at
+  - name: security
+    description: securities
+  - name: security_list
+    description: lists of securities
+  - name: portfolio_handler
+    description: list of portfolio handlers
+components:
+  parameters:
+    dataCollectionsNameParam:
+      name: name
+      in: query
+      description: Name of the data collection to query
+      required: true
+      schema:
+        type: string
+    startDateParam:
+      name: start_date
+      in: query
+      description: Start date for the results/computation
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    endDateParam:
+      name: end_date
+      in: query
+      description: End date for the results/computation
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    filterParam:
+      name: filter
+      in: query
+      description: Search keyword for filtering; searches name and title for this substring
+      required: false
+      schema:
+        type: string
+        examples:
+          - MQU
+    idsParam:
+      name: ids
+      in: query
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      required: false
+      schema:
+        type: string
+        examples:
+          - 'abcd1234,wxyz4567'
+    nameParam:
+      name: name
+      in: query
+      description: Taken as an *Exact* name to find a resource by
+      required: false
+      schema:
+        type: string
+        examples:
+          - MQUSTB20
+    namesParam:
+      name: names
+      in: query
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      required: false
+      schema:
+        type: string
+        examples:
+          - 'MQUSTB20,MQUSTRAV'
+    namespaceParam:
+      name: namespace
+      in: query
+      description: Retrieve all resources in this namespace
+      required: false
+      schema:
+        type: string
+        examples:
+          - my_client_namespace
+    fieldsParam:
+      name: fields
+      in: query
+      description: 'only return these fields, plus id,namespace, for each of the resource definitions'
+      required: false
+      schema:
+        type: string
+        examples:
+          - 'title,description'
+    debugParam:
+      name: debug
+      in: query
+      description: turns on debugging information by injecting a debug section at the top level
+      required: false
+      schema:
+        const: 'true'
+    formatParam:
+      name: format
+      in: query
+      description: choose csv (Default json)
+      required: false
+      schema:
+        const: csv
+    sectypeParam:
+      name: type
+      in: path
+      description: 'the type of security (futures_root, intraday_index etc)'
+      required: true
+      schema:
+        type: string
+    providerParam:
+      name: provider
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Provider'
+    secnameParam:
+      name: secname
+      in: path
+      description: name of the security for which the data is requested
+      required: true
+      schema:
+        type: string
+    identifierParam:
+      name: identifier_uuid
+      in: path
+      description: identifier UUID
+      required: true
+      schema:
+        type: string
+    identifierNameParam:
+      name: identifier_name
+      in: path
+      description: identifier name
+      required: true
+      schema:
+        type: string
+    uuidParam:
+      name: uuid
+      in: path
+      description: uuid of the resource
+      required: true
+      schema:
+        type: string
+  schemas:
+    IndexDefinitionPatchPutGet:
+      type: object
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/IndexDefinitionPost'
+        - $ref: '#/components/schemas/CrudExtra'
+    IndexDefinitionPost:
+      type: object
+      title: Index Manifest
+      additionalProperties: false
+      properties:
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        base_date:
+          $ref: '#/components/schemas/BaseDate'
+        base_year:
+          type: integer
+        benchmark:
+          oneOf:
+            - $ref: '#/components/schemas/IndexBenchmark'
+            - type: array
+              items:
+                $ref: '#/components/schemas/IndexBenchmark'
+        calc_freq:
+          type: string
+          enum:
+            - Daily
+            - 'Daily, EOD'
+            - Intraday
+        currency:
+          type: string
+        custom_metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetricsSchema'
+        description:
+          type: string
+        display_month:
+          type: string
+          enum:
+            - Jan
+            - Feb
+            - Mar
+            - Apr
+            - May
+            - Jun
+            - Jul
+            - Aug
+            - Sep
+            - Oct
+            - Nov
+            - Dec
+        documents:
+          type: object
+        excess_strategy:
+          const: keep_in_cash
+        family:
+          type: string
+        family_description:
+          type: string
+        first_value_date:
+          $ref: '#/components/schemas/IsoDate'
+          description: 'the first date that the index has a value; if set, will be < base_date'
+        identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentifierUUIDRef'
+        index_class_uuid:
+          type: string
+        intraday:
+          $ref: '#/components/schemas/Intraday'
+        launch_date:
+          type: string
+        methodology:
+          type: string
+        month:
+          type: integer
+        name:
+          type: string
+          pattern: '^[a-zA-Z][a-zA-Z0-9-_]{0,99}$'
+        namespace:
+          type: string
+        plot_metric:
+          type: string
+        portfolio_allocation_display:
+          type: boolean
+          description: whether or not portfolio_allocations are shown on the website. false by default
+        portfolio_display:
+          type: object
+          properties:
+            fields:
+              type: array
+              items:
+                type: object
+                properties:
+                  display_name:
+                    type: string
+                  field_name:
+                    type: string
+        portfolio_handler_id:
+          type: string
+        rebal_freq:
+          $ref: '#/components/schemas/RebalFrequency'
+        related:
+          type: array
+          items:
+            $ref: '#/components/schemas/Related'
+        run_configuration:
+          $ref: '#/components/schemas/RunConfig'
+        run_configurations:
+          type: array
+          items:
+            $ref: '#/components/schemas/RunConfigLabel'
+        sales_force_deal_id:
+          type: string
+          description: SalesForce Deal ID
+        spec:
+          $ref: '#/components/schemas/IndexSpec'
+        freezer_config:
+          $ref: '#/components/schemas/FreezerConfig'
+        calculation_check:
+          $ref: '#/components/schemas/CalculationCheck'
+        stage:
+          type: string
+          enum:
+            - prod
+            - test
+            - development
+        tags:
+          type: string
+        title:
+          type: string
+        webpage:
+          $ref: '#/components/schemas/Webpage'
+        weighting_method:
+          type: string
+          enum:
+            - Other
+            - Equal
+        eod_rt_price_check:
+          type: boolean
+      required:
+        - administrative
+        - description
+        - family
+        - launch_date
+        - name
+        - stage
+        - title
+    Administrative:
+      type: object
+      additionalProperties: false
+      properties:
+        role:
+          type: string
+          enum:
+            - data point
+            - verification
+            - calculation
+            - development
+            - administration
+        deadlines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deadline'
+        client:
+          type: object
+          properties:
+            requested_by:
+              type: string
+              description: 'this is the actual OAuth token email that originated the POST on index-template (similar to created_by and last_modified_by). Except, this is the user on the templating POST not the actual POST to index because the post to index is going to be a MerQube employee, but we need to capture who originated the templating request aka who called the meta-api. This field is used to put this index on that user''s Manage My Indices page.'
+            approved_by:
+              type: string
+              description: 'if a client requests an index to a finanancial institution, and that instituion approves the index parameters for launch, this holds the oauth email of that approver'
+            owner:
+              type: string
+              description: 'the idea here is to capture the client at a higher level than the above, e.g., this index is owned by Bank of Greatness.'
+      required:
+        - role
+    Deadline:
+      type: object
+      additionalProperties: false
+      properties:
+        time_of_day:
+          type: string
+          description: the time of day of the deadline
+          pattern: '^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$'
+        deadline_type:
+          type: string
+          enum:
+            - calculation
+            - restatement
+          default: calculation
+        next_day:
+          type: boolean
+          description: set this to true if the index starts running on day T but the deadline does not pass until T+1 in that index timezone
+          default: false
+        og_priority:
+          type: string
+          enum:
+            - P1
+            - P2
+            - P3
+          default: P1
+        business_days_prior:
+          type: integer
+          description: the amount of days before T to check for data existence
+          default: 0
+        metrics:
+          type: array
+          description: the list of metrics to check in the deadline checker script
+          items:
+            type: string
+      required:
+        - time_of_day
+        - deadline_type
+        - next_day
+        - og_priority
+        - business_days_prior
+    BaseDate:
+      type: string
+      description: the date that the index has level 'base_value'
+      pattern: '^[0-9]{4}[-/][0-9]{2}[-/][0-9]{2}'
+      examples:
+        - '2000-01-04'
+    IndexBenchmark:
+      type: object
+      additionalProperties: false
+      properties:
+        ticker:
+          type: string
+          description: 'accepts either FSYM_ID, or MQI:XXX to benchmark against another index.'
+          examples:
+            - 'MQI:XXX'
+        threshold:
+          type: number
+          description: 'the deviation that triggers an outlier event, IE, the daily difference of the index vs the daily difference of the underlying should not be more than this percent'
+          examples:
+            - 0.05
+        index_metric:
+          type: string
+          description: 'the metric of this index to compare against the ticker/threshold, eg can compare some other metric of this index than price_return'
+          default: price_return
+          examples:
+            - total_return
+        benchmark_metric:
+          type: string
+          description: only accepted if the ticker is an MQI. The metric of the benchmark index to compare against; eg can compare to some other metric than price_return of the benchmark
+          default: price_return
+          examples:
+            - total_return
+      required:
+        - ticker
+        - threshold
+    MetricsSchema:
+      type: object
+      properties:
+        data_type:
+          type: string
+          enum:
+            - string
+            - number64
+            - datetime64
+            - int64
+            - bool
+            - object
+        description:
+          type: string
+          description: a description of what this metric represents
+        name:
+          type: string
+          description: metric name
+        object_schema:
+          type: object
+          description: 'optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.'
+      required:
+        - data_type
+        - description
+        - name
+    IsoDate:
+      type: string
+      pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}'
+      examples:
+        - '2000-01-04'
+    IdentifierUUIDRef:
+      type: object
+      description: maps to an identifier resource
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Provider'
+        enabled:
+          type: boolean
+          description: Determines if the index will disseminate data based on this Identifier
+          default: true
+      required:
+        - name
+        - provider
+    Provider:
+      type: string
+      enum:
+        - bloomberg
+        - reuters
+        - morningstar
+        - factset
+        - nasdaq
+        - wind
+        - secapi
+      description: currently supported providers
+      examples:
+        - bloomberg
+    Intraday:
+      allOf:
+        - $ref: '#/components/schemas/IntradayPublishConfigWrapper'
+        - type: object
+          description: Only available for indexes with intraday tick computation
+          additionalProperties: false
+          properties:
+            enabled:
+              type: boolean
+              description: If the intraday process should be run or not
+            security_id:
+              type: string
+              description: Security ID of the intraday_index security where ticker data is served
+            ticker_period:
+              type: number
+              description: Duration between ticker datapoints. In seconds
+            tzinfo:
+              type: string
+              description: Timezone of intraday tick timestamp comparisons
+            active_time_ranges:
+              type: array
+              items:
+                $ref: '#/components/schemas/IntradayTickFilter'
+            calculation_max_retry_delay:
+              type: integer
+              description: How many seconds to keep retrying the real time calculation before setting the force flag. Defalts to 0 which means retry forever.
+              minimum: 0
+            resource_cpu_request:
+              type: integer
+              description: Minimum cpu resources requested in milliCPU
+              minimum: 1
+            resource_memory_request:
+              type: integer
+              description: Minimum memory resources requested in mebibytes.
+              minimum: 0
+            heartbeat_timeout:
+              type: integer
+              description: Max number of seconds between heartbeats before the rtindex pod is considered unhealthy
+              minimum: 1
+            startup_failure_timeout:
+              type: integer
+              description: Max number of seconds to wait for the first heartbeat from the rtindex pod before considering it a failed startup. By default it will wait 40sec
+              minimum: 1
+            data_refresh_period:
+              type: integer
+              description: After the rtindex refreshes its data this is the number of seconds to wait before refreshing again. 0 means do not refresh. Defaults to 3600 seconds (60min)
+              minimum: 0
+            tick_delay:
+              type: integer
+              description: Number of seconds to delay intraday calculation
+              minimum: 0
+          required:
+            - enabled
+    IntradayPublishConfigWrapper:
+      type: object
+      description: oneOfs at the top level of an object lead to hard to work with RootModels in pydantic. Forming this one property object makes importing and passing around this object less painful; there is a lot of code that passes this around.
+      properties:
+        publish_config:
+          $ref: '#/components/schemas/IntradayPublishConfig'
+    IntradayPublishConfig:
+      type: object
+      description: Mapping of index metric to targets it should be sent to
+      additionalProperties:
+        type: array
+        items:
+          oneOf:
+            - $ref: '#/components/schemas/IntradayPublishConfigDbTarget'
+            - $ref: '#/components/schemas/IntradayPublishConfigSecapiTarget'
+            - $ref: '#/components/schemas/IntradayPublishConfigBloombergTarget'
+            - $ref: '#/components/schemas/IntradayPublishConfigReutersTarget'
+    IntradayPublishConfigDbTarget:
+      allOf:
+        - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+        - type: object
+          properties:
+            target:
+              const: db
+          required:
+            - target
+    IntradayPublishConfigTargetBase:
+      type: object
+      properties:
+        active_time_ranges:
+          type: array
+          description: Time ranges during which values should be published to this target. Target level active_time_ranges override publish_config metric level active_time_ranges.
+          items:
+            $ref: '#/components/schemas/IntradayTickFilter'
+    IntradayTickFilter:
+      type: object
+      description: 'Filter for tick events, used to configure when an rtindex should process ticks or send ticks to targets'
+      additionalProperties: false
+      properties:
+        start_date:
+          $ref: '#/components/schemas/MerqTimestamp'
+        end_date:
+          $ref: '#/components/schemas/MerqTimestamp'
+        start_time:
+          type: string
+          description: 'Inclusive start time of the day to start running this intraday index. Format is %H:%M:%S.%f. This should be in the timezone of the index based on tzinfo.'
+          examples:
+            - '20:39:00.262345'
+        end_time:
+          type: string
+          description: 'Inclusive end time of the day to stop running this intraday index. Format is %H:%M:%S.%f. This should be in the timezone of the index based on tzinfo.'
+          examples:
+            - '20:39:00.262345'
+        days_of_week:
+          type: array
+          description: Which days of the week to run the index. Each day of the week is denoted by an integer with Monday = 0 and Sunday = 6
+          items:
+            type: integer
+        exclude_holidays:
+          type: boolean
+          description: If this is true use the index holiday calendar to decide which days to run the index. It will only run on non-holidays.
+    MerqTimestamp:
+      examples:
+        - - '2021-01-01'
+          - '2021-01-01T01:01:01'
+          - '2021-01-01T01:01:01.zzzzz'
+      anyOf:
+        - type: string
+          format: date-time
+        - type: string
+          format: date
+        - type: string
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$'
+    IntradayPublishConfigSecapiTarget:
+      allOf:
+        - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+        - type: object
+          properties:
+            target:
+              const: secapi
+          required:
+            - target
+    IntradayPublishConfigBloombergTarget:
+      allOf:
+        - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+        - type: object
+          properties:
+            target:
+              const: bloomberg
+            params:
+              $ref: '#/components/schemas/IntradayPublishConfigBloombergTargetParams'
+          required:
+            - target
+    IntradayPublishConfigBloombergTargetParams:
+      type: object
+      additionalProperties: false
+      properties:
+        rounding_decimals:
+          type: integer
+        ticker:
+          type: string
+    IntradayPublishConfigReutersTarget:
+      allOf:
+        - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+        - type: object
+          properties:
+            target:
+              const: reuters
+            params:
+              $ref: '#/components/schemas/IntradayPublishConfigReutersTargetParams'
+          required:
+            - target
+    IntradayPublishConfigReutersTargetParams:
+      type: object
+      additionalProperties: false
+      properties:
+        rounding_decimals:
+          type: integer
+        ticker:
+          type: string
+        post_type:
+          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
+    ReutersProviderKwargsPostType:
+      type: string
+      enum:
+        - EOD
+        - RT
+        - EOD_AND_RT
+      description: 'How to post the data to Reuters, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)'
+    RebalFrequency:
+      type: string
+      enum:
+        - Annual
+        - Daily
+        - Monthly
+        - Quarterly
+        - Semi-Annual
+        - Weekly
+        - Bi-Monthly
+        - Intraday
+        - None
+    Related:
+      type: object
+      properties:
+        default_display:
+          type: boolean
+          default: false
+        id:
+          type: string
+        metric:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - security
+            - index
+      required:
+        - id
+        - name
+        - type
+    RunConfig:
+      type: object
+      properties:
+        airflow_config:
+          $ref: '#/components/schemas/AirflowConfig'
+        command:
+          type: string
+        command_arguments:
+          $ref: '#/components/schemas/ArgumentsOrEnvVars'
+        index_report_uuids:
+          type: array
+          items:
+            type: string
+        index_reports:
+          oneOf:
+            - type: array
+              minItems: 1
+              items:
+                type: string
+            - type: array
+              items:
+                $ref: '#/components/schemas/IndexReport'
+        job_enabled:
+          type: boolean
+        holiday_calendar:
+          $ref: '#/components/schemas/HolidayCalendarSpec'
+        pod_image_and_tag:
+          type: string
+          description: overrides the image
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        alert_priority:
+          type: string
+          enum:
+            - P1
+            - P2
+            - P3
+            - P4
+            - P5
+        tzinfo:
+          type: string
+        num_days_to_load:
+          type: integer
+        day_chunk_size:
+          type: integer
+          description: 'if set to a number, the index run will be split into chunks of this number of days'
+      required:
+        - job_enabled
+        - schedule
+        - num_days_to_load
+    AirflowConfig:
+      type: object
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+          description: A short description related with the generated runner
+        s3_location:
+          $ref: '#/components/schemas/S3Bucket'
+          description: Bucket and path where the generated dag should be stored. If not defined `merq-airflow-dags-airflow2` is defined in merqutil
+        dag:
+          type: object
+          description: use this to set kwargs for the dag
+        pod:
+          type: object
+          description: use this to set kwargs for the pod
+        env:
+          type: object
+          description: use this to set ENV variables in the pod
+        subpods:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubPod'
+    S3Bucket:
+      type: object
+      additionalProperties: false
+      properties:
+        bucket:
+          type: string
+        path:
+          type: string
+      required:
+        - bucket
+    SubPod:
+      type: object
+      additionalProperties: false
+      properties:
+        arguments:
+          $ref: '#/components/schemas/ArgumentsOrEnvVars'
+        command:
+          type: string
+        pod_type:
+          type: string
+        uuid:
+          type: string
+        env_vars:
+          $ref: '#/components/schemas/ArgumentsOrEnvVars'
+        pod_kwargs:
+          type: object
+          properties:
+            name:
+              type: string
+          aditionalProperties: true
+      required:
+        - command
+        - pod_type
+        - uuid
+    ArgumentsOrEnvVars:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+    IndexReport:
+      type: object
+      properties:
+        uuid:
+          type: string
+        program_args:
+          type: object
+        task_id:
+          type: string
+        dissemination_destinations:
+          $ref: '#/components/schemas/DisseminationDestinations'
+      required:
+        - uuid
+    DisseminationDestinations:
+      type: object
+      properties:
+        email_dissapi_configs:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              recipient_list:
+                type: array
+                minItems: 1
+                items:
+                  type: string
+              email_list:
+                type: array
+                items:
+                  type: string
+              bcc_list:
+                type: array
+                items:
+                  type: string
+              cc_list:
+                type: array
+                items:
+                  type: string
+              subject:
+                type: string
+              content:
+                type: string
+              file_keys:
+                type: array
+                items:
+                  type: string
+            required:
+              - recipient_list
+              - subject
+        sftp_dissapi_configs:
+          type: array
+          items:
+            type: object
+            properties:
+              sftp_ids:
+                type: array
+                items:
+                  type: string
+              file_keys:
+                type: array
+                items:
+                  type: string
+            required:
+              - sftp_ids
+              - file_keys
+        s3_dissapi_configs:
+          type: array
+          items:
+            type: object
+            properties:
+              bucket:
+                type: string
+              key_prefix:
+                type: string
+              file_keys:
+                type: array
+                items:
+                  type: string
+            required:
+              - bucket
+              - key_prefix
+              - file_keys
+    HolidayCalendarSpec:
+      anyOf:
+        - $ref: '#/components/schemas/FlatCalendarSchema'
+        - $ref: '#/components/schemas/NestedCalendarSchema'
+    FlatCalendarSchema:
+      type: object
+      additionalProperties: false
+      properties:
+        calendar_identifiers:
+          type: array
+          items:
+            type: string
+            pattern: '^(FUT|MIC|FX|SM|MQI|OVERLAY):.+$'
+          default_factory: list
+        swaps_monitor_codes:
+          type: array
+          items:
+            type: string
+            pattern: '^[a-zA-Z]{3}$'
+          default_factory: list
+        condition:
+          type: string
+          enum:
+            - any
+            - all
+            - custom
+          default: all
+        holidays_to_add:
+          type: array
+          items:
+            type: string
+            format: date
+          default_factory: list
+        holidays_to_remove:
+          type: array
+          items:
+            type: string
+            format: date
+          default_factory: list
+        weekmask:
+          type: array
+          description: weekmask of valid business days
+          default:
+            - Mon
+            - Tue
+            - Wed
+            - Thu
+            - Fri
+          items:
+            type: string
+            enum:
+              - Mon
+              - Tue
+              - Wed
+              - Thu
+              - Fri
+              - Sat
+              - Sun
+    NestedCalendarSchema:
+      type: object
+      additionalProperties: false
+      properties:
+        operator:
+          type: string
+          enum:
+            - union
+            - intersection
+            - difference
+        weekmask:
+          type: array
+          items:
+            type: string
+            enum:
+              - Mon
+              - Tue
+              - Wed
+              - Thu
+              - Fri
+              - Sat
+              - Sun
+            description: weekmask of valid business days
+            default:
+              - Mon
+              - Tue
+              - Wed
+              - Thu
+              - Fri
+        children:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/calendar_identifiers'
+              - $ref: '#/components/schemas/holidays_to_add'
+              - $ref: '#/components/schemas/NestedCalendarSchema'
+      required:
+        - operator
+        - children
+    calendar_identifiers:
+      type: object
+      properties:
+        calendar_identifiers:
+          type: array
+          items:
+            type: string
+            pattern: '^(FUT|MIC|FX|SM|MQI|OVERLAY):.+$'
+    holidays_to_add:
+      type: object
+      properties:
+        holidays_to_add:
+          type: array
+          items:
+            type: string
+            format: date
+    Schedule:
+      type: object
+      additionalProperties: false
+      properties:
+        retries:
+          type: integer
+        retry_interval_min:
+          type: integer
+        schedule_start:
+          type: string
+        schedule_cron:
+          type: string
+        timeout_delta:
+          type: string
+          examples:
+            - minutes=17
+        business_days_prior:
+          type: integer
+          examples:
+            - 1
+        holiday_calendar:
+          type: object
+          properties:
+            cal_type:
+              type: string
+              examples:
+                - MIC
+            mic:
+              type: string
+              examples:
+                - XNYS
+      required:
+        - retries
+        - retry_interval_min
+        - schedule_start
+    RunConfigLabel:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/RunConfig'
+        - $ref: '#/components/schemas/RunConfigLabelAdditional'
+    RunConfigLabelAdditional:
+      type: object
+      description: 'used when there needs to be different run configurations, each with a different label, such as ''initial'' vs ''final'''
+      properties:
+        label:
+          type: string
+          description: unique label of this rc
+      required:
+        - label
+    IndexSpec:
+      type: object
+      properties:
+        index_class:
+          type: string
+        index_class_args:
+          type: object
+          description: should validate against index_class_args_spec field of the IndexClassDefinition identified by index_class
+        index_variables:
+          type: object
+          description: TODO
+        version:
+          type: integer
+    FreezerConfig:
+      type: object
+      additionalProperties: false
+      properties:
+        primary_index_name:
+          type: string
+          description: the primary index to use underlying data from
+        prices:
+          type: boolean
+          default: false
+        rebalances:
+          type: boolean
+          default: false
+        corax:
+          type: boolean
+          default: false
+        fx_rates:
+          type: boolean
+          default: false
+    CalculationCheck:
+      type: array
+      items:
+        type: object
+        oneOf:
+          - $ref: '#/components/schemas/LevelCheck'
+          - $ref: '#/components/schemas/PercentChangeCheck'
+          - $ref: '#/components/schemas/HistoryCheck'
+    LevelCheck:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            check_type:
+              const: LEVEL_CHECK
+          required:
+            - check_type
+        - $ref: '#/components/schemas/BaseCheck'
+        - type: object
+          properties:
+            params:
+              $ref: '#/components/schemas/LevelCheckParams'
+          required:
+            - params
+    BaseCheck:
+      type: object
+      properties:
+        metric:
+          type: string
+        enabled:
+          type: boolean
+        alert_type:
+          type: string
+          enum:
+            - email
+            - slack
+            - opsgenie
+            - fail_computation
+          default: fail_computation
+      required:
+        - metric
+        - enabled
+    LevelCheckParams:
+      type: object
+      properties:
+        min:
+          type:
+            - number
+            - 'null'
+        max:
+          type:
+            - number
+            - 'null'
+      required:
+        - min
+        - max
+    PercentChangeCheck:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            check_type:
+              const: PERCENT_CHANGE_CHECK
+          required:
+            - check_type
+        - $ref: '#/components/schemas/BaseCheck'
+        - type: object
+          properties:
+            params:
+              $ref: '#/components/schemas/PercentChangeCheckParams'
+          required:
+            - params
+    PercentChangeCheckParams:
+      type: object
+      properties:
+        min:
+          type:
+            - number
+            - 'null'
+          minimum: -100
+          maximum: 0
+        max:
+          type:
+            - number
+            - 'null'
+          minimum: 0
+          maximum: 100
+      required:
+        - min
+        - max
+    HistoryCheck:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            check_type:
+              const: HISTORY_CHECK
+          required:
+            - check_type
+        - $ref: '#/components/schemas/BaseCheck'
+        - type: object
+          properties:
+            params:
+              $ref: '#/components/schemas/HistoryCheckParams'
+          required:
+            - params
+    HistoryCheckParams:
+      type: object
+      properties:
+        days:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+          maximum: 365
+      required:
+        - days
+    Webpage:
+      type: object
+      properties:
+        custom_charts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomCharts'
+        visible:
+          type: boolean
+          default: true
+    CustomCharts:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        xlabel:
+          type: string
+        ylabel:
+          type: string
+        chart_type:
+          type: string
+          enum:
+            - line
+            - spline
+            - area
+            - bar
+            - column
+          default: line
+        compare_mode:
+          type: string
+          enum:
+            - absolute
+            - percent
+          default: percent
+        constructor_type:
+          type: string
+          enum:
+            - chart
+            - stockChart
+          default: stockChart
+        size:
+          type: number
+          default: 12
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              url:
+                type: string
+              array_field:
+                type: string
+              values:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    display_name:
+                      type: string
+                    path:
+                      type: string
+                  required:
+                    - display_name
+                    - path
+              key_field:
+                type: string
+            required:
+              - url
+              - array_field
+              - values
+              - key_field
+      required:
+        - name
+        - xlabel
+        - ylabel
+    CrudExtra:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+      required:
+        - id
+        - namespace
+        - status
+    Status:
+      type: object
+      properties:
+        created_at:
+          type: string
+        created_by:
+          type: string
+        last_modified:
+          type: string
+        last_modified_by:
+          type: string
+        locked_after:
+          type: string
+          description: 'If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.'
+          format: date-time
+      required:
+        - last_modified
+    ErrorCodes:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CopyFromManifest:
+      type: object
+      description: 'Creates a new resource by starting from an existing resource, removing the id/status, adding/updating/deleting keys, then posting it as a new resource. The original resource is hereby referred to as the from-manifest. This is essentially a GET-MODIFY-POST operation. Only top level keys can be modifed/replaced/deleted, this does not support subkey modification.'
+      properties:
+        copy_from_uuid:
+          type: string
+          description: the uuid of the resource to start from
+        field_deletes:
+          type: array
+          description: fields to delete from the from-manifest
+          items:
+            type: string
+        field_updates:
+          type: object
+          description: 'a dictionary of top level keys that the original manifest will be updated with (ie `manifest.update(this[field_updates])`. Top level keys can be added or replaced. To change the namespace, add namespace to the field_updates dict. The new manifest must be valid per the original resource definition.'
+        name:
+          type: string
+          description: the name of the new resource
+      required:
+        - copy_from_uuid
+        - name
+    IsoTS:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}(T|\s)\d{2}:\d{2}:\d{2}(\.\d{6})?$'
+      examples:
+        - '2022-01-02T01:02:03'
+    BasketPortfolio:
+      type: object
+      description: |
+        Target Portfolio. Supports equities, futures, and options. This object captures all information needed to execute externally defined rebalances.
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/BasketPortfolioPutIn'
+        - type: object
+          properties:
+            id:
+              type: string
+              examples:
+                - 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+            status:
+              $ref: '#/components/schemas/PortfolioStatus'
+            status_change_reason:
+              type: string
+          required:
+            - id
+            - status
+    BasketPortfolioPutIn:
+      type: object
+      description: |
+        Input data for creating/replacing target portfolios. This object captures all information needed to execute externally defined rebalances.
+      additionalProperties: false
+      properties:
+        positions:
+          type: array
+          title: Positions
+          items:
+            $ref: '#/components/schemas/ValidEquityBasketPosition'
+        timestamp:
+          $ref: '#/components/schemas/IsoTS'
+          description: the time at which the portfolio should take effect
+        unit_of_measure:
+          $ref: '#/components/schemas/PortfolioUom'
+        share_selection_date:
+          $ref: '#/components/schemas/IsoTS'
+          description: 'Share selection date, if specified, should be before the effective date (parameter ''timestamp'') for this Target Portfolio. In case when the unit_of_measure is set to WEIGHT, we first determine the shares using the prices on the share selection date. If any constituent is de-listed by the share selection date, then that constituent''s weight is distributed to other constituents before selecting the shares. We then apply the corporate actions from the share selection date to the day before the portfolio effective date. In case when the unit_of_measure is set to SHARES, we follow the similar steps as above, except the step of determining shares, as it is not needed.'
+        divisor:
+          type: number
+          description: A scaling factor to apply for the SHARES of the portfolio constituents
+        external_id:
+          type: string
+          description: An external ID to reference this portfolio with. Must be unique per index.
+      required:
+        - positions
+        - timestamp
+        - unit_of_measure
+    ValidEquityBasketPosition:
+      oneOf:
+        - $ref: '#/components/schemas/BasketPosition'
+        - $ref: '#/components/schemas/RicEquityPosition'
+        - $ref: '#/components/schemas/FsymEquityPosition'
+        - $ref: '#/components/schemas/OptionPosition'
+        - $ref: '#/components/schemas/FuturesPosition'
+        - $ref: '#/components/schemas/SecapiBasketPosition'
+        - $ref: '#/components/schemas/MerqubeIndexPosition'
+    BasketPosition:
+      type: object
+      description: A general basket portfolio position
+      additionalProperties: false
+      properties:
+        amount:
+          type: number
+          title: Amount
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        identifier:
+          type: string
+          title: Identifier
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        position_id:
+          type: string
+          title: Position Id
+          examples:
+            - '1'
+      required:
+        - amount
+        - asset_type
+        - identifier
+        - identifier_type
+    AssetType:
+      type: string
+      enum:
+        - CASH
+        - THIRD_PARTY_INDEX
+        - EQUITY
+        - OPTION
+        - FUTURES
+        - MUTUAL_FUND
+        - MERQUBE_INDEX
+        - CUSTOM_SECAPI_INDEX
+      title: Asset Type
+      examples:
+        - EQUITY
+    PositionIdentifierType:
+      type: string
+      enum:
+        - RIC
+        - CURRENCY_CODE
+        - FSYM_ID
+        - TICKER
+        - BBG_TICKER
+        - CUSIP
+      title: PositionIdentifierType
+      examples:
+        - FSYM_ID
+    RicEquityPosition:
+      description: 'Equity position, identified by a RIC'
+      allOf:
+        - $ref: '#/components/schemas/BasketPosition'
+        - $ref: '#/components/schemas/RicSpecific'
+    RicSpecific:
+      type: object
+      additionalProperties: false
+      properties:
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        real_time_trade_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/RealTimeTradeType'
+        use_primary_listing:
+          type: boolean
+          title: Use Primary Listing
+          description: use the security's primary listing rather than the one from the identifier
+          default: false
+    RealTimeTradeType:
+      type: string
+      enum:
+        - ELIGIBLE
+        - INELIGIBLE
+      title: RealTimeTradeType
+      description: Trade types that can be used for real time quotes. Examples of ineligible trade types are dark pool and odd lot trades.
+    FsymEquityPosition:
+      description: 'Equity position, identified by a FSYM + country code'
+      allOf:
+        - $ref: '#/components/schemas/BasketPosition'
+        - $ref: '#/components/schemas/FsymSpecific'
+    FsymSpecific:
+      type: object
+      additionalProperties: false
+      properties:
+        country_code:
+          $ref: '#/components/schemas/CountryCode'
+      required:
+        - country_code
+    CountryCode:
+      type: string
+      enum:
+        - AE
+        - AR
+        - AT
+        - AU
+        - BD
+        - BE
+        - BG
+        - BH
+        - BR
+        - BW
+        - CA
+        - CH
+        - CI
+        - CL
+        - CN
+        - CO
+        - CY
+        - CZ
+        - DE
+        - DK
+        - EC
+        - EG
+        - ES
+        - FI
+        - FR
+        - GB
+        - GR
+        - HK
+        - HR
+        - HU
+        - ID
+        - IE
+        - IL
+        - IN
+        - IS
+        - IT
+        - JP
+        - KH
+        - KR
+        - KW
+        - LK
+        - LU
+        - MX
+        - MY
+        - NL
+        - 'NO'
+        - NZ
+        - PE
+        - PH
+        - PK
+        - PL
+        - PT
+        - QA
+        - RU
+        - SA
+        - SE
+        - SG
+        - SI
+        - SK
+        - TH
+        - TN
+        - TR
+        - TT
+        - TW
+        - US
+        - VN
+        - ZA
+        - ZM
+      description: ISO country codes
+      examples:
+        - US
+    OptionPosition:
+      description: An Option position
+      allOf:
+        - $ref: '#/components/schemas/OptionSpecific'
+        - $ref: '#/components/schemas/BasketPosition'
+    OptionSpecific:
+      type: object
+      additionalProperties: false
+      properties:
+        identifier:
+          type: string
+          title: Identifier
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        expiration_date:
+          $ref: '#/components/schemas/IsoDate'
+          title: Expiration Date
+        type:
+          $ref: '#/components/schemas/OptionType'
+          title: Type
+        style:
+          $ref: '#/components/schemas/OptionStyle'
+          title: Style
+        strike:
+          type: number
+          title: Strike Price
+        underlying:
+          type: string
+          title: Underlying Symbol
+        expiration_type:
+          $ref: '#/components/schemas/OptionExpirationType'
+          title: Expiration Type
+        amount:
+          type: number
+          title: Amount of Shares
+        currency:
+          type: string
+          title: Currency
+          default: USD
+        lag:
+          $ref: '#/components/schemas/IsoTS'
+          title: Option Lag
+        delta_hedge_flag:
+          type: boolean
+        vol_multiplier:
+          type: number
+        structure_id:
+          type: number
+          minimum: 0
+        leg_multiple:
+          type: number
+          minimum: 0
+      required:
+        - expiration_date
+        - type
+        - strike
+        - underlying
+        - amount
+        - currency
+    OptionType:
+      type: string
+      enum:
+        - PUT
+        - CALL
+      title: Option Type
+      examples:
+        - PUT
+    OptionStyle:
+      type: string
+      enum:
+        - AMERICAN
+        - EUROPEAN
+      title: Option Style
+      examples:
+        - AMERICAN
+    OptionExpirationType:
+      type: string
+      enum:
+        - AM
+        - PM
+      title: Option Expiration Type
+      examples:
+        - AM
+    FuturesPosition:
+      description: A Futures position
+      allOf:
+        - $ref: '#/components/schemas/FuturesSpecific'
+        - $ref: '#/components/schemas/BasketPosition'
+    FuturesSpecific:
+      type: object
+      additionalProperties: false
+      properties:
+        identifier:
+          type: string
+          title: Identifier
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        expiration_date:
+          $ref: '#/components/schemas/IsoDate'
+          title: Expiration Date
+        underlying:
+          type: string
+          title: Underlying Symbol
+        amount:
+          type: number
+          title: Amount of Shares
+        currency:
+          type: string
+          title: Currency
+          default: USD
+        lag:
+          $ref: '#/components/schemas/IsoTS'
+          title: Futures Lag
+      required:
+        - underlying
+        - amount
+        - currency
+    SecapiBasketPosition:
+      description: A basket position that uses custom metrics from merqube data source
+      allOf:
+        - $ref: '#/components/schemas/BasketPosition'
+        - $ref: '#/components/schemas/SecapiSpecific'
+    SecapiSpecific:
+      type: object
+      additionalProperties: false
+      properties:
+        custom_metric:
+          type: string
+    MerqubeIndexPosition:
+      description: A basket position that uses custom metrics from merqube data source
+      allOf:
+        - $ref: '#/components/schemas/BasketPosition'
+        - $ref: '#/components/schemas/MerqubeIndexSpecific'
+    MerqubeIndexSpecific:
+      type: object
+      additionalProperties: false
+      properties:
+        metric_name:
+          type: string
+    PortfolioUom:
+      type: string
+      enum:
+        - SHARES
+        - WEIGHT
+      title: PortfolioUom
+      description: 'Used to indicate if portfolio amounts are absolute or relative. weight indicates portfolio amounts are relative weights units indicates portfolio amounts are absolute values, e.g. shares or number of contracts'
+    PortfolioStatus:
+      type: string
+      enum:
+        - PENDING_VALIDATION
+        - FAILED_VALIDATION
+        - PASSED_VALIDATION
+        - SELECTED
+        - UNSELECTED
+        - FINAL
+        - DELETED
+      title: PortfolioStatus
+      description: |
+        Indicates the status of a target portfolio.  A portfolio can only be used in an index if status is `FINAL` * `PENDING_VALIDATION` - Custom validation is necessary, and is queued up * `FAILED_VALIDATION` - Custom validation has failed. * `PASSED_VALIDATION` - Custom validation has succeeded. The portfolio must now be selected * `SELECTED` - Selected for usage on a date, but has not yet been locked in / finalized * `UNSELECTED` - Was previously selected, but a newer portfolio has replaced it for that date * `FINAL` - This portfolio can now be used for the given date. * `DELETED` - This portfolio has been deleted or rejected for usage.
+    BasketPortfolioPatchIn:
+      type: object
+      description: |
+        Input data for updating an existing target portfolio
+      additionalProperties: false
+      properties:
+        status:
+          $ref: '#/components/schemas/PortfolioStatus'
+        status_change_reason:
+          type: string
+    SecurityMetrics:
+      type: object
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        id:
+          type: string
+          examples:
+            - 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+        metric:
+          type: string
+          examples:
+            - Level
+        source:
+          type: string
+          examples:
+            - some_gcp_feed
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        value:
+          anyOf:
+            - type: string
+            - type: number
+            - type: integer
+            - type: boolean
+            - type: array
+            - type: object
+      required:
+        - eff_ts
+        - id
+        - metric
+        - prov_ts
+        - value
+x-internal: false

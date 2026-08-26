@@ -1,0 +1,164 @@
+generated: '2026-08-25'
+method: derived
+source: >-
+  Candidate tools derived from operations in https://api.merqube.com/api (OpenAPI 3.1,
+  info.version 4.40.0). No MerQube MCP server exists - see probes[] below.
+provider: MerQube
+status: candidate
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+  note: >-
+    MerQube ships no MCP server, remote or local. Nothing is published, nothing is installable, and
+    no endpoint is guessed here. The tools below are a DERIVED candidate surface showing what an MCP
+    server over this API would expose; they are not callable.
+probes:
+- url: https://api.merqube.com/mcp
+  method: 'POST tools/list'
+  status: 404
+  checked: '2026-08-25'
+- url: https://api.merqube.com/sse
+  status: 404
+  checked: '2026-08-25'
+- host: mcp.merqube.com
+  result: no DNS record
+  checked: '2026-08-25'
+- registry: npmjs
+  query: merqube
+  result: 0 packages
+  checked: '2026-08-25'
+- registry: pypi
+  result: only merqube-client-lib (a REST client, no MCP entry point)
+  checked: '2026-08-25'
+authentication:
+  would_require: 'API key in Authorization header, form "APIKEY {key}"'
+  note: >-
+    An MCP server here would need a human-issued key (see authentication/), which is why a hosted
+    remote server would have to solve key provisioning first.
+candidate_tools:
+- name: list_indices
+  rest:
+  - 'GET /index'
+
+  operation_id: index
+  description: >-
+    List MerQube indices with substring filter, exact name(s), namespace, sparse fields and CSV
+    output. Readable anonymously for the public `default` namespace.
+  read_only: true
+- name: get_index
+  rest:
+  - 'GET /index/{uuid}'
+
+  operation_id: index_uuid
+  description: Retrieve one index manifest by permanent UUID.
+  read_only: true
+- name: get_index_portfolio
+  rest:
+  - 'GET /index/{uuid}/portfolio'
+
+  operation_id: index_portfolio
+  description: Historic portfolio composition of an index over a date window.
+  read_only: true
+- name: get_index_portfolio_allocations
+  rest:
+  - 'GET /index/{uuid}/portfolio_allocations'
+
+  operation_id: index_portfolio_allocations
+  read_only: true
+- name: get_index_stats
+  rest:
+  - 'GET /index/{uuid}/stats'
+  - 'GET /index/{uuid}/stats2'
+
+  operation_id: index_stats
+  description: Performance and risk statistics for an index.
+  read_only: true
+- name: get_index_run_state
+  rest:
+  - 'GET /index/{uuid}/run_state'
+
+  description: 'Calculation state of the last run: PENDING_CREATION, RUNNING, SUCCEEDED or FAILED.'
+  read_only: true
+- name: get_security_metrics
+  rest:
+  - 'GET /security/{type}'
+  - 'GET /security/{type}/{secid}/metrics'
+
+  description: >-
+    Retrieve one or more metrics for one or more securities - the SecAPI read path that returns
+    index levels and returns.
+  read_only: true
+- name: list_security_metric_definitions
+  rest:
+  - 'GET /security/{type}/metrics'
+
+  read_only: true
+- name: list_identifiers
+  rest:
+  - 'GET /identifier'
+  - 'GET /identifier/{provider}'
+
+  description: Vendor dissemination tickers (Bloomberg, Reuters, FactSet, Nasdaq, Morningstar, Wind).
+  read_only: true
+- name: list_security_lists
+  rest:
+  - 'GET /security_list'
+  - 'GET /security_list/{uuid}'
+
+  read_only: true
+- name: list_target_portfolios
+  rest:
+  - 'GET /index/{uuid}/target_portfolio'
+
+  read_only: true
+- name: price_option
+  rest:
+  - 'POST /optionprice'
+
+  operation_id: get_option_price
+  description: Price a listed option. A POST, but computational and non-mutating.
+  read_only: true
+- name: find_strike
+  rest:
+  - 'POST /findstrike'
+
+  operation_id: find_strike_for_given_budget
+  description: Solve for the strike achievable within a given budget.
+  read_only: true
+- name: render_index_template
+  rest:
+  - 'POST /helper/index-template/decrement'
+  - 'POST /helper/index-template/equity_index'
+  - 'POST /helper/index-template/single_option'
+  - 'POST /helper/index-template/multi_eb'
+  - 'POST /helper/index-template/buffer_simple'
+  - 'POST /helper/index-template/defined_outcome'
+  - 'POST /helper/index-template/vol_target'
+  - 'POST /helper/index-template/sstr'
+
+  description: >-
+    Render a complete index manifest for a strategy family WITHOUT creating it. The safest write-
+    adjacent tool on the API and the natural rehearsal step before create_index.
+  read_only: true
+write_tools_deliberately_excluded:
+  note: >-
+    POST/PUT/PATCH/DELETE on /index, /identifier, /security, /security_list and
+    /target_portfolio_handler create and destroy production index configurations that disseminate to
+    Bloomberg and Reuters. They are omitted from this candidate list on purpose: no reversal window
+    is published (see conventions/merqube-conventions.yml reversibility) and there is no dry-run
+    mode, so an autonomous agent has no safe way to undo them.
+coverage:
+  openapi_operations: 76
+  candidate_tools: 14
+  read_only_tools: 14
+apis_yml_pointer:
+  emitted: false
+  reason: >-
+    No `type: MCPServer` pointer is wired into apis.yml. A pointer of that type asserts the PROVIDER
+    ships an MCP server; MerQube does not. This file records a derived candidate surface and an
+    honest absence, and emitting a pointer for it would convert a documented absence into a scored
+    presence.

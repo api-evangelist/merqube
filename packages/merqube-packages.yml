@@ -1,0 +1,42 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://pypi.org/pypi/merqube-client-lib/json (registry metadata),
+  https://github.com/merqube/merqube-client-lib (first-party repo, Apache-2.0),
+  https://raw.githubusercontent.com/merqube/merqube-client-lib/main/docs/Overview.md
+  ("This library can be installed from PyPi: pip install merqube-client-lib")
+provider: MerQube
+package_count: 1
+official_count: 1
+packages:
+- name: merqube-client-lib
+  registry: pypi
+  official: true
+  language: python
+  version: 0.23.2
+  published: '2025-08-05'
+  license: Apache-2.0
+  requires_python: '>=3.10,<4.0'
+  url: https://pypi.org/project/merqube-client-lib/
+  source_code: https://github.com/merqube/merqube-client-lib
+  description: MerQube IndexAPI + SecAPI client library (Python).
+  release_count: 49
+  note: >-
+    First-party: published under the MerQube GitHub organization and named as the install target in
+    MerQube's own SDK Overview doc. Latest release 0.23.2 (2025-08-05); the repo's last push is
+    2025-08-04 and the bundled Changelog's newest dated entry is 0.23.1 (2025-05-28), so the SDK has
+    been static for roughly a year while the API contract it wraps reports info.version 4.40.0. The
+    repo README still describes itself as "a WIP release of an internal client library".
+registries_checked:
+- registry: npmjs
+  result: no first-party package (registry search for "merqube" returned 0 results)
+- registry: pypi
+  result: merqube-client-lib found
+- registry: rubygems
+  result: not checked - no Ruby SDK referenced in provider docs
+- registry: crates.io
+  result: not checked - no Rust SDK referenced in provider docs
+- registry: maven-central
+  result: not checked - no JVM SDK referenced in provider docs
+- registry: nuget
+  result: not checked - no .NET SDK referenced in provider docs

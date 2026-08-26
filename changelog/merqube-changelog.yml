@@ -1,0 +1,68 @@
+generated: '2026-08-25'
+method: searched
+source: >-
+  https://raw.githubusercontent.com/merqube/merqube-client-lib/main/Changelog.md,
+  https://api.github.com/repos/merqube/merqube-client-lib/tags,
+  https://pypi.org/pypi/merqube-client-lib/json, and the merqube.com SPA route manifest
+provider: MerQube
+api_changelog:
+  published: false
+  url: null
+  note: >-
+    MerQube publishes no changelog for the MerQube API itself. The contract carries info.version
+    4.40.0 with no history, the SPA route table has no /changelog or /releases route, and the
+    Stoplight portal holds one prose article (Authentication) and no release notes. Index-level
+    changes are announced separately through the benchmark-governance surfaces at
+    merqube.com/governance/announcements and /governance/consultations.
+sdk_changelog:
+  published: true
+  url: https://github.com/merqube/merqube-client-lib/blob/main/Changelog.md
+  scheme: semver
+  format: Keep a Changelog
+  subject: merqube-client-lib (Python client), not the API contract
+  current_version: 0.23.2
+  current_version_published: '2025-08-05'
+  latest_dated_entry: '0.23.1'
+  entries:
+  - version: 0.23.1
+    date: '2025-05-28'
+    breaking: false
+    highlights:
+    - Change staging URL.
+  - version: 0.23.0
+    date: '2023-11-16'
+    breaking: false
+    highlights:
+    - Update types, which supports a new index type - Single Option protection indices.
+    - Add documentation to the multi equity basket demo.
+  - version: 0.22.2
+    date: '2023-10-13'
+    breaking: true
+    highlights:
+    - Update to latest types which renamed `buffer` parameters for somewhat increased clarity.
+  - version: 0.22.1
+    date: '2023-10-12'
+    breaking: false
+    highlights:
+    - Restore functionality of `include_non_prod`.
+    - Upgrade types; add collapse-root-models to type generation.
+  - version: 0.22.0
+    date: '2023-09-29'
+    breaking: false
+    highlights:
+    - Support buffer indices.
+  - version: 0.21.2
+    date: '2023-09-18'
+    breaking: false
+    highlights:
+    - Support ?fields when getting indices.
+  - version: 0.21.0
+    date: '2023-08-23'
+    breaking: true
+    highlights:
+    - Switch to pydantic V2.
+    - Add staging support.
+  note: >-
+    A 0.23.2 tag and PyPI release exist (2025-08-05) with no corresponding Changelog entry, so the
+    newest dated line in the file is 0.23.1. Between 0.23.0 (2023-11-16) and 0.23.1 (2025-05-28)
+    there is an 18-month gap containing a single one-line change.

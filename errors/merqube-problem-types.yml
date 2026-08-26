@@ -1,0 +1,108 @@
+generated: '2026-08-25'
+method: derived
+source: >-
+  Derived from the 4xx/5xx responses declared in https://api.merqube.com/api (OpenAPI 3.1,
+  info.version 4.40.0), plus the `error_codes` array observed live on
+  GET https://api.merqube.com/index. No dedicated error-reference page exists in MerQube's docs.
+provider: MerQube
+api: MerQube API
+format: none
+rfc9457: false
+media_type: null
+envelope:
+  shape: >-
+    Successful collection reads carry a top-level `error_codes` array of {code, message} objects
+    alongside `results` - this is how MerQube reports PARTIAL problems (e.g. results silently
+    filtered by permission) on an HTTP 200. Failure responses (4xx) declare no body schema and no
+    media type in the contract at all, only a human-readable `description` string per status.
+  success_field: results
+  problem_field: error_codes
+  problem_item_schema: '#/components/schemas/ErrorCodes'
+  problem_item_fields:
+  - name: code
+    type: string
+    example: '00001'
+  - name: message
+    type: string
+    example: RESULTS_WERE_FILTERED
+observed_codes:
+- code: '00001'
+  message: RESULTS_WERE_FILTERED
+  http_status: 200
+  meaning: >-
+    Some records matching the query were withheld because the caller's namespace permissions do not
+    cover them. Observed on an unauthenticated GET /index.
+  observed: '2026-08-25'
+  source: live response from https://api.merqube.com/index
+  note: >-
+    This is the only concrete error code MerQube emits that could be captured. The code registry is
+    not published, so the full set of `code` values is unknown from public material.
+status_catalog:
+- status: 400
+  title: Bad request
+  occurrences: 37
+  meanings:
+  - Bad request
+  - bad request
+  - illegal request body
+  - data in request body is malformed or not of the expected format
+  - illegal query arg value (e.g., time is not a date-time)
+  - a required query param is missing
+  - bad metric requested
+  - bad portfolio or request
+  - bad data collection or request
+  - No documents found in the index manifest, or invalid document type
+  - Invalid multipart request, or file exists and requires overwrite flag.
+  remediation: >-
+    Validate the payload against the schema for the target resource before retrying. The pydantic
+    models in merqube-client-lib (generated from this same spec) are the fastest way to do that.
+- status: 403
+  title: Not authorized
+  occurrences: 49
+  meanings:
+  - Not authorized
+  - not authorized
+  - unauthorized
+  - not authorized to perform this operation
+  - not authorized to see this namespace
+  - not authorized to see this index namespace
+  remediation: >-
+    The resource exists but the API key's namespaces do not include it, or the key is absent.
+    Namespace grants are requested from support@merqube.com. Note MerQube returns 403 (not 401) for
+    missing credentials.
+- status: 404
+  title: Not found
+  occurrences: 41
+  meanings:
+  - index does not exist
+  - index or portfolio does not exist
+  - index or caps does not exist
+  - index or data collection does not exist
+  - index or identifier does not exist
+  - Index or target portfolio does not exist
+  - Index or target_portfolio with the provided UUIDs does not exist
+  - identifier does not exist
+  - security does not exist
+  - security_list does not exist
+  - portfolio_handler does not exist
+  - Document not found
+  - No data available for provided fysm/country code
+  remediation: >-
+    Re-resolve the UUID. Names are mutable and UUIDs are permanent, so a 404 after a rename means a
+    stale name lookup, not a deleted object.
+- status: 409
+  title: Conflict
+  occurrences: 2
+  meanings:
+  - duplicate, e.g., name already exists
+  - Metadata consistency -- malformed s3 URI, or invalid date col
+  remediation: >-
+    Names are unique per resource type. Fetch the existing object by name and PATCH it instead of
+    re-POSTing.
+gaps:
+- No error response in the contract declares a `content` block, so no error body schema is
+  machine-readable - a client cannot generate an error type from this spec.
+- No 401 is declared anywhere; missing credentials surface as 403.
+- No 429 is declared; see rate-limits/merqube-rate-limits.yml.
+- No 5xx response is declared on any of the 76 operations.
+- The `code` registry behind `error_codes` is not published.

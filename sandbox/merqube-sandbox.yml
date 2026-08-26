@@ -1,0 +1,75 @@
+generated: '2026-08-25'
+method: probed
+source: >-
+  servers[] in https://api.merqube.com/api and in
+  https://api.merqube.com/api-raw ("Testing server for next generation features"),
+  https://github.com/merqube/merqube-client-lib/blob/main/Changelog.md
+  ("[0.23.1] - 2025-05-28 Change staging URL."),
+  Stoplight node links.mock_url for the published MerQube API service,
+  plus live probes on 2026-08-25
+provider: MerQube
+api: MerQube API
+sandbox_published: true
+model: separate-staging-host
+detail: >-
+  MerQube has no test-mode key prefix and no fixture tooling. What it does have is a second,
+  contract-declared environment: the OpenAPI servers[] block names a testing host alongside
+  production, and it answers the same OpenAPI document. There are no published test credentials, so
+  reaching staging with write access still requires a key from support@merqube.com.
+environments:
+- name: production
+  base_url: https://api.merqube.com
+  declared_in: openapi servers[0]
+  probe:
+    url: https://api.merqube.com/api
+    status: 200
+    checked: '2026-08-25'
+- name: staging
+  base_url: https://api.staging.merqube.com
+  declared_in: openapi servers[1] ("Testing server for next generation features")
+  probe:
+    url: https://api.staging.merqube.com/api
+    status: 200
+    bytes: 173320
+    checked: '2026-08-25'
+    note: Serves the same OpenAPI 3.1 document (info.version 4.40.0) as production.
+  caveat: >-
+    STALE HOST IN THE PUBLISHED DOCS. The Stoplight-hosted copy of the spec still names
+    https://staging.api.merqube.com (host and subdomain transposed). That name resolves but returned
+    no response on probe, while the host named in the live spec served from the API itself,
+    api.staging.merqube.com, works. The client library's Changelog records the move
+    ("[0.23.1] - 2025-05-28 Change staging URL."). A reader of MerQube's documentation portal gets
+    the wrong staging host.
+mock_server:
+  provider: Stoplight Prism
+  url: https://stoplight.io/mocks/merqube/api/445185098
+  source: links.mock_url on the published MerQube API service node in the Stoplight project
+  probe:
+    url: https://stoplight.io/mocks/merqube/api/445185098/index
+    status: 422
+    checked: '2026-08-25'
+    body: >-
+      Prism UNPROCESSABLE_ENTITY - "Malformed path 'index/{uuid}/identifier/{provider}'"
+  usable: false
+  note: >-
+    A hosted mock exists and is publicly reachable, but it fails to start against the project's own
+    spec: two paths in the source document are written without a leading slash
+    (index/{uuid}/identifier/{provider} and its DELETE sibling), which Prism rejects. The same two
+    malformed path keys are present in the live spec at https://api.merqube.com/api. This is a real,
+    fixable contract defect that currently costs MerQube its only pre-sales try-it surface.
+test_credentials:
+  published: false
+  test_key_prefix: null
+  live_key_prefix: null
+  note: Keys carry no environment prefix; the same "APIKEY <key>" header form is used everywhere.
+test_data:
+  published: false
+  note: >-
+    No test fixtures, seeded accounts or sample identifiers are published. The practical substitute
+    is the `default` namespace on production, which is world-readable without a key and holds real
+    MerQube index data - safe for read-path development, useless for exercising writes.
+time_simulation:
+  supported: false
+  note: >-
+    No test clocks. Index calculations are date-driven (base_date, eff_ts, deadlines), but there is
+    no published way to advance time in a test environment.
