@@ -60,32 +60,16 @@ tags_raw:
 - quantitative-finance
 - openapi
 apis:
-- name: MerQube API
-  description: >-
-    Public REST API covering the MerQube IndexAPI (index manifests, target portfolios, index
-    documents, identifiers, portfolio handlers, index templating helpers and run state) and the
-    SecAPI (security metrics, index levels, portfolios, statistics, security lists and options
-    pricing). Authenticated with an API key sent as `Authorization: APIKEY <key>`; unauthenticated
-    callers see only resources in the world-readable `default` namespace.
+- aid: merqube:merqube-api-api
+  name: MerQube API
+  description: The api API from MerQube — 1 operation(s) for api.
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
   tags:
-  - Index Data
-  - Market Data
-  - Capital Markets
-  - Investment Strategies
-  - Financial Services
-  - OpenAPI
-  tags_raw:
-  - index-data
-  - market-data
-  - capital-markets
-  - investment-strategies
-  - financial-services
-  - openapi
+  - api
   properties:
   - type: OpenAPI
-    url: openapi/merqube-api-openapi.json
+    url: openapi/merqube-api-api-openapi.yml
   - type: APIReference
     url: https://www.merqube.com/api
   - type: Documentation
@@ -98,8 +82,198 @@ apis:
     url: errors/merqube-problem-types.yml
   - type: DataModel
     url: data-model/merqube-data-model.yml
-  - type: Overlay
-    url: overlays/merqube-api-openapi-overlay.yaml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-helper-api
+  name: MerQube Helper API
+  description: The helper API from MerQube — 14 operation(s) for helper.
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - helper
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-helper-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-identifier-api
+  name: MerQube Identifier API
+  description: tickers for various providers
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - identifier
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-identifier-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-index-api
+  name: MerQube Index API
+  description: APIs for MerQube Indices
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - index
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-index-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-legacy-equity-security-api
+  name: MerQube Legacy Equity Security API
+  description: Equity securities (legacy non secapi)
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - legacy_equity_security
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-legacy-equity-security-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-options-api
+  name: MerQube Options API
+  description: Option Pricing APIs
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - options
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-options-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-portfolio-handler-api
+  name: MerQube Portfolio Handler API
+  description: list of portfolio handlers
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - portfolio_handler
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-portfolio-handler-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-security-api
+  name: MerQube Security API
+  description: securities
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - security
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-security-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-security-list-api
+  name: MerQube Security List API
+  description: lists of securities
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - security_list
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-security-list-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
   - type: Sandbox
     url: sandbox/merqube-sandbox.yml
 common:
