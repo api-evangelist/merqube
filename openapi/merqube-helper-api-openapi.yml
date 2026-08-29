@@ -1,0 +1,4551 @@
+openapi: 3.2.0
+info:
+  title: Merqube Helper API
+  version: 4.40.0
+  contact:
+    email: support@merqube.com
+    name: API Support
+    url: https://www.merqube.com/contact
+  description: 'Operations tagged helper across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.merqube.com
+- description: Testing server for next generation features
+  url: https://api.staging.merqube.com
+tags:
+- name: helper
+paths:
+  /helper/index-template/buffer_simple:
+    post:
+      description: Generate a buffer index
+      operationId: helper_template_buffer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientBufferConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a buffer index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/decrement:
+    post:
+      description: Generate a full single stock total return decrement overlay index manifest (does not create an index!)
+      operationId: helper_template_decrement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientDecrementConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a full single stock total return decrement overlay index manifest (does not create an index!)
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/defined_outcome:
+    post:
+      description: Generate a Defined Outcome Options Index
+      operationId: helper_template_defined_outcome
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - $ref: '#/components/schemas/ClientDefinedOutcomeBufferConfig'
+              - $ref: '#/components/schemas/ClientDefinedOutcomeAcceleratorConfig'
+              - $ref: '#/components/schemas/ClientDefinedOutcomeCustomStrategyConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a Defined Outcome Optons Index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/equity_index:
+    post:
+      description: Generate a Generalized Equity Index
+      operationId: helper_template_equity_index
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientEquityIndexConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a Generalized Equity Index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/multi_eb:
+    post:
+      description: Generate a full equity basket index manifest (does not create an index!)
+      operationId: helper_template_multieb
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientMultiEBConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a full equity basket index manifest (does not create an index!)
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/multi_eb_portfolios:
+    post:
+      description: Generate a proper POST to target_portfolio - the same two inputs (constituents and levels) as multi_eb, except used to just update the portfolio of an existing index. This is included in template/multi_eb.
+      operationId: helper_template_multieb_ports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientMultiEBPortUpdate'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ClientTemplateResponse'
+                type: array
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a proper POST to target_portfolio - the same two inputs (constituents and levels) as multi_eb, except used to just update the portfolio of an existing index. This is included in template/multi_eb.
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/option_strategies:
+    post:
+      description: Generate a Option Strategies Index
+      operationId: helper_template_option_strategies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientOptionStrategiesConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a Option Strategies Index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/single_option:
+    post:
+      description: Generate a single option index
+      operationId: helper_template_single_option
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientSingleOptionConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a single option index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/sstr:
+    post:
+      description: Generate a full single stock total return index manifest (does not create an index!)
+      operationId: helper_template_sstr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientSSTRConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a full single stock total return index manifest (does not create an index!)
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/static_basket:
+    post:
+      description: Generate a full static basket index manifest (does not create an index!)
+      operationId: helper_template_sstr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientStaticBasketConfig'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a full static basket index manifest (does not create an index!)
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index-template/vol_target:
+    post:
+      description: Generate a Vol Target Index
+      operationId: helper_template_vol_target
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientTemplateResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Generate a Vol Target Index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/index/run-states:
+    get:
+      description: Returns the latest index run states for the uuids provided. if no uuids provided will return all
+      parameters:
+      - $ref: '#/components/parameters/indexUuidsParam'
+      - $ref: '#/components/parameters/pageParam'
+      - $ref: '#/components/parameters/pageSizeParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: 200 response
+      summary: Return the latest index run states for the uuids provided
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/options_underlier:
+    get:
+      description: Returns all the allowed options underlier for the caller
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OptionsUnderlierGet'
+          description: 200 response
+        '403':
+          description: not authorized to perform this operation
+      summary: Returns all the allowed options underlier for the caller
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /helper/solver/defined_outcome:
+    post:
+      description: Solve for the options prices and variable leg of a Defined Outcome Options Index
+      operationId: helper_solver_defined_outcome
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefinedOutcomeSolverRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefinedOutcomeSolverResponse'
+          description: OK
+        '400':
+          description: illegal request body
+      summary: Solve for the options prices and variable leg of a Defined Outcome Options Index
+      tags:
+      - helper
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+components:
+  schemas:
+    StrategyOptionExpiryPeriodType:
+      enum:
+      - ANNUALLY
+      - QUARTERLY
+      - MONTHLY_3RD_FRIDAY
+      - WEEKLY
+      example: MONTHLY_3RD_FRIDAY
+      title: Expiry Period Type
+      type: string
+    PortfolioUom:
+      description: Used to indicate if portfolio amounts are absolute or relative. weight indicates portfolio amounts are relative weights units indicates portfolio amounts are absolute values, e.g. shares or number of contracts
+      enum:
+      - SHARES
+      - WEIGHT
+      title: PortfolioUom
+      type: string
+    PeriodicDateConfig:
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/WeeklyRebalanceDateConfig'
+      - $ref: '#/components/schemas/AdvancedRebalanceDateConfig'
+      - $ref: '#/components/schemas/SimpleRebalanceDateConfigOptions'
+      - $ref: '#/components/schemas/XthDayRebalanceDateConfig'
+    ClientMultiEBPortUpdate:
+      additionalProperties: false
+      properties:
+        constituents:
+          default_factory: list
+          description: The EB portfolio directory
+          example:
+          - date: '2022-03-11'
+            identifier: AAPL.OQ
+            identifier_type: RIC
+            quantity: -0.2512355
+            security_type: EQUITY
+          - date: '2022-03-11'
+            identifier: USD
+            identifier_type: RIC
+            quantity: 60.0
+            security_type: CASH
+          items:
+            $ref: '#/components/schemas/DatedValidEquityBasketPosition'
+          type: array
+        index_currency:
+          type: string
+        unit_of_measure:
+          $ref: '#/components/schemas/PortfolioUom'
+          default: SHARES
+      required:
+      - constituents
+      title: ClientMultiEBPortUpdate
+      type: object
+    MetricsSchema:
+      properties:
+        data_type:
+          enum:
+          - string
+          - number64
+          - datetime64
+          - int64
+          - bool
+          - object
+          type: string
+        description:
+          description: a description of what this metric represents
+          type: string
+        name:
+          description: metric name
+          type: string
+        object_schema:
+          description: optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.
+          type: object
+      required:
+      - data_type
+      - description
+      - name
+      type: object
+    ClientDecrementUnderlyingIDType:
+      description: currently supported identifier types for decrement underlyings
+      enum:
+      - RIC
+      - MERQUBE_INDEX
+      example: RIC
+      type: string
+    ClientDefinedOutcomeOptionType:
+      enum:
+      - PUT
+      - CALL
+      type: string
+    ClientDefinedOutcomeTradeType:
+      enum:
+      - BUY
+      - SELL
+      type: string
+    FsymEquityPosition:
+      allOf:
+      - $ref: '#/components/schemas/BasketPosition'
+      - $ref: '#/components/schemas/FsymSpecific'
+      description: Equity position, identified by a FSYM + country code
+    IdentifierUUIDPost:
+      additionalProperties: false
+      description: Identifier for a given provider. Will be referenced via the name field of the Identifier section
+      properties:
+        display_name:
+          type: string
+        index_name:
+          type: string
+        metric:
+          type: string
+        name:
+          description: unique name among all other Identifiers of the provider resource type.
+          pattern: ^[^!*'() ;:@&=+$,/?%#\[\]]
+          type: string
+        namespace:
+          type: string
+        num_days:
+          description: Number of days to disseminate data for
+          minimum: 0
+          type: integer
+        provider_kwargs:
+          anyOf:
+          - $ref: '#/components/schemas/BloombergProviderKwargs'
+          - $ref: '#/components/schemas/ReutersProviderKwargs'
+          - $ref: '#/components/schemas/SecapiProviderKwargs'
+          - $ref: '#/components/schemas/NasdaqProviderKwargs'
+        rounding_decimals:
+          description: If rounding_type=standard, corresponds to number of decimal places to round to. If rounding_type=sigfig, corresponds to number of significant figures to round to.
+          type: integer
+        rounding_type:
+          default: standard
+          description: Type of rounding to apply to the disseminated data. standard = normal python round(), sigfig = significant figures rounding.
+          enum:
+          - standard
+          - sigfig
+          type: string
+        start_date:
+          format: date
+          type: string
+        ticker:
+          type: string
+      required:
+      - name
+      - ticker
+      - index_name
+      type: object
+    TRBCFilterSpec:
+      additionalProperties: false
+      properties:
+        include_or_exclude:
+          description: Whether to include or exclude the specified TRBC codes
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        trbc_codes:
+          description: TRBC codes to filter by
+          items:
+            type: integer
+          type: array
+        type:
+          enum:
+          - trbc
+          type: string
+      required:
+      - type
+      - trbc_codes
+      - include_or_exclude
+      type: object
+    OptionsUnderlierGet:
+      additionalProperties: false
+      properties:
+        allowed_underliers:
+          items:
+            $ref: '#/components/schemas/OptionsUnderlierItem'
+            type: object
+          type: array
+      required:
+      - allowed_underliers
+      type: object
+    ReinvestmentType:
+      additionalProperties: false
+      default: INDEX
+      description: set to the type of reinvestment to apply
+      enum:
+      - INDEX
+      - SECURITY
+      example: INDEX
+      type: string
+    S3Bucket:
+      additionalProperties: false
+      properties:
+        bucket:
+          type: string
+        path:
+          type: string
+      required:
+      - bucket
+      type: object
+    ClientIndexConfigBase:
+      allOf:
+      - $ref: '#/components/schemas/ClientBaseVal'
+      - $ref: '#/components/schemas/ClientIndexBaseProperties'
+    ClientSSTRConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientSSTRSpecific'
+      - $ref: '#/components/schemas/ClientEquityBasketConfigBase'
+      description: full config for SSTRs
+      type: object
+    LevelCheck:
+      allOf:
+      - properties:
+          check_type:
+            enum:
+            - LEVEL_CHECK
+            type: string
+        type: object
+      - $ref: '#/components/schemas/BaseCheck'
+      - properties:
+          params:
+            $ref: '#/components/schemas/LevelCheckParams'
+        type: object
+      required:
+      - check_type
+      - params
+      type: object
+    holidays_to_add:
+      properties:
+        holidays_to_add:
+          items:
+            format: date
+            type: string
+          type: array
+      type: object
+    ClientManagementFeeConfig:
+      additionalProperties: false
+      properties:
+        day_count_convention:
+          $ref: '#/components/schemas/DayCountConvention'
+          description: Management fee day-count convention
+        rate:
+          description: Management fee percentage as a decimal (e.g. 0.01 for 1%)
+          maximum: 1
+          minimum: 0
+          type: number
+      required:
+      - rate
+      - day_count_convention
+      type: object
+    ClientDefinedOutcomeBufferBase:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeBufferStrategy'
+      - additionalProperties: false
+        properties:
+          strategy_type:
+            enum:
+            - BUFFER
+            type: string
+        required:
+        - strategy_type
+        type: object
+      description: A Defined Outcome Buffer Base
+      type: object
+    Provider:
+      description: currently supported providers
+      enum:
+      - bloomberg
+      - reuters
+      - morningstar
+      - factset
+      - nasdaq
+      - wind
+      - secapi
+      example: bloomberg
+      type: string
+    BloombergProviderKwargsPostType:
+      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      type: string
+    ClientDefinedOutcomeExpiry:
+      additionalProperties: false
+      properties:
+        expiry_period_type:
+          $ref: '#/components/schemas/ClientDefinedOutcomeExpiryPeriodType'
+          type: string
+        expiry_period_value:
+          minimum: 0
+          type: number
+      required:
+      - expiry_period_type
+      - expiry_period_value
+      type: object
+    ClientEquityIndexSpecific:
+      additionalProperties: false
+      properties:
+        allocation_units:
+          description: The allocation units for the index, which define how the index constituents are grouped and weighted
+          items:
+            $ref: '#/components/schemas/AllocationUnit'
+          type: array
+        allocation_weight_type:
+          default: FIXED_WEIGHT
+          description: The way weight should be assigned to each allocation unit
+          enum:
+          - FIXED_WEIGHT
+          - EQUAL_WEIGHT
+          type: string
+        currency:
+          type: string
+        holiday_calendar:
+          $ref: '#/components/schemas/HolidayCalendarSpec'
+        rebalance_config:
+          $ref: '#/components/schemas/RebalanceConfig'
+        reinvestment_time:
+          $ref: '#/components/schemas/ReinvestmentTime'
+        reinvestment_type:
+          $ref: '#/components/schemas/ReinvestmentType'
+        return_type:
+          enum:
+          - total_return
+          - price_return
+          - net_total_return
+          type: string
+      required:
+      - currency
+      - return_type
+      - reinvestment_strategy
+      - reinvestment_time
+      - reinvestment_type
+      - holiday_calendar
+      - rebalance_config
+      - allocation_units
+      type: object
+    LegacyStaticBasketCalendarConfig:
+      properties:
+        calendar_identifiers:
+          items:
+            $ref: '#/components/schemas/CalendarAlias'
+          type: array
+        holidays_to_add:
+          items:
+            $ref: '#/components/schemas/IsoDate'
+          type: array
+        holidays_to_remove:
+          items:
+            $ref: '#/components/schemas/IsoDate'
+          type: array
+      required:
+      - calendar_identifiers
+      type: object
+    ClientDefinedOutcomeOption:
+      additionalProperties: false
+      properties:
+        exercise_style:
+          $ref: '#/components/schemas/OptionExerciseStyle'
+          type: string
+        exposure:
+          minimum: 0
+          type: number
+        option_type:
+          $ref: '#/components/schemas/ClientDefinedOutcomeOptionType'
+          type: string
+        root:
+          $ref: '#/components/schemas/ClientDefinedOutcomeRoots'
+          type: string
+        strike_type:
+          $ref: '#/components/schemas/ClientDefinedOutcomeStrikeType'
+          type: string
+        strike_value:
+          minimum: 0
+          type: number
+        trade_type:
+          $ref: '#/components/schemas/ClientDefinedOutcomeTradeType'
+          type: string
+      required:
+      - strike_type
+      - option_type
+      - trade_type
+      - strike_value
+      - root
+      - exercise_style
+      type: object
+    WeeklyRebalanceDates:
+      additionalProperties: false
+      properties:
+        day:
+          enum:
+          - Monday
+          - Tuesday
+          - Wednesday
+          - Thursday
+          - Friday
+          type: string
+      required:
+      - day
+      type: object
+    RebalanceMethodConfig:
+      additionalProperties: false
+      oneOf:
+      - $ref: '#/components/schemas/FreeFloatRebalanceConfig'
+      - $ref: '#/components/schemas/RebalanceTypeWithNoConfig'
+    SecapiBasketPosition:
+      allOf:
+      - $ref: '#/components/schemas/BasketPosition'
+      - $ref: '#/components/schemas/SecapiSpecific'
+      description: A basket position that uses custom metrics from merqube data source
+    ClientDefinedOutcomeBufferStrategy:
+      additionalProperties: false
+      properties:
+        option_strategies:
+          items:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeBufferStrategyItem'
+          maxItems: 1
+          minItems: 1
+          type: array
+      required:
+      - option_strategies
+      type: object
+    InterestRateConfig:
+      additionalProperties: false
+      description: configuration for an interest rate
+      discriminator:
+        mapping:
+          constant: '#/components/schemas/ConstantInterestRateConfig'
+          variable: '#/components/schemas/VariableInterestRateConfig'
+        propertyName: type
+      oneOf:
+      - $ref: '#/components/schemas/ConstantInterestRateConfig'
+      - $ref: '#/components/schemas/VariableInterestRateConfig'
+      type: object
+    CalendarAlias:
+      enum:
+      - default
+      - Canada
+      - Euronext Paris
+      - Europe
+      - US
+      - Transatlantic
+      type: string
+    HolidayCalendarSpec:
+      anyOf:
+      - $ref: '#/components/schemas/FlatCalendarSchema'
+      - $ref: '#/components/schemas/NestedCalendarSchema'
+    ClientCoveredDelta:
+      additionalProperties: false
+      description: A covered delta strategy with a call delta between 0 and 1. Covers by selling a call.
+      properties:
+        method:
+          default: Covered
+          enum:
+          - Covered
+          example: Covered
+          type: string
+        options:
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        options_method:
+          default: Delta
+          enum:
+          - Delta
+          example: Delta
+          type: string
+      required:
+      - options
+      type: object
+    OptionRoot:
+      enum:
+      - SPY
+      - QQQ
+      - IWM
+      - EFA
+      - EEM
+      - TLT
+      - LQD
+      - HYG
+      - GLD
+      type: string
+    ClientStaticBasketSpecific:
+      additionalProperties: false
+      properties:
+        apply_mcap_screen:
+          default: true
+          description: set to true if the index should apply a 15% min market cap screen
+          type: boolean
+        base_value:
+          type: number
+        constituents:
+          items:
+            properties:
+              amount:
+                maximum: 100
+                minimum: 0
+                type: number
+              identifier:
+                title: Identifier
+                type: string
+              identifier_type:
+                $ref: '#/components/schemas/PositionIdentifierType'
+            required:
+            - identifier
+            - identifier_type
+            type: object
+          type: array
+        holiday_calendar_config:
+          oneOf:
+          - $ref: '#/components/schemas/LegacyStaticBasketCalendarConfig'
+          - $ref: '#/components/schemas/StaticBasketCalendarConfig'
+          type: object
+        rebalance_calendar:
+          $ref: '#/components/schemas/HolidayCalendarSpec'
+        rebalance_config:
+          $ref: '#/components/schemas/RebalanceConfig'
+        reinvestment_time:
+          $ref: '#/components/schemas/ReinvestmentTime'
+          default: AT_CLOSE
+        reinvestment_type:
+          $ref: '#/components/schemas/ReinvestmentType'
+          default: INDEX
+        restrict_base_date:
+          default: true
+          description: won't let user create a basket with base date before at least 70% of basket's IPO dates
+          type: boolean
+        return_type:
+          enum:
+          - total_return
+          - price_return
+          - net_total_return
+          type: string
+      required:
+      - base_value
+      - return_type
+      - reinvestment_time
+      - reinvestment_type
+      - rebalance_config
+      - constituents
+      - apply_mcap_screen
+      type: object
+    CountryCode:
+      description: ISO country codes
+      enum:
+      - AE
+      - AR
+      - AT
+      - AU
+      - BD
+      - BE
+      - BG
+      - BH
+      - BR
+      - BW
+      - CA
+      - CH
+      - CI
+      - CL
+      - CN
+      - CO
+      - CY
+      - CZ
+      - DE
+      - DK
+      - EC
+      - EG
+      - ES
+      - FI
+      - FR
+      - GB
+      - GR
+      - HK
+      - HR
+      - HU
+      - ID
+      - IE
+      - IL
+      - IN
+      - IS
+      - IT
+      - JP
+      - KH
+      - KR
+      - KW
+      - LK
+      - LU
+      - MX
+      - MY
+      - NL
+      - false
+      - NZ
+      - PE
+      - PH
+      - PK
+      - PL
+      - PT
+      - QA
+      - RU
+      - SA
+      - SE
+      - SG
+      - SI
+      - SK
+      - TH
+      - TN
+      - TR
+      - TT
+      - TW
+      - US
+      - VN
+      - ZA
+      - ZM
+      example: US
+      type: string
+    ClientEquityIndexConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientEquityIndexSpecific'
+      - $ref: '#/components/schemas/ClientEquityIndexConfigBase'
+      description: full config for equity indices
+      type: object
+    ClientBufferConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientBufferSpecific'
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      description: full config for buffer indices
+      type: object
+    HistoryCheck:
+      allOf:
+      - properties:
+          check_type:
+            enum:
+            - HISTORY_CHECK
+            type: string
+        type: object
+      - $ref: '#/components/schemas/BaseCheck'
+      - properties:
+          params:
+            $ref: '#/components/schemas/HistoryCheckParams'
+        type: object
+      required:
+      - check_type
+      - params
+      type: object
+    IntradayFlatlineAlerts:
+      properties:
+        alert_hours:
+          $ref: '#/components/schemas/AlertHours'
+        alert_type:
+          $ref: '#/components/schemas/IntradayAlertType'
+          default: opsgenie
+          description: Type of alert to send when flatline is detected. Default is opsgenie.
+        enabled:
+          default: true
+          description: If the flatline alert should be enabled
+          type: boolean
+        min_ticks:
+          description: Minimum number of ticks in the window to be the same to considered a flatline
+          minimum: 2
+          type: integer
+        window_length:
+          default: 5
+          description: window_length in minutes for flatline alert
+          minimum: 1
+          type: integer
+      type: object
+    OptionPosition:
+      allOf:
+      - $ref: '#/components/schemas/OptionSpecific'
+      - $ref: '#/components/schemas/BasketPosition'
+      description: An Option position
+    DatedFsymEquityPosition:
+      allOf:
+      - $ref: '#/components/schemas/DatedBasketPosition'
+      - $ref: '#/components/schemas/FsymSpecific'
+    ClientDefinedOutcomeBufferConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeBufferBase'
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      description: base config for defined outcome indices
+      properties:
+        currency:
+          type: string
+        use_maf:
+          default: false
+          type: boolean
+      type: object
+    ClientDefinedOutcomeNoEtfStrategy:
+      additionalProperties: false
+      properties:
+        min_cap:
+          default: 0
+          minimum: 0
+          type: number
+        strategy:
+          pattern: ^NO_ETF$
+          type: string
+      required:
+      - strategy
+      - min_cap
+      type: object
+    ClientBufferSpecific:
+      additionalProperties: false
+      description: properties specific to buffer indices
+      properties:
+        protection_end:
+          description: eg the 30 in the above example. Must be < protection_start.
+          example: 70.0
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        protection_start:
+          description: losses on the underlying are incurred up to protection_start, the portfolio is protected against losses between protection_start and protection_end, and then losses after protection_end are also incurred. These are represented as percentages of the underlying. Eg on start=95 and end=70 (sometimes a called a 5/30 buffer), the first 5% of losses are incurred, the portfolio is protected between -5% and -30%, then losses after 30% are added to 5% and are incurred. In this example, if the underlying drops 32%, the index will lose 7%.
+          example: 95.0
+          maximum: 100.0
+          minimum: 0
+          type: number
+        roll_freq:
+          default: 12
+          description: frequency in months of the options roll
+          example: 3
+          minimum: 1
+          type: integer
+        root:
+          description: the root of the options
+          enum:
+          - SPY
+          - QQQ
+          - IWM
+          - EFA
+          - EEM
+          - TLT
+          - LQD
+          - HYG
+          - GLD
+          example: SPY
+          type: string
+      required:
+      - protection_start
+      - protection_end
+      - roll_freq
+      - root
+      type: object
+    MarketCapFilterSpec:
+      additionalProperties: false
+      properties:
+        currency:
+          type: string
+        mkt_cap_type:
+          enum:
+          - total_mkt_cap
+          - float_mkt_cap
+          type: string
+        threshold_addition_max:
+          format: float
+          type: number
+        threshold_addition_min:
+          format: float
+          type: number
+        threshold_retention_max:
+          format: float
+          type: number
+        threshold_retention_min:
+          format: float
+          type: number
+        type:
+          enum:
+          - market_cap
+          type: string
+      required:
+      - type
+      - currency
+      - mkt_cap_type
+      type: object
+    MicFilterSpec:
+      additionalProperties: false
+      properties:
+        include_or_exclude:
+          description: Whether to include or exclude the specified MIC codes
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        mics:
+          items:
+            type: string
+          type: array
+        type:
+          enum:
+          - mic
+          type: string
+      required:
+      - type
+      - mics
+      - include_or_exclude
+      type: object
+    DatedValidEquityBasketPosition:
+      oneOf:
+      - $ref: '#/components/schemas/DatedBasketPosition'
+      - $ref: '#/components/schemas/DatedRicEquityPosition'
+      - $ref: '#/components/schemas/DatedFsymEquityPosition'
+    RicEquityPosition:
+      allOf:
+      - $ref: '#/components/schemas/BasketPosition'
+      - $ref: '#/components/schemas/RicSpecific'
+      description: Equity position, identified by a RIC
+    InitialMonthConfig:
+      additionalProperties: false
+      properties:
+        frequency:
+          pattern: ^(ANNUAL|QUARTERLY|SEMIANNUAL|MONTHLY)$
+          type: string
+        roll_forward:
+          default: true
+          type: boolean
+        starting_month:
+          enum:
+          - January
+          - February
+          - March
+          - April
+          - May
+          - June
+          - July
+          - August
+          - September
+          - October
+          - November
+          - December
+          type: string
+      required:
+      - frequency
+      type: object
+    ArgumentsOrEnvVars:
+      items:
+        items:
+          type: string
+        type: array
+      type: array
+    ReinvestmentTime:
+      additionalProperties: false
+      default: AT_OPEN
+      description: set to the type of reinvestment to apply
+      enum:
+      - AT_OPEN
+      - AT_CLOSE
+      example: AT_OPEN
+      type: string
+    ClientOptionStrategiesBase:
+      additionalProperties: false
+      description: A options strategy index
+      properties:
+        early_exercise:
+          $ref: '#/components/schemas/ClientStrategyOptionEarlyExercise'
+        hold_underlier:
+          default: true
+          type: boolean
+        interest_rate_config:
+          $ref: '#/components/schemas/IndexInterestRateConfig'
+          description: configuration for interest rates on an options strategy self service index
+        strategy_options:
+          description: List of options in the strategy and their configs
+          items:
+            $ref: '#/components/schemas/ClientStrategyOption'
+          type: array
+        strategy_type:
+          $ref: '#/components/schemas/OptionStrategyType'
+          description: The type of strategy
+        transaction_cost_spec:
+          $ref: '#/components/schemas/TransactionCostsConfig'
+        underliers:
+          description: The underlying assets of the strategy
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/FsymAndCountry'
+            - $ref: '#/components/schemas/IndexTicker'
+          minItems: 1
+          type: array
+      required:
+      - strategy_type
+      - underliers
+      - strategy_options
+      type: object
+    ClientOptionalBaseVal:
+      additionalProperties: false
+      properties:
+        base_date:
+          $ref: '#/components/schemas/BaseDate'
+        base_value:
+          description: set the index value on base_date to this base_value
+          example: 1000.0
+          exclusiveMinimum: 0
+          type: number
+      required:
+      - base_value
+      type: object
+    Administrative:
+      additionalProperties: false
+      properties:
+        client:
+          properties:
+            approved_by:
+              description: if a client requests an index to a finanancial institution, and that instituion approves the index parameters for launch, this holds the oauth email of that approver
+              type: string
+            owner:
+              description: the idea here is to capture the client at a higher level than the above, e.g., this index is owned by Bank of Greatness.
+              type: string
+            requested_by:
+              description: this is the actual OAuth token email that originated the POST on index-template (similar to created_by and last_modified_by). Except, this is the user on the templating POST not the actual POST to index because the post to index is going to be a MerQube employee, but we need to capture who originated the templating request aka who called the meta-api. This field is used to put this index on that user's Manage My Indices page.
+              type: string
+          type: object
+        deadlines:
+          items:
+            $ref: '#/components/schemas/Deadline'
+          type: array
+        role:
+          enum:
+          - data point
+          - verification
+          - calculation
+          - development
+          - administration
+          type: string
+      required:
+      - role
+      type: object
+    RebalFrequency:
+      enum:
+      - Annual
+      - Daily
+      - Monthly
+      - Quarterly
+      - Semi-Annual
+      - Weekly
+      - Bi-Monthly
+      - Intraday
+      - None
+      type: string
+    SectorFilterSpec:
+      additionalProperties: false
+      properties:
+        include_or_exclude:
+          description: Whether to include or exclude the specified sectors
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        sectors:
+          items:
+            type: string
+          type: array
+        type:
+          enum:
+          - sector
+          type: string
+      required:
+      - type
+      - sectors
+      - include_or_exclude
+      type: object
+    SecapiProviderKwargs:
+      additionalProperties: false
+      description: Secapi provider custom arguments
+      properties:
+        metric:
+          type: string
+        security_name:
+          type: string
+        security_type:
+          type: string
+      required:
+      - security_type
+      - security_name
+      - metric
+      type: object
+    OptionStrategyType:
+      enum:
+      - COVERED_CALL
+      - PUT_WRITE
+      - PROTECTIVE_PUT
+      - COLLAR
+      - CUSTOM
+      example: COLLAR
+      title: Option Strategy Type
+      type: string
+    WeeklyRebalanceDateConfig:
+      additionalProperties: false
+      allOf:
+      - properties:
+          frequency:
+            default: WEEKLY
+            enum:
+            - WEEKLY
+            type: string
+          roll_forward:
+            default: true
+            type: boolean
+        required:
+        - frequency
+        type: object
+      - $ref: '#/components/schemas/WeeklyRebalanceDates'
+    IntradayTickFilter:
+      additionalProperties: false
+      description: Filter for tick events, used to configure when an rtindex should process ticks or send ticks to targets
+      properties:
+        days_of_week:
+          description: Which days of the week to run the index. Each day of the week is denoted by an integer with Monday = 0 and Sunday = 6
+          items:
+            type: integer
+          type: array
+        end_date:
+          $ref: '#/components/schemas/MerqTimestamp'
+        end_time:
+          description: Inclusive end time of the day to stop running this intraday index. Format is %H:%M:%S.%f. This should be in the timezone of the index based on tzinfo.
+          example: 74340.262345
+          type: string
+        exclude_holidays:
+          description: If this is true use the index holiday calendar to decide which days to run the index. It will only run on non-holidays.
+          type: boolean
+        start_date:
+          $ref: '#/components/schemas/MerqTimestamp'
+        start_time:
+          description: Inclusive start time of the day to start running this intraday index. Format is %H:%M:%S.%f. This should be in the timezone of the index based on tzinfo.
+          example: 74340.262345
+          type: string
+      type: object
+    IsoTS:
+      example: Sun, 02 Jan 2022 01:02:03 GMT
+      pattern: ^\d{4}-\d{2}-\d{2}(T|\s)\d{2}:\d{2}:\d{2}(\.\d{6})?$
+      type: string
+    PercentChangeCheck:
+      allOf:
+      - properties:
+          check_type:
+            enum:
+            - PERCENT_CHANGE_CHECK
+            type: string
+        type: object
+      - $ref: '#/components/schemas/BaseCheck'
+      - properties:
+          params:
+            $ref: '#/components/schemas/PercentChangeCheckParams'
+        type: object
+      required:
+      - check_type
+      - params
+      type: object
+    ClientEBCoraxConfig:
+      additionalProperties: false
+      description: how to handle corporate actions
+      properties:
+        deduct_tax:
+          default: false
+          type: boolean
+        reinvest_day:
+          default: AT_OPEN
+          enum:
+          - AT_OPEN
+          - AT_CLOSE
+          type: string
+        reinvest_dividend_type:
+          enum:
+          - INDEX
+          - SECURITY
+          - CASH
+          type: string
+        reinvest_dividends:
+          default: true
+          example: false
+          type: boolean
+      type: object
+    IntradayPublishConfigReutersTargetParams:
+      additionalProperties: false
+      properties:
+        post_type:
+          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
+        rounding_decimals:
+          type: integer
+        ticker:
+          type: string
+      type: object
+    ClientDefinedOutcomeStrikeType:
+      enum:
+      - DELTA
+      - PCT_SPOT
+      - INCOME
+      type: string
+    ClientDefinedOutcomeScheduleType:
+      enum:
+      - CERTAIN_DAY
+      - MONTH_END
+      - THIRD_FRIDAY
+      type: string
+    IntradayPublishConfigWrapper:
+      description: oneOfs at the top level of an object lead to hard to work with RootModels in pydantic. Forming this one property object makes importing and passing around this object less painful; there is a lot of code that passes this around.
+      properties:
+        publish_config:
+          $ref: '#/components/schemas/IntradayPublishConfig'
+      type: object
+    FsymSpecific:
+      additionalProperties: false
+      properties:
+        country_code:
+          $ref: '#/components/schemas/CountryCode'
+      required:
+      - country_code
+      type: object
+    ClientStrategyOptionEarlyExercise:
+      additionalProperties: false
+      description: Defines the Early Exercise Strategy
+      properties:
+        borrowing_rate:
+          minimum: 0.0
+          type: number
+        enabled:
+          default: false
+          type: boolean
+        rebalancing_period:
+          minimum: 1
+          type: integer
+        restrike_days:
+          minimum: 1
+          type: integer
+        treatment:
+          $ref: '#/components/schemas/EarlyExerciseTreatment'
+      required:
+      - enabled
+      type: object
+    ClientDefinedOutcomeAcceleratorConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeAcceleratorBase'
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      description: base config for defined outcome indices
+      properties:
+        currency:
+          type: string
+        use_maf:
+          default: false
+          type: boolean
+      type: object
+    IndexReport:
+      properties:
+        dissemination_destinations:
+          $ref: '#/components/schemas/DisseminationDestinations'
+        program_args:
+          type: object
+        task_id:
+          type: string
+        uuid:
+          type: string
+      required:
+      - uuid
+      type: object
+    ClientDecrementSpecific:
+      additionalProperties: false
+      properties:
+        day_count_convention:
+          description: must either adapt to a fixed number of days in a year e.g. 'f360' or to Actual ISDA convention, i.e. 'actual'
+          example: f360
+          type: string
+        fee_type:
+          description: set to the type of fee to apply
+          enum:
+          - fixed
+          - percentage_pre
+          - percentage_post
+          - fixed_points_underlying
+          example: fixed
+          type: string
+        fee_value:
+          description: set to the value of the fee to apply. For fixed, this is bps, for percentage_pre/post this is given as a percentage
+          example: 0.05
+          type: number
+        start_date:
+          description: set to the start date of the index if it is to differ from base_date. If this is specified, it must be before base_date. In this case the base_date, base_value is used as a fixed intercept, with the index level starting from start_date and passing through that intercept
+          example: Sun, 04 Jan 2004 00:00:00 GMT
+          format: date
+          type: string
+        underlying:
+          $ref: '#/components/schemas/ClientDecrementUnderlying'
+          example:
+            identifier: COST.OQ
+            identifier_type: RIC
+      required:
+      - fee_value
+      - fee_type
+      - day_count_convention
+      - underlying
+      type: object
+    OptionStyle:
+      enum:
+      - AMERICAN
+      - EUROPEAN
+      example: AMERICAN
+      title: Option Style
+      type: string
+    Webpage:
+      properties:
+        custom_charts:
+          items:
+            $ref: '#/components/schemas/CustomCharts'
+          type: array
+        visible:
+          default: true
+          type: boolean
+      type: object
+    RebalanceConfig:
+      properties:
+        rebalance_dates:
+          $ref: '#/components/schemas/PeriodicDateConfig'
+        rebalance_method:
+          $ref: '#/components/schemas/RebalanceMethodConfig'
+        selection_dates:
+          enum:
+          - rebalance_date
+          - prev_month
+          - prev_week
+          type: string
+      required:
+      - rebalance_dates
+      - rebalance_method
+      - selection_dates
+      type: object
+    BloombergProviderKwargs:
+      additionalProperties: false
+      description: Bloomberg provider custom arguments
+      properties:
+        post_type:
+          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
+      required:
+      - post_type
+      type: object
+    ClientDefinedOutcomeCustomStrategyConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeCustomStrategyBase'
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      description: base config for defined outcome indices with custom strategies
+      properties:
+        currency:
+          type: string
+        use_maf:
+          default: false
+          type: boolean
+      type: object
+    HistoryCheckParams:
+      properties:
+        days:
+          maximum: 365
+          minimum: 0
+          nullable: true
+          type: integer
+      required:
+      - days
+      type: object
+    ClientDefinedOutcomeCustomStrategyBase:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeCustomStrategy'
+      - additionalProperties: false
+        properties:
+          strategy_type:
+            enum:
+            - CUSTOM
+            type: string
+        required:
+        - strategy_type
+        type: object
+      description: A Defined Outcome Custom Strategy Base
+      type: object
+    ClientDefinedOutcomeParticipationRateStrategy:
+      additionalProperties: false
+      properties:
+        max_participation:
+          default: 200
+          minimum: 0
+          type: number
+        option:
+          $ref: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategyOption'
+          type: object
+        strategy:
+          pattern: ^PARTICIPATION_RATE$
+          type: string
+      required:
+      - strategy
+      - max_participation
+      - option
+      type: object
+    OptionExerciseStyle:
+      enum:
+      - EUROPEAN
+      - AMERICAN
+      type: string
+    ClientStrategyOptionRebalanceCertainDay:
+      additionalProperties: false
+      description: Defines rebalance-related configs for option strategies self service flow, if user selects "Certain Day"
+      properties:
+        day_of_week:
+          $ref: '#/components/schemas/DayOfWeek'
+          type: string
+        roll_back:
+          description: Whether or not to roll back or roll forward if date is a holiday
+          type: boolean
+        schedule_type:
+          enum:
+          - CERTAIN_DAY
+          type: string
+        time_period_away:
+          minimum: 1
+          type: integer
+        week_of_month:
+          maximum: 4
+          minimum: 1
+          type: integer
+      required:
+      - schedule_type
+      - time_period_away
+      - day_of_week
+      - roll_back
+      type: object
+    IndexInterestRateConfig:
+      additionalProperties: false
+      description: configuration for an index's interest rates including both lending/borrowing rates
+      properties:
+        borrowing_rate:
+          $ref: '#/components/schemas/InterestRateConfig'
+        lending_rate:
+          $ref: '#/components/schemas/InterestRateConfig'
+      required:
+      - lending_rate
+      - borrowing_rate
+      type: object
+    ListingWeightCap:
+      additionalProperties: false
+      properties:
+        exchange_country:
+          type: string
+        fsym_id:
+          type: str
+        weight_cap:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+      required:
+      - fsym_id
+      - exchange_country
+      - weight_cap
+      type: object
+    CalculationCheck:
+      items:
+        oneOf:
+        - $ref: '#/components/schemas/LevelCheck'
+        - $ref: '#/components/schemas/PercentChangeCheck'
+        - $ref: '#/components/schemas/HistoryCheck'
+        type: object
+      type: array
+    DatedBasketPosition:
+      allOf:
+      - $ref: '#/components/schemas/BasketPosition'
+      - properties:
+          date:
+            $ref: '#/components/schemas/IsoDate'
+          selection_date:
+            $ref: '#/components/schemas/IsoDate'
+        required:
+        - date
+        type: object
+    SubPod:
+      additionalProperties: false
+      properties:
+        arguments:
+          $ref: '#/components/schemas/ArgumentsOrEnvVars'
+        command:
+          type: string
+        env_vars:
+          $ref: '#/components/schemas/ArgumentsOrEnvVars'
+        pod_kwargs:
+          aditionalProperties: true
+          properties:
+            name:
+              type: string
+          type: object
+        pod_type:
+          type: string
+        uuid:
+          type: string
+      required:
+      - command
+      - pod_type
+      - uuid
+      type: object
+    DefinedOutcomeSolverRequest:
+      additionalProperties: false
+      properties:
+        expiry:
+          $ref: '#/components/schemas/ClientDefinedOutcomeExpiry'
+          type: object
+        options:
+          items:
+            $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+          type: array
+        root:
+          $ref: '#/components/schemas/ClientDefinedOutcomeRoots'
+          type: string
+        variable_leg_params:
+          $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+          description: User-defined option parameters for Participation Rate strategy
+          nullable: true
+        variable_leg_strategy:
+          description: The variable leg strategy to use. If not specified, defaults to Cap strategy.
+          discriminator:
+            mapping:
+              CASH: '#/components/schemas/ClientDefinedOutcomeCashStrategy'
+              NO_ETF: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+              PARTICIPATION_RATE: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategy'
+            propertyName: strategy
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategy'
+          - $ref: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+          - $ref: '#/components/schemas/ClientDefinedOutcomeCashStrategy'
+          type: object
+      required:
+      - expiry
+      - options
+      - root
+      title: Client Defined Outcome Option Price Solver Response Schema
+      type: object
+    ClientMultiEBPortConfig:
+      allOf:
+      - $ref: '#/components/schemas/ClientMultiEBPortUpdate'
+      - $ref: '#/components/schemas/ClientBaseVal'
+    DqmsConfig:
+      additionalProperties: false
+      properties:
+        enabled:
+          description: If true, force-enables DQMS validation for this index
+          type: boolean
+      type: object
+    ClientMultiEBSpecific:
+      additionalProperties: false
+      properties:
+        corporate_actions:
+          $ref: '#/components/schemas/ClientEBCoraxConfig'
+          default_factory: ClientEBCoraxConfig
+        dissemination_settings:
+          description: array of configurations for setting up identifiers for individual providers
+          items:
+            $ref: '#/components/schemas/DisseminationSetting'
+          type: array
+        level_overrides:
+          description: optional level overrides for the index on certain days.
+          example:
+          - comment: test for some special day for some special reason
+            date: '2022-03-18'
+            level: 1364.344
+          items:
+            $ref: '#/components/schemas/LevelOverride'
+          type: array
+        precision_level:
+          description: used to set the rounding decimal field when creating identifiers
+          minimum: 0
+          type: integer
+        rebal_freq:
+          $ref: '#/components/schemas/RebalFrequency'
+        tick_configuration:
+          $ref: '#/components/schemas/TickConfiguration'
+          description: config for the intraday index ticking start/end hour/minutes
+        unified_fee_config:
+          $ref: '#/components/schemas/ClientUnifiedFeeConfig'
+          description: Optional unified fee configuration for multi-asset equity baskets
+      type: object
+    ClientSingleOptionConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientSingleOptionBase'
+      - additionalProperties: false
+        properties:
+          strategy:
+            oneOf:
+            - $ref: '#/components/schemas/ClientCoveredStrike'
+            - $ref: '#/components/schemas/ClientCoveredDelta'
+            - $ref: '#/components/schemas/ClientDownsideStrike'
+            - $ref: '#/components/schemas/ClientDownsideDelta'
+        required:
+        - strategy
+        type: object
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      description: a single option strategy
+      title: ClientSingleOptionConfig
+      type: object
+    ClientOptionStrategiesConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientOptionStrategiesBase'
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      description: A Option strategies index
+      title: ClientOptionStrategiesConfig
+      type: object
+    FreezerConfig:
+      additionalProperties: false
+      properties:
+        corax:
+          default: false
+          type: boolean
+        fx_rates:
+          default: false
+          type: boolean
+        prices:
+          default: false
+          type: boolean
+        primary_index_name:
+          description: the primary index to use underlying data from
+          type: string
+        rebalances:
+          default: false
+          type: boolean
+      type: object
+    ClientDefinedOutcomeExpiryPeriodType:
+      enum:
+      - MONTHS
+      - WEEKS
+      type: string
+    ClientDefinedOutcomeRebalancer:
+      additionalProperties: false
+      properties:
+        day_of_week:
+          $ref: '#/components/schemas/DayOfWeek'
+          type: string
+        days_before_expiry:
+          minimum: 0
+          type: integer
+        roll_back:
+          type: boolean
+        schedule_type:
+          $ref: '#/components/schemas/ClientDefinedOutcomeScheduleType'
+          type: string
+        time_period_away:
+          minimum: 0
+          type: integer
+        week_of_month:
+          maximum: 5
+          minimum: 1
+          type: integer
+      required:
+      - schedule_type
+      - time_period_away
+      - roll_back
+      type: object
+    Deadline:
+      additionalProperties: false
+      properties:
+        business_days_prior:
+          default: 0
+          description: the amount of days before T to check for data existence
+          type: integer
+        deadline_type:
+          default: calculation
+          enum:
+          - calculation
+          - restatement
+          type: string
+        metrics:
+          description: the list of metrics to check in the deadline checker script
+          items:
+            type: string
+          type: array
+        next_day:
+          default: false
+          description: set this to true if the index starts running on day T but the deadline does not pass until T+1 in that index timezone
+          type: boolean
+        og_priority:
+          default: P1
+          enum:
+          - P1
+          - P2
+          - P3
+          type: string
+        time_of_day:
+          description: the time of day of the deadline
+          pattern: ^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$
+          type: string
+      required:
+      - time_of_day
+      - deadline_type
+      - next_day
+      - og_priority
+      - business_days_prior
+      type: object
+    RicSpecific:
+      additionalProperties: false
+      properties:
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        real_time_trade_types:
+          items:
+            $ref: '#/components/schemas/RealTimeTradeType'
+          type: array
+        use_primary_listing:
+          default: false
+          description: use the security's primary listing rather than the one from the identifier
+          title: Use Primary Listing
+          type: boolean
+      type: object
+    SecapiSpecific:
+      additionalProperties: false
+      properties:
+        custom_metric:
+          type: string
+      type: object
+    CountryOfDomicileFilterSpec:
+      additionalProperties: false
+      properties:
+        domicile_countries:
+          items:
+            type: string
+          type: array
+        include_or_exclude:
+          description: Whether to include or exclude the specified countries
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        type:
+          enum:
+          - country_of_domicile
+          type: string
+      required:
+      - type
+      - domicile_countries
+      - include_or_exclude
+      type: object
+    AssetType:
+      enum:
+      - CASH
+      - THIRD_PARTY_INDEX
+      - EQUITY
+      - OPTION
+      - FUTURES
+      - MUTUAL_FUND
+      - MERQUBE_INDEX
+      - CUSTOM_SECAPI_INDEX
+      - OTHER
+      example: EQUITY
+      title: Asset Type
+      type: string
+    calendar_identifiers:
+      properties:
+        calendar_identifiers:
+          items:
+            pattern: ^(FUT|MIC|FX|SM|MQI|OVERLAY):.+$
+            type: string
+          type: array
+      type: object
+    NotificationConfig:
+      additionalProperties: false
+      properties:
+        email_list_uuid:
+          type: string
+        emails:
+          items:
+            type: string
+          type: array
+        enabled:
+          type: boolean
+      type: object
+    ClientSSTRSpecific:
+      additionalProperties: false
+      properties:
+        reinvestment_type:
+          $ref: '#/components/schemas/ReinvestmentTime'
+          default: AT_OPEN
+        ric:
+          description: set to the RIC of the underlying equity
+          example: LMVH.PA
+          type: string
+      required:
+      - ric
+      type: object
+    SubSectorFilterSpec:
+      additionalProperties: false
+      properties:
+        include_or_exclude:
+          description: Whether to include or exclude the specified sub-sectors
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        sub_sectors:
+          items:
+            type: string
+          type: array
+        type:
+          enum:
+          - sub_sector
+          type: string
+      required:
+      - type
+      - sub_sectors
+      - include_or_exclude
+      type: object
+    IndexSpec:
+      properties:
+        index_class_args:
+          type: object
+        index_class_code:
+          type: string
+        index_variables:
+          description: TODO
+          type: object
+        version:
+          type: integer
+      required:
+      - index_class_code
+      type: object
+    AlertHours:
+      properties:
+        end:
+          description: Start of the silent hours in HH:MM 24h format. The timezone is based on the intraday.tzinfo
+          pattern: ^[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}$
+          type: string
+        start:
+          description: Start of the silent hours in HH:MM 24h format. The timezone is based on the intraday.tzinfo
+          pattern: ^[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}$
+          type: string
+      type: object
+    ClientDefinedOutcomeCashStrategy:
+      additionalProperties: false
+      properties:
+        strategy:
+          pattern: ^CASH$
+          type: string
+      required:
+      - strategy
+      type: object
+    RunConfigLabel:
+      additionalProperties: true
+      allOf:
+      - $ref: '#/components/schemas/RunConfig'
+      - $ref: '#/components/schemas/RunConfigLabelAdditional'
+      type: object
+    Intraday:
+      allOf:
+      - $ref: '#/components/schemas/IntradayPublishConfigWrapper'
+      - additionalProperties: false
+        description: Only available for indexes with intraday tick computation
+        properties:
+          active_time_ranges:
+            items:
+              $ref: '#/components/schemas/IntradayTickFilter'
+            type: array
+          alerting:
+            $ref: '#/components/schemas/IntradayAlerting'
+          calculation_max_retry_delay:
+            description: How many seconds to keep retrying the real time calculation before setting the force flag. Defalts to 0 which means retry forever.
+            minimum: 0
+            type: integer
+          data_refresh_period:
+            description: After the rtindex refreshes its data this is the number of seconds to wait before refreshing again. 0 means do not refresh. Defaults to 3600 seconds (60min)
+            minimum: 0
+            type: integer
+          enabled:
+            description: If the intraday process should be run or not
+            type: boolean
+          heartbeat_timeout:
+            description: Max number of seconds between heartbeats before the rtindex pod is considered unhealthy
+            minimum: 1
+            type: integer
+          infra_timed_scaling:
+            $ref: '#/components/schemas/IntradayInfraTimedScaling'
+          ohl_enabled:
+            default: false
+            description: Should send Open High Low data to providers
+            type: boolean
+          opening_tick_time:
+            description: The time of opening tick in index's timezone. The index will send data against this
+            pattern: ^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$
+            type: string
+          resource_cpu_request:
+            description: Minimum cpu resources requested in milliCPU
+            minimum: 1
+            type: integer
+          resource_memory_request:
+            description: Minimum memory resources requested in mebibytes.
+            minimum: 0
+            type: integer
+          security_id:
+            description: Security ID of the intraday_index security where ticker data is served
+            type: string
+          startup_failure_timeout:
+            description: Max number of seconds to wait for the first heartbeat from the rtindex pod before considering it a failed startup. By default it will wait 40sec
+            minimum: 1
+            type: integer
+          tick_delay:
+            description: Number of seconds to delay intraday calculation
+            minimum: 0
+            type: integer
+          ticker_period:
+            description: Duration between ticker datapoints. In seconds
+            minimum: 1
+            type: number
+          tzinfo:
+            description: Timezone of intraday tick timestamp comparisons
+            type: string
+        required:
+        - enabled
+        - tzinfo
+        type: object
+    TickConfiguration:
+      additionalProperties: false
+      description: configuration for intraday index ticking time information
+      properties:
+        intraday_timezone:
+          default: US/Eastern
+          example: US/Eastern
+          type: string
+        tick_end_hour:
+          description: hour the index will end ticking intraday
+          maximum: 23
+          minimum: 0
+          type: integer
+        tick_end_minute:
+          description: minute the index will end ticking intraday
+          maximum: 59
+          minimum: 0
+          type: integer
+        tick_start_hour:
+          description: hour the index will start ticking intraday
+          maximum: 23
+          minimum: 0
+          type: integer
+        tick_start_minute:
+          description: minute the index will start ticking intraday
+          maximum: 59
+          minimum: 0
+          type: integer
+      type: object
+    NestedCalendarSchema:
+      additionalProperties: false
+      properties:
+        children:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/calendar_identifiers'
+            - $ref: '#/components/schemas/holidays_to_add'
+            - $ref: '#/components/schemas/NestedCalendarSchema'
+          type: array
+        operator:
+          enum:
+          - union
+          - intersection
+          - difference
+          type: string
+        weekmask:
+          items:
+            default:
+            - Mon
+            - Tue
+            - Wed
+            - Thu
+            - Fri
+            description: weekmask of valid business days
+            enum:
+            - Mon
+            - Tue
+            - Wed
+            - Thu
+            - Fri
+            - Sat
+            - Sun
+            type: string
+          type: array
+      required:
+      - operator
+      - children
+      type: object
+    IdTransactionCost:
+      additionalProperties: false
+      properties:
+        cost_floor:
+          default: 0.0
+          maximum: 1.0
+          minimum: 0.0
+          type: number
+        merq_id:
+          description: 'Deterministic identifier. Two allowed shapes: 1) fsym_id+country_code form:  el:<fsym_id>:<country_code>:0 2) ticker: in:<ticker>:0 Examples: ''el:R85KLC:US:0'', ''in:AAPL:0''
+
+            '
+          examples:
+          - el:R85KLC:US:0
+          - in:AAPL:0
+          type: string
+        vol_factor:
+          default: 0.0
+          maximum: 1.0
+          minimum: 0.0
+          type: number
+      required:
+      - merq_id
+      type: object
+    ClientCoveredStrike:
+      additionalProperties: false
+      description: A covered strike strategy with the strike being percentage of the spot. Covers by selling a call.
+      properties:
+        method:
+          default: Covered
+          enum:
+          - Covered
+          example: Covered
+          type: string
+        options:
+          minimum: 0.0
+          type: number
+        options_method:
+          default: Strike
+          enum:
+          - Strike
+          example: Strike
+          type: string
+      required:
+      - options
+      type: object
+    ClientDefinedOutcomeCustomStrategy:
+      additionalProperties: false
+      properties:
+        interest_rate_config:
+          $ref: '#/components/schemas/IndexInterestRateConfig'
+          description: configuration for interest rates on an options strategy self service index
+        option_strategies:
+          items:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeCustomStrategyItem'
+          maxItems: 1
+          minItems: 1
+          type: array
+        starting_cash:
+          default: 0
+          description: The starting cash for the custom strategy, used to fund the options
+          minimum: 0
+          type: number
+        underliers:
+          description: The underlying assets of the strategy
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/FsymAndCountry'
+            - $ref: '#/components/schemas/IndexTicker'
+          maxItems: 1
+          minItems: 0
+          type: array
+      required:
+      - option_strategies
+      type: object
+    WeightingSpec:
+      additionalProperties: false
+      properties:
+        default_weight_cap:
+          description: The overall weight cap for the allocation unit, if applicable
+          format: float
+          type: number
+        default_weight_floor:
+          description: Default minimum stock weight for any stock
+          format: float
+          type: number
+        fixed_weight_listings:
+          default: []
+          items:
+            $ref: '#/components/schemas/ListingFixedWeight'
+          type: array
+        listing_weight_caps:
+          default: []
+          items:
+            $ref: '#/components/schemas/ListingWeightCap'
+          type: array
+        listing_weight_floors:
+          default: []
+          items:
+            $ref: '#/components/schemas/ListingWeightFloor'
+          type: array
+        weighting_strategy:
+          enum:
+          - equal_weight
+          - total_mkt_cap
+          - float_mkt_cap
+          - fixed
+          - advt_3m
+          type: string
+      required:
+      - weighting_strategy
+      type: object
+    IdentifierUUIDRef:
+      additionalProperties: false
+      description: maps to an identifier resource
+      properties:
+        enabled:
+          default: true
+          description: Determines if the index will disseminate data based on this Identifier
+          type: boolean
+        name:
+          type: string
+        provider:
+          $ref: '#/components/schemas/Provider'
+      required:
+      - name
+      - provider
+      type: object
+    ClientDecrementUnderlying:
+      additionalProperties: false
+      properties:
+        identifier:
+          example: COST.OQ
+          type: string
+        identifier_type:
+          $ref: '#/components/schemas/ClientDecrementUnderlyingIDType'
+      required:
+      - identifier_type
+      - identifier
+      type: object
+    ClientDefinedOutcomeBufferStrategyItem:
+      additionalProperties: false
+      properties:
+        expiry:
+          $ref: '#/components/schemas/ClientDefinedOutcomeExpiry'
+          type: object
+        interest_rate_config:
+          $ref: '#/components/schemas/IndexInterestRateConfig'
+          description: configuration for interest rates on an options strategy self service index
+        number_of_tranches:
+          description: Number of tranches in the strategy
+          minimum: 1
+          type: integer
+        options:
+          items:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+          type: array
+        rebalancer:
+          $ref: '#/components/schemas/ClientDefinedOutcomeRebalancer'
+          type: object
+        self_financing_strategy:
+          additionalProperties: false
+          discriminator:
+            mapping:
+              NO_ETF: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+              PARTICIPATION_RATE: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategy'
+            propertyName: strategy
+          oneOf:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategy'
+          - $ref: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+          type: object
+        strategy_type:
+          enum:
+          - CUSTOM
+          - ACCELERATOR
+          - BUFFER
+          type: string
+      required:
+      - options
+      - rebalancer
+      - number_of_tranches
+      - expiry
+      type: object
+    IsoDate:
+      example: Tue, 04 Jan 2000 00:00:00 GMT
+      pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}
+      type: string
+    ClientDownsideStrike:
+      additionalProperties: false
+      description: A downside strike strategy with the strike being percentage of the spot. Protects downside by buying a put.
+      properties:
+        method:
+          default: Downside
+          enum:
+          - Downside
+          example: Downside
+          type: string
+        options:
+          minimum: 0.0
+          type: number
+        options_method:
+          default: Strike
+          enum:
+          - Strike
+          example: Strike
+          type: string
+      required:
+      - options
+      type: object
+    ClientSingleOptionBase:
+      additionalProperties: false
+      description: a single option strategy
+      properties:
+        exposure:
+          description: percentage of the underlying you want exposure to
+          minimum: 0.0
+          type: number
+        option_underlying:
+          $ref: '#/components/schemas/OptionRoot'
+          description: the underlying option to use; if not specified the default is to use the `root`
+          example: SPY
+        rebalancing_strategy:
+          description: the rebalancing schedule
+          enum:
+          - weekly_Monday
+          - weekly_Tuesday
+          - weekly_Wednesday
+          - weekly_Thursday
+          - weekly_Friday
+          - monthly_End_Of_Month
+          - monthly_3rd_Friday
+          type: string
+        root:
+          $ref: '#/components/schemas/OptionRoot'
+          default: SPY
+          description: the root of the option; more roots may be supported in the future
+          example: SPY
+      required:
+      - rebalancing_strategy
+      - exposure
+      type: object
+    RunConfig:
+      additionalProperties: true
+      properties:
+        airflow_config:
+          $ref: '#/components/schemas/AirflowConfig'
+        alert_priority:
+          enum:
+          - P1
+          - P2
+          - P3
+          - P4
+          - P5
+          type: string
+        command:
+          type: string
+        command_arguments:
+          $ref: '#/components/schemas/ArgumentsOrEnvVars'
+        day_chunk_size:
+          description: if set to a number, the index run will be split into chunks of this number of days
+          type: integer
+        dqms:
+          $ref: '#/components/schemas/DqmsConfig'
+        holiday_calendar:
+          $ref: '#/components/schemas/HolidayCalendarSpec'
+        index_report_uuids:
+          items:
+            type: string
+          type: array
+        index_reports:
+          oneOf:
+          - items:
+              type: string
+            minItems: 1
+            type: array
+          - items:
+              $ref: '#/components/schemas/IndexReport'
+            type: array
+        job_enabled:
+          type: boolean
+        num_days_to_load:
+          type: integer
+        pod_image_and_tag:
+          description: overrides the image
+          type: string
+        schedule:
+          $ref: '#/components/schemas/Schedule'
+        state_key:
+          description: ID to use when storing or reading the state of an instance of a dissapi object.
+          minLength: 1
+          type: string
+        tzinfo:
+          type: string
+      required:
+      - schedule
+      - job_enabled
+      - num_days_to_load
+      type: object
+    IntradayPublishConfigSecapiTarget:
+      allOf:
+      - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+      - properties:
+          target:
+            enum:
+            - secapi
+            type: string
+        required:
+        - target
+        type: object
+    StrategyOptionStrikeType:
+      enum:
+      - PCT_SPOT
+      - DELTA
+      - INCOME
+      - COSTLESS
+      example: PCT_SPOT
+      title: Option Strike Type
+      type: string
+    RebalanceTypeWithNoConfig:
+      additionalProperties: false
+      properties:
+        method:
+          enum:
+          - FIXED_WEIGHT
+          - EQUAL_WEIGHT
+          type: string
+      required:
+      - method
+      type: object
+    ClientDefinedOutcomeParticipationRateStrategyOption:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+      required:
+      - exercise_style
+      - exposure
+      - option_type
+      - ETF
+      - strike
+      type: object
+    BasketPortfolioPutIn:
+      additionalProperties: false
+      description: 'Input data for creating/replacing target portfolios. This object captures all information needed to execute externally defined rebalances.
+
+        '
+      properties:
+        divisor:
+          description: A scaling factor to apply for the SHARES of the portfolio constituents
+          type: number
+        external_id:
+          description: An external ID to reference this portfolio with. Must be unique per index.
+          type: string
+        positions:
+          items:
+            $ref: '#/components/schemas/ValidEquityBasketPosition'
+          title: Positions
+          type: array
+        share_selection_date:
+          $ref: '#/components/schemas/IsoTS'
+          description: Share selection date, if specified, should be before the effective date (parameter 'timestamp') for this Target Portfolio. In case when the unit_of_measure is set to WEIGHT, we first determine the shares using the prices on the share selection date. If any constituent is de-listed by the share selection date, then that constituent's weight is distributed to other constituents before selecting the shares. We then apply the corporate actions from the share selection date to the day before the portfolio effective date. In case when the unit_of_measure is set to SHARES, we follow the similar steps as above, except the step of determining shares, as it is not needed.
+        target_portfolio_type:
+          default: EOD
+          description: Whether its an end of day portfolio or an intraday portfolio.
+          enum:
+          - EOD
+          - INTRADAY
+          type: string
+        timestamp:
+          $ref: '#/components/schemas/IsoTS'
+          description: the time at which the portfolio should take effect
+        unit_of_measure:
+          $ref: '#/components/schemas/PortfolioUom'
+      required:
+      - timestamp
+      - positions
+      - unit_of_measure
+      type: object
+    XthDayRebalanceDateConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/InitialMonthConfig'
+      - properties:
+          method:
+            enum:
+            - XTH CALENDAR DAY
+            type: string
+          xth_day:
+            maximum: 31
+            minimum: 1
+            type: integer
+        required:
+        - method
+        type: object
+    ClientUnifiedFeeConfig:
+      additionalProperties: false
+      properties:
+        deduction_source:
+          $ref: '#/components/schemas/FeeDeductionSource'
+          description: Where configured fees should be deducted from
+        management_fee:
+          $ref: '#/components/schemas/ClientManagementFeeConfig'
+          description: Optional time-accrued management fee configuration
+        performance_fee:
+          $ref: '#/components/schemas/ClientPerformanceFeeConfig'
+          description: Optional high-water-mark performance fee configuration
+      required:
+      - deduction_source
+      type: object
+    OptionsUnderlierItem:
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+      required:
+      - name
+      type: object
+    PositionIdentifierType:
+      enum:
+      - RIC
+      - CURRENCY_CODE
+      - FSYM_ID
+      - TICKER
+      - BBG_TICKER
+      - CUSIP
+      example: FSYM_ID
+      title: PositionIdentifierType
+      type: string
+    OptionType:
+      enum:
+      - PUT
+      - CALL
+      example: PUT
+      title: Option Type
+      type: string
+    IntradayPublishConfigTargetBase:
+      properties:
+        active_time_ranges:
+          description: Time ranges during which values should be published to this target. Target level active_time_ranges override publish_config metric level active_time_ranges.
+          items:
+            $ref: '#/components/schemas/IntradayTickFilter'
+          type: array
+      type: object
+    ClientStrategyOption:
+      additionalProperties: false
+      description: Defines an option in a strategy index for self service flow
+      properties:
+        expiry:
+          $ref: '#/components/schemas/ClientStrategyOptionExpiry'
+        exposure:
+          minimum: 0
+          type: number
+        is_financing:
+          default: false
+          type: boolean
+        is_spread:
+          default: false
+          type: boolean
+        number_of_tranches:
+          minimum: 1
+          type: integer
+        option_type:
+          $ref: '#/components/schemas/OptionType'
+          type: string
+        rebalance:
+          oneOf:
+          - $ref: '#/components/schemas/ClientStrategyOptionRebalanceRelativeToExpiry'
+          - $ref: '#/components/schemas/ClientStrategyOptionRebalanceCertainDay'
+        spread_lower_bound:
+          type: number
+        spread_upper_bound:
+          type: number
+        strike_type:
+          $ref: '#/components/schemas/StrategyOptionStrikeType'
+          type: string
+        strike_value:
+          minimum: 0
+          type: number
+        trade_type:
+          $ref: '#/components/schemas/TradeType'
+          type: string
+      required:
+      - option_type
+      - trade_type
+      - strike_type
+      - exposure
+      - number_of_tranches
+      - expiry
+      - rebalance
+      - early_exercise
+      type: object
+    IntradayPublishConfigDbTarget:
+      allOf:
+      - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+      - properties:
+          target:
+            enum:
+            - db
+            type: string
+        required:
+        - target
+        type: object
+    EarlyExerciseTreatment:
+      enum:
+      - KEEP_IN_CASH
+      - RESTRIKE_AT_DAYS
+      - CONDITION_RESTRIKE_AT_DAYS
+      type: string
+    TradeType:
+      enum:
+      - BUY
+      - SELL
+      example: BUY
+      title: Trade Type
+      type: string
+    IntradayPublishConfigBloombergTargetParams:
+      additionalProperties: false
+      properties:
+        rounding_decimals:
+          type: integer
+        ticker:
+          type: string
+      type: object
+    IntradayInfraTimedScaling:
+      additionalProperties: false
+      description: Describes how to scale up and down based on the active time range.
+      properties:
+        enabled:
+          default: true
+          description: Whether or not the deployment will be scaled up and down.
+          type: boolean
+        end_time_buffer:
+          default: 10
+          description: The amount of minutes past the end time after which the deployment is scaled down.
+          maximum: 59
+          minimum: 5
+          type: integer
+        start_time_buffer:
+          default: 59
+          description: The amount of minutes before the start time from which the deployment is scale up.
+          maximum: 59
+          minimum: 10
+          type: integer
+      type: object
+    OptionSpecific:
+      additionalProperties: false
+      properties:
+        amount:
+          title: Amount of Shares
+          type: number
+        currency:
+          default: USD
+          title: Currency
+          type: string
+        delta_hedge_flag:
+          type: boolean
+        expiration_date:
+          $ref: '#/components/schemas/IsoDate'
+          title: Expiration Date
+        expiration_type:
+          $ref: '#/components/schemas/OptionExpirationType'
+          title: Expiration Type
+        identifier:
+          title: Identifier
+          type: string
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        lag:
+          $ref: '#/components/schemas/IsoTS'
+          title: Option Lag
+        leg_multiple:
+          type: number
+        mic:
+          pattern: '[A-Z0-9]{4}'
+          title: Mic Code
+          type: string
+        strike:
+          title: Strike Price
+          type: number
+        strike_type:
+          enum:
+          - PCT_SPOT
+          - DELTA
+          - SPCT_SPOT
+          title: Strike Type
+          type: string
+        structure_id:
+          minimum: 0
+          type: number
+        style:
+          $ref: '#/components/schemas/OptionStyle'
+          title: Style
+        type:
+          $ref: '#/components/schemas/OptionType'
+          title: Type
+        underlying:
+          title: Underlying Symbol
+          type: string
+        vol_multiplier:
+          type: number
+      required:
+      - expiration_date
+      - type
+      - strike
+      - amount
+      - underlying
+      - currency
+      type: object
+    ClientMultiEBConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientMultiEBPortConfig'
+      - $ref: '#/components/schemas/ClientMultiEBSpecific'
+      - $ref: '#/components/schemas/ClientRuntimeInfo'
+      - $ref: '#/components/schemas/ClientEquityBasketConfigBase'
+      description: full config for equity baskets
+      title: ClientMultiEBConfig
+      type: object
+    CustomCharts:
+      additionalProperties: false
+      properties:
+        chart_type:
+          default: line
+          enum:
+          - line
+          - spline
+          - area
+          - bar
+          - column
+          type: string
+        compare_mode:
+          default: percent
+          enum:
+          - absolute
+          - percent
+          type: string
+        constructor_type:
+          default: stockChart
+          enum:
+          - chart
+          - stockChart
+          type: string
+        data:
+          items:
+            additionalProperties: false
+            properties:
+              array_field:
+                type: string
+              key_field:
+                type: string
+              url:
+                type: string
+              values:
+                items:
+                  additionalProperties: false
+                  properties:
+                    display_name:
+                      type: string
+                    path:
+                      type: string
+                  required:
+                  - display_name
+                  - path
+                  type: object
+                type: array
+            required:
+            - url
+            - array_field
+            - values
+            - key_field
+            type: object
+          type: array
+        name:
+          type: string
+        size:
+          default: 12
+          type: number
+        xlabel:
+          type: string
+        ylabel:
+          type: string
+      required:
+      - name
+      - xlabel
+      - ylabel
+      type: object
+    OptionPriceMetrics:
+      additionalProperties: false
+      description: Option Price Metrics
+      example:
+        bid_ask_spread: 0.01
+        delta: 0.5
+        dividend_yield: 0.02
+        gamma: 0.1
+        interest_rate: 0.01
+        price: 0.01
+        spot: 100.0
+        theta: -0.01
+        vega: 0.2
+        vol: 0.2
+      properties:
+        bid_ask_spread:
+          description: Spread between Bid and Ask prices of the option being priced
+          format: number
+          type: number
+        delta:
+          description: Delta of this option
+          format: number
+          type: number
+        dividend_yield:
+          description: Implied Dividend Yield for the underlying
+          format: number
+          type: number
+        gamma:
+          description: Gamma of the option being priced
+          format: number
+          type: number
+        interest_rate:
+          description: Implied Interest Rate
+          format: number
+          type: number
+        price:
+          description: Option Price
+          format: number
+          type: number
+        spot:
+          description: Underlying spot price
+          format: number
+          type: number
+        theta:
+          description: Theta of the option being priced
+          format: number
+          type: number
+        vega:
+          description: Vega of the option being priced
+          format: number
+          type: number
+        vol:
+          description: Implied Volatility
+          format: number
+          type: number
+      required:
+      - price
+      - vol
+      - interest_rate
+      - dividend_yield
+      - spot
+      - delta
+      - theta
+      - gamma
+      - vega
+      - bid_ask_spread
+      title: Option Price Metrics Schema
+      type: object
+    DayOfWeek:
+      enum:
+      - MON
+      - TUE
+      - WED
+      - THU
+      - FRI
+      example: MON
+      title: Day of Week
+      type: string
+    VariableInterestRateConfig:
+      additionalProperties: false
+      description: configuration for variable interest rates on options strategy self serve indices
+      properties:
+        is_constant:
+          default: false
+          description: Used to determine if the rate value is to be set once per rebalance period or changed every day
+          type: boolean
+        reference_rate:
+          enum:
+          - SOFR
+          - EFFR
+          type: string
+        spread:
+          type: number
+      required:
+      - reference_rate
+      - spread
+      type: object
+    MerqTimestamp:
+      anyOf:
+      - format: date-time
+        type: string
+      - format: date
+        type: string
+      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+        type: string
+      example:
+      - '2021-01-01'
+      - '2021-01-01T01:01:01'
+      - 2021-01-01T01:01:01.zzzzz
+    AllocationUnit:
+      additionalProperties: false
+      properties:
+        allocation_name:
+          description: The name of the allocation unit
+          type: string
+        allocation_screens:
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/CountryOfDomicileFilterSpec'
+            - $ref: '#/components/schemas/CountryOfExchangeFilterSpec'
+            - $ref: '#/components/schemas/MicFilterSpec'
+            - $ref: '#/components/schemas/CurrencyFilterSpec'
+            - $ref: '#/components/schemas/SectorFilterSpec'
+            - $ref: '#/components/schemas/SubSectorFilterSpec'
+            - $ref: '#/components/schemas/TRBCFilterSpec'
+            - $ref: '#/components/schemas/MarketCapFilterSpec'
+            - $ref: '#/components/schemas/Advt3mFilterSpec'
+            - $ref: '#/components/schemas/MarketCapPercentFilterSpec'
+            - $ref: '#/components/schemas/StaticListingExclusionFilterSpec'
+          type: array
+        allocation_type:
+          enum:
+          - mkt_cap_sorted
+          - parent_universe
+          - static
+          type: string
+        allocation_weight:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        ignore_double_listings:
+          type: boolean
+        number_of_listings:
+          description: The number of listings in the allocation unit, if null select all that apply
+          type: integer
+        parent_index:
+          description: The parent index for the allocation unit, if applicable
+          type: string
+        sort_metric:
+          default: total_mkt_cap
+          enum:
+          - total_mkt_cap
+          - float_mkt_cap
+          - advt_3m
+          type: string
+        static_listings:
+          items:
+            properties:
+              amount:
+                maximum: 100
+                minimum: 0
+                type: number
+              identifier:
+                title: Identifier
+                type: string
+              identifier_type:
+                $ref: '#/components/schemas/PositionIdentifierType'
+            required:
+            - identifier
+            - identifier_type
+            type: object
+          type: array
+        weighting:
+          $ref: '#/components/schemas/WeightingSpec'
+      required:
+      - allocation_type
+      - allocation_name
+      - weighting
+      type: object
+    ClientDefinedOutcomeAcceleratorBase:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDefinedOutcomeAcceleratorStrategy'
+      - additionalProperties: false
+        properties:
+          strategy_type:
+            enum:
+            - ACCELERATOR
+            type: string
+        required:
+        - strategy_type
+        type: object
+      description: A Defined Outcome Accelerator Base
+      type: object
+    ClientIndexConfigOptionalBaseDate:
+      allOf:
+      - $ref: '#/components/schemas/ClientOptionalBaseVal'
+      - $ref: '#/components/schemas/ClientIndexBaseProperties'
+    ClientStrategyOptionRebalanceRelativeToExpiry:
+      additionalProperties: false
+      description: Defines rebalance-related configs for options strategies self service flow, if user selects "Relative to Expiry"
+      properties:
+        days_before_expiry:
+          minimum: 0
+          type: integer
+        roll_back:
+          description: Whether or not to roll back or roll forward if date is a holiday
+          type: boolean
+        schedule_type:
+          enum:
+          - REL_TO_EXPIRY
+          type: string
+      required:
+      - schedule_type
+      - days_before_expiry
+      - roll_back
+      type: object
+    ClientTemplateResponse:
+      properties:
+        bbg_ident_template:
+          $ref: '#/components/schemas/IdentifierUUIDPost'
+          description: only returned if the client specified a bbg ticker
+          nullable: true
+        post_template:
+          $ref: '#/components/schemas/IndexDefinitionPost'
+          description: a full index manifest that can be posted
+        target_ports:
+          description: only returns for indices where the client should post the target portfolios
+          items:
+            $ref: '#/components/schemas/BasketPortfolioPutIn'
+          nullable: true
+          type: array
+      type: object
+    DisseminationDestinations:
+      properties:
+        email_dissapi_configs:
+          items:
+            properties:
+              bcc_list:
+                items:
+                  type: string
+                type: array
+              cc_list:
+                items:
+                  type: string
+                type: array
+              content:
+                type: string
+              email_list:
+                items:
+                  type: string
+                type: array
+              file_keys:
+                items:
+                  type: string
+                type: array
+              recipient_list:
+                items:
+                  type: string
+                minItems: 1
+                type: array
+              subject:
+                type: string
+            required:
+            - recipient_list
+            - subject
+            type: object
+          minItems: 1
+          type: array
+        s3_dissapi_configs:
+          items:
+            properties:
+              bucket:
+                type: string
+              file_keys:
+                items:
+                  type: string
+                type: array
+              key_prefix:
+                type: string
+            required:
+            - bucket
+            - key_prefix
+            - file_keys
+            type: object
+          type: array
+        sftp_dissapi_configs:
+          items:
+            properties:
+              file_keys:
+                items:
+                  type: string
+                type: array
+              sftp_ids:
+                items:
+                  type: string
+                type: array
+            required:
+            - sftp_ids
+            - file_keys
+            type: object
+          type: array
+      type: object
+    FsymAndCountry:
+      description: Represents the combination of a FSYM + Country Code
+      properties:
+        country_code:
+          $ref: '#/components/schemas/CountryCode'
+        fsym_id:
+          type: string
+      required:
+      - fsym_id
+      - country_code
+      type: object
+    ClientBaseVal:
+      additionalProperties: false
+      properties:
+        base_date:
+          $ref: '#/components/schemas/BaseDate'
+        base_value:
+          description: set the index value on base_date to this base_value
+          example: 1000.0
+          exclusiveMinimum: 0
+          type: number
+      required:
+      - base_date
+      - base_value
+      type: object
+    LevelCheckParams:
+      properties:
+        max:
+          nullable: true
+          type: number
+        min:
+          nullable: true
+          type: number
+      required:
+      - min
+      - max
+      type: object
+    MarketCapPercentFilterSpec:
+      additionalProperties: false
+      properties:
+        mkt_cap_type:
+          enum:
+          - total_mkt_cap
+          - float_mkt_cap
+          type: string
+        threshold_addition_max:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        threshold_addition_min:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        threshold_retention_max:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        threshold_retention_min:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        type:
+          enum:
+          - mkt_cap_percent
+          type: string
+      required:
+      - type
+      - mkt_cap_type
+      type: object
+    CurrencyFilterSpec:
+      additionalProperties: false
+      properties:
+        currencies:
+          items:
+            type: string
+          type: array
+        include_or_exclude:
+          description: Whether to include or exclude the specified currencies
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        type:
+          enum:
+          - currency
+          type: string
+      required:
+      - type
+      - currencies
+      - include_or_exclude
+      type: object
+    IntradayPublishConfigBloombergTarget:
+      allOf:
+      - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+      - properties:
+          params:
+            $ref: '#/components/schemas/IntradayPublishConfigBloombergTargetParams'
+          target:
+            enum:
+            - bloomberg
+            type: string
+        required:
+        - target
+        type: object
+    MerqubeIndexSpecific:
+      additionalProperties: false
+      properties:
+        metric_name:
+          type: string
+      type: object
+    FlatCalendarSchema:
+      additionalProperties: false
+      properties:
+        calendar_identifiers:
+          default_factory: list
+          items:
+            pattern: ^(FUT|MIC|FX|SM|MQI|OVERLAY):.+$
+            type: string
+          type: array
+        condition:
+          default: all
+          enum:
+          - any
+          - all
+          - custom
+          type: string
+        holidays_to_add:
+          default_factory: list
+          items:
+            format: date
+            type: string
+          type: array
+        holidays_to_remove:
+          default_factory: list
+          items:
+            format: date
+            type: string
+          type: array
+        swaps_monitor_codes:
+          default_factory: list
+          items:
+            pattern: ^[a-zA-Z]{3}$
+            type: string
+          type: array
+        weekmask:
+          default:
+          - Mon
+          - Tue
+          - Wed
+          - Thu
+          - Fri
+          description: weekmask of valid business days
+          items:
+            enum:
+            - Mon
+            - Tue
+            - Wed
+            - Thu
+            - Fri
+            - Sat
+            - Sun
+            type: string
+          type: array
+      type: object
+    HighWaterMarkMode:
+      default: STATIC
+      enum:
+      - STATIC
+      - DYNAMIC
+      type: string
+    ListingWeightFloor:
+      additionalProperties: false
+      properties:
+        exchange_country:
+          type: string
+        fsym_id:
+          type: str
+        weight_floor:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+      required:
+      - fsym_id
+      - exchange_country
+      - weight_cap
+      type: object
+    StaticBasketCalendarConfig:
+      properties:
+        holidays_to_add:
+          items:
+            $ref: '#/components/schemas/IsoDate'
+          type: array
+        holidays_to_remove:
+          items:
+            $ref: '#/components/schemas/IsoDate'
+          type: array
+        swaps_monitor_codes:
+          items:
+            type: string
+          type: array
+      required:
+      - swaps_monitor_codes
+      type: object
+    IntradayPublishConfig:
+      additionalProperties:
+        items:
+          oneOf:
+          - $ref: '#/components/schemas/IntradayPublishConfigDbTarget'
+          - $ref: '#/components/schemas/IntradayPublishConfigSecapiTarget'
+          - $ref: '#/components/schemas/IntradayPublishConfigBloombergTarget'
+          - $ref: '#/components/schemas/IntradayPublishConfigReutersTarget'
+        type: array
+      description: Mapping of index metric to targets it should be sent to
+      type: object
+    ReutersProviderKwargs:
+      additionalProperties: false
+      description: Reuters provider custom arguments
+      properties:
+        post_type:
+          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
+      type: object
+    CountryOfExchangeFilterSpec:
+      additionalProperties: false
+      properties:
+        exchange_countries:
+          items:
+            type: string
+          type: array
+        include_or_exclude:
+          description: Whether to include or exclude the specified countries
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        type:
+          enum:
+          - country_of_exchange
+          type: string
+      required:
+      - type
+      - exchange_countries
+      - include_or_exclude
+      type: object
+    ClientEquityBasketConfigBase:
+      allOf:
+      - $ref: '#/components/schemas/ClientIndexConfigBase'
+      - additionalProperties: false
+        description: class with shared properties among the equity basket group.
+        properties:
+          currency:
+            default: USD
+            description: set to the currency of the index
+            example: USD
+            type: string
+          holiday_calendar:
+            $ref: '#/components/schemas/HolidayCalendarSpec'
+          is_intraday:
+            default: false
+            description: set to true if the index is to calculate multiple times during the day. This does not pertain to the frequency of rebalancing; see `rebal_freq`. Even though theoretically all index family types can calculate multiple times a day, not all types will support this initially. This parameter is a bit experimental in that sense.
+            example: false
+            type: boolean
+        type: object
+    IndexTicker:
+      description: Represents a ticker of the index. Used in self service options to hold the Index as the underlier
+      properties:
+        ticker:
+          enum:
+          - NDX
+          - SPX
+          - RUT
+          - MQ5C
+          - SXXP
+          - SX5E
+          type: string
+      required:
+      - ticker
+      type: object
+    SimpleRebalanceDateConfigOptions:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/InitialMonthConfig'
+      - properties:
+          method:
+            enum:
+            - FIRST BUSINESS DAY
+            - LAST BUSINESS DAY
+            type: string
+        required:
+        - method
+        type: object
+    IntradayPublishConfigReutersTarget:
+      allOf:
+      - $ref: '#/components/schemas/IntradayPublishConfigTargetBase'
+      - properties:
+          params:
+            $ref: '#/components/schemas/IntradayPublishConfigReutersTargetParams'
+          target:
+            enum:
+            - reuters
+            type: string
+        required:
+        - target
+        type: object
+    ValidEquityBasketPosition:
+      oneOf:
+      - $ref: '#/components/schemas/BasketPosition'
+      - $ref: '#/components/schemas/RicEquityPosition'
+      - $ref: '#/components/schemas/FsymEquityPosition'
+      - $ref: '#/components/schemas/OptionPosition'
+      - $ref: '#/components/schemas/FuturesPosition'
+      - $ref: '#/components/schemas/SecapiBasketPosition'
+      - $ref: '#/components/schemas/MerqubeIndexPosition'
+    ClientDefinedOutcomeAcceleratorStrategy:
+      additionalProperties: false
+      properties:
+        option_strategies:
+          items:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeAcceleratorStrategyItem'
+          maxItems: 1
+          minItems: 1
+          type: array
+      required:
+      - option_strategies
+      type: object
+    DisseminationSetting:
+      additionalProperties: false
+      description: configuration for setting up identifier to provider
+      properties:
+        destination:
+          enum:
+          - BLOOMBERG
+          - REFINITIV
+          - MORNINGSTAR
+          - FACTSET
+          type: string
+        ticker:
+          type: string
+      required:
+      - destination
+      - ticker
+      type: object
+    DayCountConvention:
+      enum:
+      - f250
+      - f252
+      - f360
+      - f365
+      - actual
+      type: string
+    ClientDefinedOutcomeAcceleratorStrategyItem:
+      additionalProperties: false
+      properties:
+        expiry:
+          $ref: '#/components/schemas/ClientDefinedOutcomeExpiry'
+          type: object
+        interest_rate_config:
+          $ref: '#/components/schemas/IndexInterestRateConfig'
+          description: configuration for interest rates on an options strategy self service index
+        number_of_tranches:
+          description: Number of tranches in the strategy
+          minimum: 1
+          type: integer
+        options:
+          items:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+          maxItems: 2
+          minItems: 2
+          type: array
+        rebalancer:
+          $ref: '#/components/schemas/ClientDefinedOutcomeRebalancer'
+          type: object
+        self_financing_strategy:
+          $ref: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+          type: object
+        strategy_type:
+          enum:
+          - CUSTOM
+          - ACCELERATOR
+          - BUFFER
+          type: string
+      required:
+      - options
+      - rebalancer
+      - number_of_tranches
+      - expiry
+      type: object
+    DefinedOutcomeSolverResponse:
+      additionalProperties: false
+      properties:
+        option_solutions:
+          description: Option Price Metrics
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/OptionPriceMetrics'
+            - type: null
+          type: array
+        variable_leg_cash_solution:
+          description: Cash solution when Cash strategy is selected
+          format: float
+          nullable: true
+          type: number
+        variable_leg_solution:
+          allOf:
+          - oneOf:
+            - $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+            - type: null
+          - properties:
+              price:
+                description: Option Price
+                format: number
+                type: number
+            required:
+            - price
+          description: Variable Leg Metrics
+          type: object
+      title: Client Defined Outcome Option Price Solver Response Schema
+      type: object
+    ConstantInterestRateConfig:
+      additionalProperties: false
+      description: configuration for constant interest rates on options strategy self serve indices
+      properties:
+        rate:
+          type: number
+      required:
+      - rate
+      type: object
+    RunConfigLabelAdditional:
+      description: used when there needs to be different run configurations, each with a different label, such as 'initial' vs 'final'
+      properties:
+        label:
+          description: unique label of this rc
+          type: string
+      required:
+      - label
+      type: object
+    BasketPosition:
+      additionalProperties: false
+      description: A general basket portfolio position
+      properties:
+        amount:
+          title: Amount
+          type: number
+        asset_type:
+          $ref: '#/components/schemas/AssetType'
+        identifier:
+          title: Identifier
+          type: string
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        position_id:
+          example: '1'
+          title: Position Id
+          type: string
+      required:
+      - asset_type
+      - identifier
+      - identifier_type
+      - amount
+      type: object
+    DatedRicEquityPosition:
+      allOf:
+      - $ref: '#/components/schemas/DatedBasketPosition'
+      - $ref: '#/components/schemas/RicSpecific'
+    ClientDownsideDelta:
+      additionalProperties: false
+      description: A downside delta strategy with the delta being percentage of the spot. Protects downside by buying a put.
+      properties:
+        method:
+          default: Downside
+          enum:
+          - Downside
+          example: Downside
+          type: string
+        options:
+          maximum: 0
+          minimum: -100.0
+          type: number
+        options_method:
+          default: Delta
+          enum:
+          - Delta
+          example: Delta
+          type: string
+      required:
+      - options
+      type: object
+    Schedule:
+      additionalProperties: false
+      properties:
+        business_days_prior:
+          example: 1
+          type: integer
+        event_driven:
+          default: false
+          description: if true, there will be no defined schedule for the DAG (as in you could have a created DAG that won't run unless triggered manually)
+          type: boolean
+        holiday_calendar:
+          properties:
+            cal_type:
+              example: MIC
+              type: string
+            mic:
+              example: XNYS
+              type: string
+          type: object
+        retries:
+          type: integer
+        retry_interval_min:
+          type: integer
+        schedule_cron:
+          type: string
+        schedule_start:
+          type: string
+        timeout_delta:
+          example: minutes=17
+          type: string
+        triggers:
+          description: the dataset trigger to which the dag subscribes to. This is a list of trigger(s)
+          example:
+          - trigger://exchange/XNYS/early_closing.merq
+          items:
+            type: string
+          type: array
+      required:
+      - retries
+      - retry_interval_min
+      - schedule_start
+      type: object
+    ReutersProviderKwargsPostType:
+      description: How to post the data to Reuters, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      - EOD_AND_RT_COMBINED
+      type: string
+    FuturesPosition:
+      allOf:
+      - $ref: '#/components/schemas/FuturesSpecific'
+      - $ref: '#/components/schemas/BasketPosition'
+      description: A Futures position
+    ClientEquityIndexConfigBase:
+      allOf:
+      - $ref: '#/components/schemas/ClientIndexConfigOptionalBaseDate'
+      - additionalProperties: false
+        description: class with shared properties among the equity index group.
+        properties:
+          currency:
+            default: USD
+            description: set to the currency of the index
+            example: USD
+            type: string
+          holiday_calendar:
+            $ref: '#/components/schemas/HolidayCalendarSpec'
+          is_intraday:
+            default: false
+            description: set to true if the index is to calculate multiple times during the day. This does not pertain to the frequency of rebalancing; see `rebal_freq`. Even though theoretically all index family types can calculate multiple times a day, not all types will support this initially. This parameter is a bit experimental in that sense.
+            example: false
+            type: boolean
+        type: object
+    IndexBenchmark:
+      additionalProperties: false
+      properties:
+        benchmark_metric:
+          default: price_return
+          description: only accepted if the ticker is an MQI. The metric of the benchmark index to compare against; eg can compare to some other metric than price_return of the benchmark
+          example: total_return
+          type: string
+        index_metric:
+          default: price_return
+          description: the metric of this index to compare against the ticker/threshold, eg can compare some other metric of this index than price_return
+          example: total_return
+          type: string
+        threshold:
+          description: the deviation that triggers an outlier event, IE, the daily difference of the index vs the daily difference of the underlying should not be more than this percent
+          example: 0.05
+          type: number
+        ticker:
+          description: accepts either FSYM_ID, or MQI:XXX to benchmark against another index.
+          example: MQI:XXX
+          type: string
+      required:
+      - ticker
+      - threshold
+      type: object
+    ClientPerformanceFeeConfig:
+      additionalProperties: false
+      properties:
+        high_water_mark:
+          description: Required when hwm_mode is STATIC. Must be omitted when hwm_mode is DYNAMIC.
+          type: number
+        hwm_mode:
+          $ref: '#/components/schemas/HighWaterMarkMode'
+          default: STATIC
+          description: 'STATIC uses the configured high_water_mark. DYNAMIC derives the high-water mark as the maximum published index level through two calculation days before the fee reference date, and charges no fee until that history exists.
+
+            '
+        rate:
+          description: Performance fee percentage as a decimal (e.g. 0.01 for 1%)
+          maximum: 1
+          minimum: 0
+          type: number
+      required:
+      - rate
+      type: object
+    AirflowConfig:
+      additionalProperties: false
+      properties:
+        affinity_match_expression_key:
+          description: the affinity to use in airflow
+          type: string
+        dag:
+          additionalProperties: true
+          description: use this to set kwargs for the dag
+          type: object
+        description:
+          description: A short description related with the generated runner
+          type: string
+        env:
+          additionalProperties: true
+          description: use this to set ENV variables in the pod
+          type: object
+        pod:
+          additionalProperties: true
+          description: use this to set kwargs for the pod
+          type: object
+        s3_location:
+          $ref: '#/components/schemas/S3Bucket'
+          description: Bucket and path where the generated dag should be stored. If not defined `merq-airflow-dags-airflow2` is defined in merqutil
+        subpods:
+          items:
+            $ref: '#/components/schemas/SubPod'
+          type: array
+      type: object
+    FeeDeductionSource:
+      enum:
+      - ALL_CONSTITUENTS
+      - CASH
+      type: string
+    TransactionCostsConfig:
+      additionalProperties: false
+      properties:
+        individual_transaction_cost:
+          additionalProperties:
+            $ref: '#/components/schemas/IdTransactionCost'
+          type: object
+        pool_cash:
+          default: false
+          type: boolean
+        transaction_cost_activated:
+          default: false
+          type: boolean
+      type: object
+    ListingFixedWeight:
+      additionalProperties: false
+      properties:
+        exchange_country:
+          type: string
+        fixed_weight:
+          format: float
+          maximum: 100.0
+          minimum: 0.0
+          type: number
+        fsym_id:
+          type: string
+      required:
+      - fsym_id
+      - exchange_country
+      - fixed_weight
+      type: object
+    ClientDefinedOutcomeCustomStrategyItem:
+      additionalProperties: false
+      properties:
+        expiry:
+          $ref: '#/components/schemas/ClientDefinedOutcomeExpiry'
+          type: object
+        number_of_tranches:
+          description: Number of tranches in the strategy
+          minimum: 1
+          type: integer
+        options:
+          items:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeOption'
+          minItems: 1
+          type: array
+        rebalancer:
+          $ref: '#/components/schemas/ClientDefinedOutcomeRebalancer'
+          type: object
+        self_financing_strategy:
+          additionalProperties: false
+          discriminator:
+            mapping:
+              CASH: '#/components/schemas/ClientDefinedOutcomeCashStrategy'
+              NO_ETF: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+              PARTICIPATION_RATE: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategy'
+            propertyName: strategy
+          oneOf:
+          - $ref: '#/components/schemas/ClientDefinedOutcomeParticipationRateStrategy'
+          - $ref: '#/components/schemas/ClientDefinedOutcomeNoEtfStrategy'
+          - $ref: '#/components/schemas/ClientDefinedOutcomeCashStrategy'
+          type: object
+        strategy_type:
+          enum:
+          - CUSTOM
+          - ACCELERATOR
+          - BUFFER
+          type: string
+      required:
+      - options
+      - rebalancer
+      - number_of_tranches
+      - expiry
+      type: object
+    Advt3mFilterSpec:
+      additionalProperties: false
+      properties:
+        currency:
+          type: string
+        threshold_addition_max:
+          format: float
+          type: number
+        threshold_addition_min:
+          format: float
+          type: number
+        threshold_retention_max:
+          format: float
+          type: number
+        threshold_retention_min:
+          format: float
+          type: number
+        type:
+          enum:
+          - advt_3m
+          type: string
+      required:
+      - type
+      - currency
+      type: object
+    ClientDecrementConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientDecrementSpecific'
+      - $ref: '#/components/schemas/ClientEquityBasketConfigBase'
+      description: full config for decrements
+      type: object
+    MerqubeIndexPosition:
+      allOf:
+      - $ref: '#/components/schemas/BasketPosition'
+      - $ref: '#/components/schemas/MerqubeIndexSpecific'
+      description: A basket position that uses custom metrics from merqube data source
+    RealTimeTradeType:
+      description: Trade types that can be used for real time quotes. Examples of ineligible trade types are dark pool and odd lot trades.
+      enum:
+      - ELIGIBLE
+      - INELIGIBLE
+      title: RealTimeTradeType
+    NasdaqProviderKwargs:
+      additionalProperties: false
+      description: Nasdaq provider custom arguments
+      properties:
+        eod_date_delta:
+          description: How many days to offset the Nasdaq date (T if before 6:30pm EST otherwise T + 1) when getting EOD data from the Index
+          type: integer
+        nasdaq_env:
+          description: Which Nasdaq environment to send data to
+          enum:
+          - testing
+          - production
+          type: string
+      required:
+      - nasdaq_env
+      type: object
+    FreeFloatRebalanceConfig:
+      additionalProperties: false
+      properties:
+        max_weight:
+          type: number
+        method:
+          default: FREE_FLOAT
+          enum:
+          - FREE_FLOAT
+          type: string
+      required:
+      - method
+      type: object
+    ClientRuntimeInfo:
+      additionalProperties: false
+      description: represents index runtime info, which must be specified for some indices (but auto derived for others based on exchange close times etc)
+      properties:
+        run_hour:
+          description: set to the hour of day to run the index in the index's timezone
+          example: 16
+          type: integer
+        run_minute:
+          description: 'set to the minute of the hour to run the index '
+          example: 30
+          type: integer
+        timezone:
+          default: US/Eastern
+          description: set to the timezone of the index
+          example: US/Eastern
+          type: string
+      required:
+      - run_hour
+      - run_minute
+      type: object
+    IndexDefinitionPost:
+      additionalProperties: false
+      properties:
+        administrative:
+          $ref: '#/components/schemas/Administrative'
+        base_date:
+          $ref: '#/components/schemas/BaseDate'
+        base_year:
+          type: integer
+        benchmark:
+          oneOf:
+          - $ref: '#/components/schemas/IndexBenchmark'
+          - items:
+              $ref: '#/components/schemas/IndexBenchmark'
+            type: array
+        calc_freq:
+          enum:
+          - Daily
+          - Daily, EOD
+          - Intraday
+          type: string
+        calculation_check:
+          $ref: '#/components/schemas/CalculationCheck'
+        currency:
+          type: string
+        custom_metrics:
+          items:
+            $ref: '#/components/schemas/MetricsSchema'
+          type: array
+        description:
+          type: string
+        display_month:
+          enum:
+          - Jan
+          - Feb
+          - Mar
+          - Apr
+          - May
+          - Jun
+          - Jul
+          - Aug
+          - Sep
+          - Oct
+          - Nov
+          - Dec
+          type: string
+        documents:
+          type: object
+        eod_rt_price_check:
+          type: boolean
+        excess_strategy:
+          enum:
+          - keep_in_cash
+          type: string
+        family:
+          type: string
+        family_codes:
+          items:
+            type: string
+          maxItems: 1
+          minItems: 1
+          type: array
+        family_description:
+          type: string
+        fill_missing_data:
+          description: Controls missing equity price recovery. The API derives this flag from stage and stores true only for backtest; all other stages store false.
+          type: boolean
+        first_value_date:
+          $ref: '#/components/schemas/IsoDate'
+          description: the first date that the index has a value; if set, will be < base_date
+        freezer_config:
+          $ref: '#/components/schemas/FreezerConfig'
+        identifiers:
+          items:
+            $ref: '#/components/schemas/IdentifierUUIDRef'
+          minItems: 0
+          type: array
+        intraday:
+          $ref: '#/components/schemas/Intraday'
+        launch_date:
+          type: string
+        methodology:
+          type: string
+        month:
+          type: integer
+        name:
+          pattern: ^[a-zA-Z][a-zA-Z0-9-_]{0,99}$
+          type: string
+        namespace:
+          type: string
+        notify_configuration:
+          $ref: '#/components/schemas/NotificationConfig'
+        plot_metric:
+          type: string
+        portfolio_allocation_display:
+          description: whether or not portfolio_allocations are shown on the website. false by default
+          type: boolean
+        portfolio_display:
+          properties:
+            fields:
+              items:
+                properties:
+                  display_name:
+                    type: string
+                  field_name:
+                    type: string
+                type: object
+              type: array
+          type: object
+        portfolio_handler_id:
+          type: string
+        rebal_freq:
+          $ref: '#/components/schemas/RebalFrequency'
+        related:
+          items:
+            $ref: '#/components/schemas/Related'
+          type: array
+        run_configuration:
+          $ref: '#/components/schemas/RunConfig'
+        run_configurations:
+          items:
+            $ref: '#/components/schemas/RunConfigLabel'
+          type: array
+        sales_force_deal_id:
+          description: SalesForce Deal ID
+          type: string
+        spec:
+          $ref: '#/components/schemas/IndexSpec'
+        stage:
+          enum:
+          - prod
+          - test
+          - development
+          - backtest
+          - inqubator
+          type: string
+        tags:
+          type: string
+        title:
+          type: string
+        webpage:
+          $ref: '#/components/schemas/Webpage'
+        weighting_method:
+          enum:
+          - Other
+          - Equal
+          type: string
+      required:
+      - description
+      - administrative
+      - launch_date
+      - name
+      - stage
+      - title
+      title: Index Manifest
+      type: object
+    PercentChangeCheckParams:
+      properties:
+        max:
+          nullable: true
+          type: number
+        min:
+          nullable: true
+          type: number
+      required:
+      - min
+      - max
+      type: object
+    ClientDefinedOutcomeRoots:
+      enum:
+      - SPY
+      - QQQ
+      - IWM
+      - EFA
+      - XIU
+      - TLT
+      - HYG
+      - EEM
+      - LQD
+      - VOO
+      - IVV
+      - SPX
+      - VTWO
+      - BITO
+      - IBIT
+      - MSFT
+      - AMZN
+      - TSLA
+      - META
+      - AAPL
+      - NVDA
+      - GOOGL
+      - GOOG
+      - GLD
+      type: string
+    LevelOverride:
+      additionalProperties: false
+      example:
+        comment: test for some special day for some special reason
+        date: '2022-03-18'
+        level: 1364.344
+      properties:
+        comment:
+          type: string
+        date:
+          $ref: '#/components/schemas/IsoDate'
+        level:
+          type: number
+      required:
+      - date
+      - level
+      type: object
+    BaseDate:
+      description: the date that the index has level 'base_value'
+      example: Tue, 04 Jan 2000 00:00:00 GMT
+      pattern: ^[0-9]{4}[-/][0-9]{2}[-/][0-9]{2}
+      type: string
+    IntradayAlerting:
+      additionalProperties: false
+      description: Alerting configuration for intraday ticks
+      properties:
+        flatline_alerts:
+          $ref: '#/components/schemas/IntradayFlatlineAlerts'
+      type: object
+    OptionExpirationType:
+      enum:
+      - AM
+      - PM
+      example: AM
+      title: Option Expiration Type
+      type: string
+    ClientIndexBaseProperties:
+      additionalProperties: false
+      properties:
+        bbg_ticker:
+          description: due to the limitations of the Bloomberg ticker creation process (no API), this must be a pre-created ticker. You can email MerQube a list of tickers to create on your behalf at support@merqube.com. Then, you provide those as input to these indices
+          example: MY_TICKER
+          type: string
+        description:
+          description: set to the description of the index, which will show on merqube.com
+          example: My Index Description
+          type: string
+        email_list:
+          default_factory: list
+          description: list of emails to send daily dissemination reports, and the initial backtest reports, to; if not specified, no emails will be sent
+          example:
+          - bob@mycompany.com
+          - alice@mycompany.com
+          items:
+            type: string
+          type: array
+        name:
+          description: 'set to the name of the index. Commonly people use the ticker as the name, but that is not necessary. Must be globally unique - you will get a 409 if this index name is taken '
+          example: My Index
+          pattern: ^[^!*'() ;:@&=+$,/?%#\[\]]
+          type: string
+        namespace:
+          description: set to the namespace of the index
+          example: mycompany
+          type: string
+        title:
+          description: set to the title of the index that shows up on merqube.com
+          example: My Index Title
+          type: string
+      required:
+      - description
+      - name
+      - namespace
+      - title
+      type: object
+    FuturesSpecific:
+      additionalProperties: false
+      properties:
+        amount:
+          title: Amount of Shares
+          type: number
+        currency:
+          default: USD
+          title: Currency
+          type: string
+        expiration_date:
+          $ref: '#/components/schemas/IsoDate'
+          title: Expiration Date
+        identifier:
+          title: Identifier
+          type: string
+        identifier_type:
+          $ref: '#/components/schemas/PositionIdentifierType'
+        lag:
+          $ref: '#/components/schemas/IsoTS'
+          title: Futures Lag
+        underlying:
+          title: Underlying Symbol
+          type: string
+      required:
+      - expiration_date
+      - amount
+      - underlying
+      - currency
+      type: object
+    IntradayAlertType:
+      enum:
+      - opsgenie
+      - slack
+      type: string
+    ClientStaticBasketConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/ClientStaticBasketSpecific'
+      - $ref: '#/components/schemas/ClientEquityBasketConfigBase'
+      description: full config for Static Basket Indices
+      type: object
+    AdvancedRebalanceDateConfig:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/InitialMonthConfig'
+      - properties:
+          method:
+            default: ADVANCED
+            enum:
+            - ADVANCED
+            type: string
+          roll_forward:
+            default: true
+            type: boolean
+          xth_week:
+            enum:
+            - First
+            - Second
+            - Third
+            - Fourth
+            - Last
+            type: string
+        type: object
+      - $ref: '#/components/schemas/WeeklyRebalanceDates'
+      required:
+      - method
+      - xth_week
+      - day
+    BaseCheck:
+      properties:
+        alert_type:
+          default: fail_computation
+          enum:
+          - email
+          - slack
+          - opsgenie
+          - fail_computation
+          type: string
+        enabled:
+          type: boolean
+        metric:
+          type: string
+      required:
+      - metric
+      - enabled
+      type: object
+    ClientStrategyOptionExpiry:
+      additionalProperties: false
+      description: Defines expiry-related configs for options strategies self service flow
+      properties:
+        day_of_week:
+          $ref: '#/components/schemas/DayOfWeek'
+          description: Should only be set if expiry_time_period is WEEKLY
+          type: string
+        expiry_period_type:
+          $ref: '#/components/schemas/StrategyOptionExpiryPeriodType'
+          type: string
+        time_period_away:
+          minimum: 1
+          type: integer
+      required:
+      - expiry_period_type
+      - time_period_away
+      type: object
+    StaticListingExclusionFilterSpec:
+      additionalProperties: false
+      properties:
+        static_listings:
+          items:
+            $ref: '#/components/schemas/FsymAndCountry'
+          type: array
+        type:
+          enum:
+          - static_listing_exclusion
+          type: string
+      required:
+      - type
+      - static_listings
+      type: object
+    Related:
+      properties:
+        default_display:
+          default: false
+          type: boolean
+        id:
+          type: string
+        metric:
+          type: string
+        name:
+          type: string
+        type:
+          enum:
+          - security
+          - index
+          type: string
+      required:
+      - id
+      - name
+      - type
+      type: object
+    IsoTS_2:
+      type: string
+      pattern: ^\d{4}-\d{2}-\d{2}(T|\s)\d{2}:\d{2}:\d{2}(\.\d{6})?$
+      example: 2022-01-02 01:02:03
+    ClientDecrementSpecific_2:
+      type: object
+      additionalProperties: false
+      required:
+      - fee_value
+      - fee_type
+      - day_count_convention
+      - underlying
+      properties:
+        fee_value:
+          description: set to the value of the fee to apply. For fixed, this is bps, for percentage_pre/post this is given as a percentage
+          example: 0.05
+          type: number
+        fee_type:
+          type: string
+          description: set to the type of fee to apply
+          enum:
+          - fixed
+          - percentage_pre
+          - percentage_post
+          - fixed_points_underlying
+          example: fixed
+        day_count_convention:
+          type: string
+          description: must either adapt to a fixed number of days in a year e.g. 'f360' or to Actual ISDA convention, i.e. 'actual'
+          example: f360
+        underlying:
+          $ref: '#/components/schemas/ClientDecrementUnderlying'
+          example:
+            identifier_type: RIC
+            identifier: COST.OQ
+        start_date:
+          type: string
+          format: date
+          description: set to the start date of the index if it is to differ from base_date. If this is specified, it must be before base_date. In this case the base_date, base_value is used as a fixed intercept, with the index level starting from start_date and passing through that intercept
+          example: 2004-01-04
+    IsoDate_2:
+      type: string
+      pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}
+      example: 2000-01-04
+    BaseDate_2:
+      description: the date that the index has level 'base_value'
+      type: string
+      pattern: ^[0-9]{4}[-/][0-9]{2}[-/][0-9]{2}
+      example: 2000-01-04
+  parameters:
+    pageSizeParam:
+      description: size of the page to load, defaults to 1000
+      in: query
+      name: page_size
+      schema:
+        default: 1000
+        minimum: 1
+        type: integer
+    indexUuidsParam:
+      description: comma sep list of index_uuids
+      in: query
+      name: index_uuids
+      schema:
+        type: string
+    pageParam:
+      description: page number to load, defaults to 1
+      in: query
+      name: page
+      schema:
+        default: 1
+        minimum: 1
+        type: integer
+x-refined-from:
+- merqube-api-openapi.json
+- merqube-api-raw.yaml
+x-internal: true

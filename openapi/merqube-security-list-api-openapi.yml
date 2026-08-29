@@ -1,0 +1,315 @@
+openapi: 3.2.0
+info:
+  title: Merqube Security List API
+  version: 4.40.0
+  contact:
+    email: support@merqube.com
+    name: API Support
+    url: https://www.merqube.com/contact
+  description: 'Operations tagged security_list across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.merqube.com
+- description: Testing server for next generation features
+  url: https://api.staging.merqube.com
+tags:
+- description: lists of securities
+  name: security_list
+paths:
+  /security_list:
+    get:
+      description: Get all MerQube security_lists.
+      parameters:
+      - $ref: '#/components/parameters/filterParam'
+      - $ref: '#/components/parameters/idsParam'
+      - $ref: '#/components/parameters/nameParam'
+      - $ref: '#/components/parameters/namesParam'
+      - $ref: '#/components/parameters/namespaceParam'
+      - $ref: '#/components/parameters/fieldsParam'
+      - $ref: '#/components/parameters/debugParam'
+      - $ref: '#/components/parameters/formatParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error_codes:
+                    $ref: '#/components/schemas/ErrorCodes'
+                  results:
+                    items:
+                      $ref: '#/components/schemas/SecurityListPatchPutGet'
+                    type: array
+                type: object
+          description: 200 response
+      summary: Get all MerQube security_lists.
+      tags:
+      - security_list
+    post:
+      description: Create a new MerQube security_list
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityListPost'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: the uuid of this security_list
+                    type: string
+                  status:
+                    type: string
+                type: object
+          description: OK
+        '400':
+          description: illegal request body
+        '403':
+          description: not authorized to perform this operation
+      summary: Create a new MerQube security_list
+      tags:
+      - security_list
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security_list/{uuid}:
+    parameters:
+    - $ref: '#/components/parameters/uuidParam'
+    delete:
+      description: Delete a MerQube security_list.
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: not authorized
+        '404':
+          description: security_list does not exist
+      summary: Delete a MerQube security_list.
+      tags:
+      - security_list
+    get:
+      description: Returns the MerQube security_list with this uuid
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityListPatchPutGet'
+          description: 200 response
+        '403':
+          description: not authorized to perform this operation
+        '404':
+          description: security_list does not exist
+      summary: Returns the MerQube security_list with this uuid
+      tags:
+      - security_list
+    patch:
+      description: Partialy update a MerQube security_list.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+        description: any fields from an security_list Manifest
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: illegal request body
+        '403':
+          description: not authorized
+        '404':
+          description: security_list does not exist
+      summary: Partially update a MerQube security_list
+      tags:
+      - security_list
+    put:
+      description: Replace a MerQube security_list.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityListPatchPutGet'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: illegal request body
+        '403':
+          description: not authorized
+        '404':
+          description: security_list does not exist
+      summary: Replace a MerQube security_list
+      tags:
+      - security_list
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+components:
+  parameters:
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
+      in: query
+      name: filter
+      required: false
+      schema:
+        example: MQU
+        type: string
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
+      schema:
+        type: string
+    namespaceParam:
+      description: Retrieve all resources in this namespace
+      in: query
+      name: namespace
+      required: false
+      schema:
+        example: my_client_namespace
+        type: string
+    fieldsParam:
+      description: only return these fields, plus id,namespace, for each of the resource definitions
+      in: query
+      name: fields
+      required: false
+      schema:
+        example: title,description
+        type: string
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    debugParam:
+      description: turns on debugging information by injecting a debug section at the top level
+      in: query
+      name: debug
+      required: false
+      schema:
+        enum:
+        - 'true'
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+  schemas:
+    SecurityListPatchPutGet:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/SecurityListPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
+    CrudExtra:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+      required:
+      - id
+      - status
+      - namespace
+      type: object
+    SecurityListPost:
+      additionalProperties: false
+      description: represents a list of securities
+      properties:
+        name:
+          description: unique name among all other security lists
+          pattern: ^[^!*'() ;:@&=+$,/?%#\[\]]
+          type: string
+        namespace:
+          type: string
+        realtime:
+          type: boolean
+        securities:
+          items:
+            additionalProperties: false
+            properties:
+              identifier_type:
+                enum:
+                - RIC
+                - secapi_name
+                type: string
+              identifier_value:
+                example: AAPL.QQ
+                type: string
+              security_type:
+                example: equity
+                type: string
+            required:
+            - security_type
+            - identifier_type
+            - identifier_value
+            type: object
+          type: array
+      required:
+      - name
+      - securities
+      type: object
+    Status:
+      properties:
+        created_at:
+          type: string
+        created_by:
+          type: string
+        last_modified:
+          type: string
+        last_modified_by:
+          type: string
+        locked_after:
+          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
+          format: date-time
+          type: string
+      required:
+      - last_modified
+      type: object
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+x-refined-from:
+- merqube-api-openapi.json
+- merqube-api-raw.yaml
+x-internal: true

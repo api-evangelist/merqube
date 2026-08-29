@@ -1,0 +1,53 @@
+{
+  "provider": "merqube",
+  "sources": [
+    "_original/merqube-api-openapi.json",
+    "_original/merqube-api-raw.yaml",
+    "_original/merqube-stoplight-docs-openapi.yaml"
+  ],
+  "outputs": [
+    "merqube-api-api-openapi.yml",
+    "merqube-helper-api-openapi.yml",
+    "merqube-identifier-api-openapi.yml",
+    "merqube-index-api-openapi.yml",
+    "merqube-legacy-equity-security-api-openapi.yml",
+    "merqube-options-api-openapi.yml",
+    "merqube-portfolio-handler-api-openapi.yml",
+    "merqube-security-api-openapi.yml",
+    "merqube-security-list-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (3 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "merqube-api-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "merqube-api-openapi.json: declared missing tag: api",
+    "merqube-api-openapi.json: declared missing tag: helper",
+    "merqube-api-raw.yaml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "merqube-api-raw.yaml: declared missing tag: api",
+    "merqube-api-raw.yaml: declared missing tag: helper",
+    "merqube-stoplight-docs-openapi.yaml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "merqube-stoplight-docs-openapi.yaml: declared missing tag: api",
+    "tag 'api' spans 3 source specs (merqube-api-openapi.json, merqube-api-raw.yaml, merqube-stoplight-docs-openapi.yaml): per-path servers applied",
+    "tag 'helper' spans 2 source specs (merqube-api-openapi.json, merqube-api-raw.yaml): per-path servers applied",
+    "tag 'identifier' spans 2 source specs (merqube-api-openapi.json, merqube-api-raw.yaml): per-path servers applied",
+    "tag 'index' spans 3 source specs (merqube-api-openapi.json, merqube-api-raw.yaml, merqube-stoplight-docs-openapi.yaml): per-path servers applied",
+    "tag 'legacy_equity_security' spans 2 source specs (merqube-api-openapi.json, merqube-api-raw.yaml): per-path servers applied",
+    "tag 'options' spans 2 source specs (merqube-api-openapi.json, merqube-api-raw.yaml): per-path servers applied",
+    "tag 'portfolio_handler' spans 2 source specs (merqube-api-openapi.json, merqube-api-raw.yaml): per-path servers applied",
+    "tag 'security' spans 3 source specs (merqube-api-openapi.json, merqube-api-raw.yaml, merqube-stoplight-docs-openapi.yaml): per-path servers applied",
+    "tag 'security_list' spans 2 source specs (merqube-api-openapi.json, merqube-api-raw.yaml): per-path servers applied"
+  ],
+  "skipped": [
+    "merqube-api-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-helper-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-identifier-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-index-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-legacy-equity-security-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-options-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-portfolio-handler-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-security-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "merqube-security-list-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

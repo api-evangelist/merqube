@@ -1,0 +1,371 @@
+openapi: 3.2.0
+info:
+  title: Merqube Options API
+  version: 4.40.0
+  contact:
+    email: support@merqube.com
+    name: API Support
+    url: https://www.merqube.com/contact
+  description: 'Operations tagged options across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.merqube.com
+- description: Testing server for next generation features
+  url: https://api.staging.merqube.com
+tags:
+- description: Option Pricing APIs
+  externalDocs:
+    description: More details at
+    url: https://merqube.com/api
+  name: options
+paths:
+  /findstrike:
+    servers:
+    - url: https://api.merqurian.com
+    post:
+      description: MERQUBE FINDSTRIKE API returns the strike of a custom option given the underlying (root), the budget (cost of the option for which the strike is desired), date on which the strike price is desired (asofdate), expiration date of the option (expiry), and the type of the option (otype) [Put/Call], and the exercise type (etype)[European/American]. The API response contains the parameter strike which provides the strike of the option for the given budget.
+      operationId: find_strike_for_given_budget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                asofdate:
+                  description: The date as of which the price of the option is being requested. Any date between 01-10-2005 and the most recent trading date of the underlying asset.
+                  example: Tue, 26 May 2020 00:00:00 GMT
+                  format: date
+                  type: string
+                budget:
+                  example: 3.1
+                  format: number
+                  type: number
+                etype:
+                  description: The option exercise type is either “European”, which can only be exercised at expiration, or “American”, which can be exercised at any time up to and including the expiration date.
+                  enum:
+                  - European
+                  - American
+                  type: string
+                expiry:
+                  description: The expiry or expiration date is the date on which the options contract expires. Any date between 01-10-2005 and the expiration date of the longest dated options series on the given underlying asset.
+                  example: Mon, 15 Feb 2021 00:00:00 GMT
+                  format: date
+                  type: string
+                extrapolation_days:
+                  default: 0
+                  description: This parameter allows the pricing of the option to use an implied dividend schedule to be moved forward by the number of days specified in this parameter. Any number greater than or equal to zero. Default value is zero.
+                  example: 0
+                  type: integer
+                otype:
+                  description: The option type refers to whether an option is a put option or a call option.
+                  enum:
+                  - put
+                  - call
+                  type: string
+                request_id:
+                  description: This request id is returned back to the sender in the response
+                  type: string
+                root:
+                  description: Code for the underlying instrument on which the option is priced.
+                  enum:
+                  - SPY
+                  - TLT
+                  - QQQ
+                  - IWM
+                  type: string
+                scale_dividend:
+                  default: 1
+                  description: Allows all of the dividends in the implied dividend schedule to be scaled by this input parameter. Any number greater than zero and less than 5. Default value is one.
+                  example: 1
+                  format: number
+                  type: number
+                volatility_shift:
+                  default: 0
+                  description: Allows the user to change the implied volatility that is used to compute the price of the option (calculated from the volatility surface) by adding the input value to the one computed. For example, if the parameter provided is 0.1, the implied volatility used to calculate the option price would add 10% to the implied volatility calculated internally from the volatility surface. Number between -0.25 and 0.25, default value of zero.
+                  example: 0
+                  format: number
+                  type: number
+              required:
+              - root
+              - budget
+              - asofdate
+              - expiry
+              - otype
+              - etype
+              type: object
+        description: Parameters for the option to price
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindStrikeResponse'
+          description: 200 response
+      summary: Given budget and other criteria, find strike price
+      tags:
+      - options
+  /optionprice:
+    servers:
+    - url: https://api.merqurian.com
+    post:
+      description: MERQUBE OPTIONPRICE API returns the price of a custom option, the implied volatility (vol), implied interest rate (interest_rate), implied dividend yield (dividend_yield), and the option greeks (delta, vega, theta, and gamma). The API requires the underlying (root), date on which the pricing is desired (asofdate), strike of the custom option (strike), expiration (expiry), the type of the option (otype) [Put/Call], and the exercise type (etype)[European/American].
+      operationId: get_option_price
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                asofdate:
+                  description: The date as of which the price of the option is being requested. Any date between 01-10-2005 and the most recent trading date of the underlying asset.
+                  example: Tue, 26 May 2020 00:00:00 GMT
+                  format: date
+                  type: string
+                etype:
+                  description: The option exercise type is either “European”, which can only be exercised at expiration, or “American”, which can be exercised at any time up to and including the expiration date.
+                  enum:
+                  - European
+                  - American
+                  type: string
+                expiry:
+                  description: The expiry or expiration date is the date on which the options contract expires. Any date between 01-10-2005 and the expiration date of the longest dated options series on the given underlying asset.
+                  example: Mon, 15 Feb 2021 00:00:00 GMT
+                  format: date
+                  type: string
+                extrapolation_days:
+                  default: 0
+                  description: This parameter allows the pricing of the option to use an implied dividend schedule to be moved forward by the number of days specified in this parameter. Any number greater than or equal to zero. Default value is zero.
+                  example: 0
+                  type: integer
+                otype:
+                  description: The option type refers to whether an option is a put option or a call option.
+                  enum:
+                  - put
+                  - call
+                  type: string
+                request_id:
+                  description: This request id is returned back to the sender in the response
+                  type: string
+                root:
+                  description: Code for the underlying instrument on which the option is priced.
+                  enum:
+                  - SPY
+                  - TLT
+                  - QQQ
+                  - IWM
+                  type: string
+                scale_dividend:
+                  default: 1
+                  description: Allows all of the dividends in the implied dividend schedule to be scaled by this input parameter. Any number greater than zero and less than 5. Default value is one.
+                  example: 1
+                  format: number
+                  type: number
+                strike:
+                  description: Strike of the option being priced. Any number greater than zero.
+                  example: 300
+                  format: number
+                  type: number
+                volatility_shift:
+                  default: 0
+                  description: Allows the user to change the implied volatility that is used to compute the price of the option (calculated from the volatility surface) by adding the input value to the one computed. For example, if the parameter provided is 0.1, the implied volatility used to calculate the option price would add 10% to the implied volatility calculated internally from the volatility surface. Number between -0.25 and 0.25, default value of zero.
+                  example: 0
+                  format: number
+                  type: number
+              required:
+              - root
+              - strike
+              - asofdate
+              - expiry
+              - otype
+              - etype
+              type: object
+        description: Parameters for the option to price
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OptionResponse'
+          description: 200 response
+      summary: Custom option pricer
+      tags:
+      - options
+  /options/availability_dates/{fysm_id}/{country_code}:
+    parameters:
+    - $ref: '#/components/parameters/fsymIdParam'
+    - $ref: '#/components/schemas/CountryCode'
+    get:
+      description: Returns a collection of availablity dates for the provided underlier
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: 200 response
+        '403':
+          description: not authorized to perform this operation
+        '404':
+          description: No data available for provided fysm/country code
+      summary: Returns a collection of availablity dates for the provided underlier
+      tags:
+      - options
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+components:
+  parameters:
+    fsymIdParam:
+      description: fsym id
+      in: path
+      name: fsym_id
+      required: true
+      schema:
+        type: string
+  schemas:
+    OptionResponse:
+      properties:
+        bid_ask_spread:
+          description: Spread between Bid and Ask prices of the option being priced
+          format: number
+          type: number
+        delta:
+          description: Delta of this option
+          format: number
+          type: number
+        dividend_yield:
+          description: Implied Dividend Yield for the underlying
+          format: number
+          type: number
+        gamma:
+          description: Gamma of the option being priced
+          format: number
+          type: number
+        interest_rate:
+          description: Implied Interest Rate
+          format: number
+          type: number
+        price:
+          description: Option Price
+          format: number
+          type: number
+        request_id:
+          description: Request ID sent in the request
+          type: string
+        spot:
+          description: Underlying spot price
+          format: number
+          type: number
+        theta:
+          description: Theta of the option being priced
+          format: number
+          type: number
+        vega:
+          description: Vega of the option being priced
+          format: number
+          type: number
+        vol:
+          description: Implied Volatility
+          format: number
+          type: number
+      title: Option Response Schema
+      type: object
+      x-examples: {}
+    FindStrikeResponse:
+      properties:
+        request_id:
+          description: Request ID sent in the request
+          type: string
+        spot:
+          description: Underlying spot price.
+          format: number
+          type: number
+        strike:
+          description: Strike that prices to the given budget.
+          format: number
+          type: number
+        strike_percentage:
+          description: Strike as a percentage of the underlying spot price that prices to the given budget.
+          format: number
+          type: number
+      title: Find Strike Response Schema
+      type: object
+    CountryCode:
+      description: ISO country codes
+      enum:
+      - AE
+      - AR
+      - AT
+      - AU
+      - BD
+      - BE
+      - BG
+      - BH
+      - BR
+      - BW
+      - CA
+      - CH
+      - CI
+      - CL
+      - CN
+      - CO
+      - CY
+      - CZ
+      - DE
+      - DK
+      - EC
+      - EG
+      - ES
+      - FI
+      - FR
+      - GB
+      - GR
+      - HK
+      - HR
+      - HU
+      - ID
+      - IE
+      - IL
+      - IN
+      - IS
+      - IT
+      - JP
+      - KH
+      - KR
+      - KW
+      - LK
+      - LU
+      - MX
+      - MY
+      - NL
+      - false
+      - NZ
+      - PE
+      - PH
+      - PK
+      - PL
+      - PT
+      - QA
+      - RU
+      - SA
+      - SE
+      - SG
+      - SI
+      - SK
+      - TH
+      - TN
+      - TR
+      - TT
+      - TW
+      - US
+      - VN
+      - ZA
+      - ZM
+      example: US
+      type: string
+x-refined-from:
+- merqube-api-openapi.json
+- merqube-api-raw.yaml
+x-internal: true

@@ -1,0 +1,41 @@
+openapi: 3.2.0
+info:
+  title: Merqube API
+  version: 4.40.0
+  contact:
+    email: support@merqube.com
+    name: API Support
+    url: https://www.merqube.com/contact
+  description: 'Operations tagged api across 3 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml, merqube-stoplight-docs-openapi.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.merqube.com
+- description: Testing server for next generation features
+  url: https://api.staging.merqube.com
+- url: https://staging.api.merqube.com
+  description: Testing server for next generation features
+tags:
+- name: api
+paths:
+  /api:
+    get:
+      description: serves this api in json format
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+          description: 200 response
+      tags:
+      - api
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+x-refined-from:
+- merqube-api-openapi.json
+- merqube-api-raw.yaml
+- merqube-stoplight-docs-openapi.yaml
+x-internal: true

@@ -1,0 +1,606 @@
+openapi: 3.2.0
+info:
+  title: Merqube Security API
+  version: 4.40.0
+  contact:
+    email: support@merqube.com
+    name: API Support
+    url: https://www.merqube.com/contact
+  description: 'Operations tagged security across 3 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml, merqube-stoplight-docs-openapi.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.merqube.com
+- description: Testing server for next generation features
+  url: https://api.staging.merqube.com
+- url: https://staging.api.merqube.com
+  description: Testing server for next generation features
+tags:
+- description: securities
+  name: security
+paths:
+  /security:
+    get:
+      description: Returns the list of security types (note - equity is not currently under this)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  properties:
+                    name:
+                      type: string
+                  type: object
+                type: array
+          description: list of security types
+      summary: Returns the list of security types
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/{type}:
+    parameters:
+    - $ref: '#/components/parameters/sectypeParam'
+    get:
+      description: get one or more metrics for one or more securities
+      parameters:
+      - $ref: '#/components/parameters/nameParam'
+      - $ref: '#/components/parameters/namesParam'
+      - description: single id to pull
+        in: query
+        name: id
+        schema:
+          type: string
+      - $ref: '#/components/parameters/idsParam'
+      - description: comma delimited list of metrics
+        example: Level,Portfolio
+        in: query
+        name: metrics
+        schema:
+          type: string
+      - description: "a tiny query language that allows filtering securities by their metric values.\nFor example, 'get all futures contracts with expiry < x and root == Y'.\n\nThis is not a row-level filter.\nThis is intended for 'metadata' like metrics and not for metrics with many values, as the results could be surprising.\nFor example, 'get me prices for this week for all stocks that have ever closed above 1000' will contain this weeks results, and those prices may be < 1000;\n  however, given this filter, those stocks *at one point* closed > 1000.\n\nParenthesis and logicl ors between clauses are not currently supported.\nAn arbitrary number of and clauses is supported, and or within a clause is supported, IE 'root = X or Y'\n\nThe supported value oeprators are '!=', '==', '>=', '<=', '<', '>'\n\nThe first parsed operator in each `^` seperated clause is used as the operator - no additional checking is performed, so something like\n`==<=` will be parsed as \"is equal to `<=`\" which is probably not what you want (and is likely to return an empty result set).\n\nThe supported logical operators are '^' (and, since & conflicts with URL query args) and ',' (or)\n\nWhen the target value is a list (contains ','), the only two valid operators are != and ==. IE you cannot use <=X,Y etc.\n\nWhen the operator is '==' and the value is '*', it means \"the security has this metric defined at least once\" (ie, we don't care about the value, just that the row exists)\n\nExamples -\n\n  futures_contract...&securityfilter=root==BTC,B6 - all contracts with root euql to BTC or B6\n\n  futures_contract...&securityfilter=root==BTC^expiry.merq>=2022-01-01T00:00:00 - all contracts with BTC root expiring in 2022 or later\n\n  futures_root...&securityfilter=cme_limit_scaling_factor!=1.0 - all roots with a special/custom scaling factor such as cents\n\nIt can also replace the names= parameter, e.g.,\n\n   futures_root...&securityfilter=name==A6,B6 - get the roots named either A6 or B6 (returns 2 records)\n"
+        in: query
+        name: securityfilter
+        schema:
+          type: string
+      - description: only return securities in this namespace
+        example: mybank
+        in: query
+        name: namespace
+        schema:
+          type: string
+      - $ref: '#/components/parameters/startDateParam'
+      - $ref: '#/components/parameters/endDateParam'
+      - $ref: '#/components/parameters/formatParam'
+      - description: view the database as_of a certain timestamp; data corrections that were backdated but inserted after this timestamp are ignored
+        in: query
+        name: as_of
+        schema:
+          description: should be a date-time as a string; YYYY-mm-dd HH-mm-ss
+          type: string
+      - description: view only data that was received since this timestamp. Note that because data could be corrected for previous days (eff_ts), this does not necessarily mean that eff_ts >= the since date. This will obtain data that was known about on or after the since date, but that data could be a correction for previous days.
+        in: query
+        name: since
+        schema:
+          description: should be a date-time as a string; YYYY-mm-dd HH-mm-ss
+          type: string
+      - description: only applies when format!=csv. Includes additional information about the raw security api records, such as the provider timestamp and the source of the data. This is an employee only feature.
+        in: query
+        name: raw
+        schema:
+          type: boolean
+      - description: Shows the full history of records including corrected records (that is, no `max(prov_ts)`)). This is an employee only feature. Also implies raw=true automatically. NOTE, this breaks the typical unique index of `id/eff_ts/metric` because if there were corrections, the metric may have changed multiple times - the new unique index includes `prov_ts` in this case.
+        in: query
+        name: show_full_history
+        schema:
+          type: boolean
+      - description: turns on debugging information by injecting a debug section at the top level
+        in: query
+        name: debug
+        required: false
+        schema:
+          enum:
+          - 'true'
+          type: string
+      - description: Only return records that have been validated by internal data quality system. Defaults to false
+        in: query
+        name: validated_only
+        schema:
+          type: boolean
+      - $ref: '#/components/parameters/preferReadReplicaParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  error_codes:
+                    $ref: '#/components/schemas/ErrorCodes'
+                  results:
+                    items:
+                      $ref: '#/components/schemas/SecurityMetrics'
+                    type: array
+                type: object
+            text/csv:
+              example: ts,index,Level,Portfolio 2021-07-21T00:00:00,XXX,1,[...]
+          description: ok
+        '403':
+          description: not authorized
+      summary: get one or more metrics for one or more securities
+      tags:
+      - security
+    post:
+      description: Insert new securities
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSecurity'
+        description: some of this is a WIP RE initial metrics etc. Making a contract may have fields rem
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityCreationResponse'
+          description: OK
+        '400':
+          description: bad request
+        '403':
+          description: unauthorized
+        '409':
+          description: duplicate, e.g., name already exists
+      summary: Insert new securities
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/{type}/data:
+    post:
+      description: Insert new security metrics
+      parameters:
+      - $ref: '#/components/parameters/sectypeParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/SecurityMetrics'
+              type: array
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: data in request body is malformed or not of the expected format
+        '403':
+          description: not authorized
+      summary: Insert new security metrics
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/{type}/data/delete:
+    post:
+      description: 'Mark existing security metrics as deleted - not really RESTful, more of an RPC endpoint, that allows the bulk (soft) deletion of records.
+
+        Records are not hard-deleted; as in "as_of" queries are preserved, but they are marked with a sentinel that causes them not to be served with more recent or non-as of queries.
+
+        Note -  if the goal is to insert *a correction* - as in, there *should be a metric for this id/eff_ts, but the current value is wrong*, this method is NOT for that case.
+
+        That case should be handled by doing a normal insert with a higher prov_ts.
+
+        This delete is for the case where data should not have existed (or "was NULL") for an eff_ts as known by a given prov_ts.
+
+        Prov_ts is optional on this method.
+
+        If prov_ts is supplied, the deletion will take effect if theres no data with a higher prov_ts, but will not take effect if new inserts have a higher prov_ts. This [optional] acceptance of prov_ts is to support replaying data in any order, where data is added at prov_ts1, deleted at at prov_ts2, but then re-added (After the delete) by the provider at prov_ts3 - we want the results to be consistent regardless of what order these are replayed in.
+
+        If prov_ts is not supplied, it is set to episolon greater than the current max prov_ts, and will take effect until newer data with a higher prov_ts comes in.
+
+        It is reccomended that prov_ts is supplied unless the goal is absolutely to null out whatever the latest value is.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/sectypeParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                records:
+                  items:
+                    $ref: '#/components/schemas/SecurityMetricsDeletion'
+                  type: array
+              required:
+              - records
+              type: object
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  successful_deletions:
+                    type: number
+                type: object
+          description: ok
+        '400':
+          description: data in request body is malformed or not of the expected format
+        '403':
+          description: not authorized
+      summary: Mark existing security metrics as deprecated
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/{type}/metrics:
+    get:
+      description: Get the metrics defined for a set of securities, however this only currently supports getting exactly one by name - more to come. That is, this allows you to query the metric definitions of a security by name rather than by id.
+      parameters:
+      - $ref: '#/components/parameters/sectypeParam'
+      - $ref: '#/components/parameters/nameParam'
+      - $ref: '#/components/parameters/preferReadReplicaParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MetricsSchema'
+                type: array
+          description: 200 response
+      summary: Get the metrics defined for a set of securities
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/{type}/{secid}:
+    delete:
+      description: Delete a security. It can be remade with the same name after - but this destroys all metrics, and as_of and since.
+      parameters:
+      - $ref: '#/components/parameters/sectypeParam'
+      - description: id of the security for which the data is requested
+        in: path
+        name: secid
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 200 response
+        '403':
+          description: not authorized
+        '404':
+          description: security does not exist
+      summary: Delete a security
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/{type}/{secid}/metrics:
+    get:
+      description: Get the metrics defined for a given security by id
+      parameters:
+      - $ref: '#/components/parameters/sectypeParam'
+      - description: id of the security for which the data is requested
+        in: path
+        name: secid
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/preferReadReplicaParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MetricsSchema'
+                type: array
+          description: 200 response
+        '403':
+          description: not authorized
+        '404':
+          description: security does not exist
+      summary: Get the metrics defined for a givenn security by id
+      tags:
+      - security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+components:
+  parameters:
+    sectypeParam:
+      description: the type of security (futures_root, intraday_index etc)
+      in: path
+      name: type
+      required: true
+      schema:
+        type: string
+    endDateParam:
+      description: End date for the results/computation
+      in: query
+      name: end_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    preferReadReplicaParam:
+      description: Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and bypasses SecAPI full-query caches for stronger read-after-write consistency.
+      in: query
+      name: prefer_read_replica
+      required: false
+      schema:
+        default: false
+        type: boolean
+    startDateParam:
+      description: Start date for the results/computation
+      in: query
+      name: start_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+    nameParam_2:
+      name: name
+      in: query
+      description: Taken as an *Exact* name to find a resource by
+      required: false
+      schema:
+        type: string
+        examples:
+        - MQUSTB20
+    namesParam_2:
+      name: names
+      in: query
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      required: false
+      schema:
+        type: string
+        examples:
+        - MQUSTB20,MQUSTRAV
+    formatParam_2:
+      name: format
+      in: query
+      description: choose csv (Default json)
+      required: false
+      schema:
+        const: csv
+    idsParam_2:
+      name: ids
+      in: query
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      required: false
+      schema:
+        type: string
+        examples:
+        - abcd1234,wxyz4567
+  schemas:
+    MetricsSchema:
+      properties:
+        data_type:
+          enum:
+          - string
+          - number64
+          - datetime64
+          - int64
+          - bool
+          - object
+          type: string
+        description:
+          description: a description of what this metric represents
+          type: string
+        name:
+          description: metric name
+          type: string
+        object_schema:
+          description: optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.
+          type: object
+      required:
+      - data_type
+      - description
+      - name
+      type: object
+    SecurityCreationResponse:
+      properties:
+        id:
+          type: string
+        inserts:
+          type: integer
+      type: object
+    SecurityMetrics:
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        id:
+          example: 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+          type: string
+        lineage:
+          description: data lineage information, for MerQube use only.
+          type: object
+        metric:
+          example: Level
+          type: string
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        source:
+          example: some_gcp_feed
+          type: string
+        value:
+          anyOf:
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - items: {}
+            type: array
+          - type: object
+      required:
+      - eff_ts
+      - id
+      - metric
+      - value
+      - prov_ts
+      type: object
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+    NewSecurity:
+      additionalProperties: false
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+          description: 'DEPRECATED: this is no longer used for security creates, but allowed for backwards compatibility'
+        name:
+          pattern: ^[^!*'() ;:@&=+$,/?%#\[\]]
+          type: string
+        namespace:
+          description: the calling user must have permission to this namespace to create the security in this namespace
+          type: string
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        source:
+          type: string
+      required:
+      - name
+      - namespace
+      - prov_ts
+      type: object
+    SecurityMetricsDeletion:
+      description: like a SecurityMetric, but no value and an optional prov_ts; marks the deletion of an id/eff_ts/metric tuple.
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        id:
+          example: 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+          type: string
+        metric:
+          example: Level
+          type: string
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        source:
+          example: some_gcp_feed
+          type: string
+      required:
+      - id
+      - eff_ts
+      - metric
+      type: object
+    MerqTimestamp:
+      anyOf:
+      - format: date-time
+        type: string
+      - format: date
+        type: string
+      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+        type: string
+      example:
+      - '2021-01-01'
+      - '2021-01-01T01:01:01'
+      - 2021-01-01T01:01:01.zzzzz
+    SecurityMetrics_2:
+      type: object
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp_2'
+        id:
+          type: string
+          examples:
+          - 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+        metric:
+          type: string
+          examples:
+          - Level
+        source:
+          type: string
+          examples:
+          - some_gcp_feed
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp_2'
+        value:
+          anyOf:
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - type: array
+          - type: object
+      required:
+      - eff_ts
+      - id
+      - metric
+      - prov_ts
+      - value
+    MerqTimestamp_2:
+      examples:
+      - - '2021-01-01'
+        - '2021-01-01T01:01:01'
+        - 2021-01-01T01:01:01.zzzzz
+      anyOf:
+      - type: string
+        format: date-time
+      - type: string
+        format: date
+      - type: string
+        pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+x-refined-from:
+- merqube-api-openapi.json
+- merqube-api-raw.yaml
+- merqube-stoplight-docs-openapi.yaml
+x-internal: true

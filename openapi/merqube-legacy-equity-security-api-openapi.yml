@@ -1,0 +1,258 @@
+openapi: 3.2.0
+info:
+  title: Merqube Legacy Equity Security API
+  version: 4.40.0
+  contact:
+    email: support@merqube.com
+    name: API Support
+    url: https://www.merqube.com/contact
+  description: 'Operations tagged legacy_equity_security across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+servers:
+- description: Production server
+  url: https://api.merqube.com
+- description: Testing server for next generation features
+  url: https://api.staging.merqube.com
+tags:
+- description: Equity securities (legacy non secapi)
+  name: legacy_equity_security
+paths:
+  /security/equity_legacy/{secname}/metrics:
+    get:
+      description: Get the metrics defined for a security
+      operationId: security_metrics_defs
+      parameters:
+      - $ref: '#/components/parameters/secnameParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  results:
+                    items:
+                      $ref: '#/components/schemas/MetricsDef'
+                    type: array
+                type: object
+          description: 200 response
+        '403':
+          description: not authorized
+        '404':
+          description: security does not exist
+      summary: Get the metrics defined for a security
+      tags:
+      - legacy_equity_security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/equity_legacy/{secname}/metrics/{name}:
+    get:
+      description: Get a metrics definition for a security
+      operationId: security_metrics_def
+      parameters:
+      - $ref: '#/components/parameters/secnameParam'
+      - description: name of metric
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MetricsDef'
+          description: 200 response
+        '403':
+          description: not authorized
+        '404':
+          description: security does not exist
+      summary: Get a metrics definition for a security
+      tags:
+      - legacy_equity_security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/equity_legacy/{secname}/metrics/{name}/data:
+    get:
+      description: Get the metrics timeseries of a MerQube security
+      operationId: security_metrics
+      parameters:
+      - description: name of the security for which the data is requested
+        in: path
+        name: secname
+        required: true
+        schema:
+          type: string
+      - description: name of metric
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/startDateParam'
+      - $ref: '#/components/parameters/endDateParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  results:
+                    items:
+                      $ref: '#/components/schemas/Metrics'
+                    type: array
+                type: object
+          description: 200 response
+        '400':
+          description: bad metric requested
+        '404':
+          description: security does not exist
+      summary: Get the metrics timeseries of a MerQube security
+      tags:
+      - legacy_equity_security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+  /security/equity_legacy/{secname}/stats:
+    get:
+      description: Returns stats associated with a specific MerQube security
+      operationId: secstats
+      parameters:
+      - $ref: '#/components/parameters/secnameParam'
+      - $ref: '#/components/parameters/startDateParam'
+      - $ref: '#/components/parameters/endDateParam'
+      - description: 'Metric to compute stats on (default: total_return)'
+        in: query
+        name: metric
+        required: false
+        schema:
+          type: string
+      - $ref: '#/components/parameters/formatParam'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+          description: 200 response
+        '403':
+          description: not authorized to see this namespace
+        '404':
+          description: index does not exist
+      summary: Returns stats associated with a specific MerQube security
+      tags:
+      - legacy_equity_security
+    servers:
+    - description: Production server
+      url: https://api.merqube.com
+    - description: Testing server for next generation features
+      url: https://api.staging.merqube.com
+components:
+  parameters:
+    endDateParam:
+      description: End date for the results/computation
+      in: query
+      name: end_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    secnameParam:
+      description: name of the security for which the data is requested
+      in: path
+      name: secname
+      required: true
+      schema:
+        type: string
+    startDateParam:
+      description: Start date for the results/computation
+      in: query
+      name: start_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
+  schemas:
+    Stats:
+      properties:
+        annual_volatility:
+          example: 3.717606464173326
+          type: number
+        annualized_return:
+          example: 6.665050717276233
+          type: number
+        cumulative_return:
+          example: 2.7597506251556547
+          type: number
+        end_date:
+          $ref: '#/components/schemas/MerqTimestamp'
+        id:
+          example: YTD
+          type: string
+        max_drawdown:
+          example: -1.3877029296510448
+          type: number
+        sharpe_ratio:
+          example: 1.759543308780235
+          type: number
+        start_date:
+          $ref: '#/components/schemas/MerqTimestamp'
+    MetricsArr:
+      items:
+        properties:
+          id:
+            example: price_return
+            type: string
+          value:
+            example: 1000.0000000000002
+            type: number
+        type: object
+      type: array
+    Metrics:
+      properties:
+        metrics:
+          $ref: '#/components/schemas/MetricsArr'
+        ts:
+          description: iso8601 format
+          format: date-time
+          type: string
+      type: object
+    MetricsDef:
+      properties:
+        name:
+          example: daily_return
+          type: string
+        type:
+          example: double
+          type: string
+      type: object
+    MerqTimestamp:
+      anyOf:
+      - format: date-time
+        type: string
+      - format: date
+        type: string
+      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+        type: string
+      example:
+      - '2021-01-01'
+      - '2021-01-01T01:01:01'
+      - 2021-01-01T01:01:01.zzzzz
+x-refined-from:
+- merqube-api-openapi.json
+- merqube-api-raw.yaml
+x-internal: true
