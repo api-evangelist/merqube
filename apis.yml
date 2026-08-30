@@ -47,16 +47,16 @@ specificationVersion: '0.23'
 created: '2026-08-25'
 modified: '2026-08-25'
 tags:
-- Company
-- Financial Services
-- Index Data
+- company
+- Financial-Services
+- index-data
 - Market Data
-- Capital Markets
-- Investment Strategies
-- Asset Management
-- ETF
-- Structured Products
-- Quantitative Finance
+- capital-markets
+- investment-strategies
+- asset-management
+- ETFs
+- structured-products
+- quantitative-finance
 - OpenAPI
 tags_raw:
 - company
@@ -76,7 +76,8 @@ apis:
   description: The api API from MerQube — 1 operation(s) for api.
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
-  tags:
+  tags: []
+  tags_raw:
   - api
   properties:
   - type: OpenAPI
@@ -101,6 +102,8 @@ apis:
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
   tags:
+  - Helper
+  tags_raw:
   - helper
   properties:
   - type: OpenAPI
@@ -149,6 +152,8 @@ apis:
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
   tags:
+  - Index
+  tags_raw:
   - index
   properties:
   - type: OpenAPI
@@ -172,7 +177,8 @@ apis:
   description: Equity securities (legacy non secapi)
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
-  tags:
+  tags: []
+  tags_raw:
   - legacy_equity_security
   properties:
   - type: OpenAPI
@@ -197,6 +203,8 @@ apis:
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
   tags:
+  - Options
+  tags_raw:
   - options
   properties:
   - type: OpenAPI
@@ -220,7 +228,8 @@ apis:
   description: list of portfolio handlers
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
-  tags:
+  tags: []
+  tags_raw:
   - portfolio_handler
   properties:
   - type: OpenAPI
@@ -245,6 +254,8 @@ apis:
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
   tags:
+  - Security
+  tags_raw:
   - security
   properties:
   - type: OpenAPI
@@ -268,7 +279,8 @@ apis:
   description: lists of securities
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
-  tags:
+  tags: []
+  tags_raw:
   - security_list
   properties:
   - type: OpenAPI
