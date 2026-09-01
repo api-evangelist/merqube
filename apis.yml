@@ -47,16 +47,16 @@ specificationVersion: '0.23'
 created: '2026-08-25'
 modified: '2026-08-25'
 tags:
-- company
+- Company
 - Financial-Services
-- index-data
+- Index Data
 - Market Data
-- capital-markets
+- Capital Markets
 - investment-strategies
-- asset-management
+- Asset Management
 - ETFs
-- structured-products
-- quantitative-finance
+- Structured Products
+- Quantitative Finance
 - OpenAPI
 tags_raw:
 - company
@@ -102,7 +102,7 @@ apis:
   humanURL: https://www.merqube.com/api
   baseURL: https://api.merqube.com
   tags:
-  - Helper
+  - helper
   tags_raw:
   - helper
   properties:
