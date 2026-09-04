@@ -25,22 +25,20 @@ deliveryModel:
 image: https://merqube.com/MerQube_Favicon_apple-touch-icon.png
 accessModel:
   pricing: unknown
-  onboarding: request
+  onboarding: approval
   trial: false
-  try_now: true
-  public: true
-  label: Public read, human-gated API key
-  confidence: high
+  try_now: false
+  public: false
+  label: Requires approval
+  confidence: medium
   source:
-  - authentication
   - plans
-  generated: '2026-08-25'
+  - authentication
+  - rate-limits
+  - security
+  - sandbox
+  generated: '2026-09-03'
   method: derived
-  note: >-
-    The `default` namespace is readable from https://api.merqube.com with no credential at all, so
-    the read surface is genuinely public. Write access and customer namespaces require a key that
-    support@merqube.com issues by hand after registration; there is no self-service key and no
-    published price.
 x-type: company
 x-source: harvest:secondary-market
 specificationVersion: '0.23'
