@@ -1,12 +1,12 @@
 openapi: 3.2.0
 info:
-  title: Merqube Security List API
-  version: 4.40.0
   contact:
     email: support@merqube.com
     name: API Support
     url: https://www.merqube.com/contact
-  description: 'Operations tagged security_list across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+  description: MerQube APIs
+  title: MerQube Security List API
+  version: 4.40.0
 servers:
 - description: Production server
   url: https://api.merqube.com
@@ -42,11 +42,12 @@ paths:
                     type: array
                 type: object
           description: 200 response
-      summary: Get all MerQube security_lists.
+      summary: Get all MerQube security_lists
       tags:
       - security_list
+      operationId: getSecurityList
+      x-operation-id-source: derived
     post:
-      description: Create a new MerQube security_list
       requestBody:
         content:
           application/json:
@@ -72,11 +73,8 @@ paths:
       summary: Create a new MerQube security_list
       tags:
       - security_list
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: postSecurityList
+      x-operation-id-source: derived
   /security_list/{uuid}:
     parameters:
     - $ref: '#/components/parameters/uuidParam'
@@ -89,11 +87,12 @@ paths:
           description: not authorized
         '404':
           description: security_list does not exist
-      summary: Delete a MerQube security_list.
+      summary: Delete a MerQube security_list
       tags:
       - security_list
+      operationId: deleteSecurityListByUuid
+      x-operation-id-source: derived
     get:
-      description: Returns the MerQube security_list with this uuid
       responses:
         '200':
           content:
@@ -108,6 +107,8 @@ paths:
       summary: Returns the MerQube security_list with this uuid
       tags:
       - security_list
+      operationId: getSecurityListByUuid
+      x-operation-id-source: derived
     patch:
       description: Partialy update a MerQube security_list.
       requestBody:
@@ -128,6 +129,8 @@ paths:
       summary: Partially update a MerQube security_list
       tags:
       - security_list
+      operationId: patchSecurityListByUuid
+      x-operation-id-source: derived
     put:
       description: Replace a MerQube security_list.
       requestBody:
@@ -147,107 +150,10 @@ paths:
       summary: Replace a MerQube security_list
       tags:
       - security_list
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: putSecurityListByUuid
+      x-operation-id-source: derived
 components:
-  parameters:
-    filterParam:
-      description: Search keyword for filtering; searches name and title for this substring
-      in: query
-      name: filter
-      required: false
-      schema:
-        example: MQU
-        type: string
-    uuidParam:
-      description: uuid of the resource
-      in: path
-      name: uuid
-      required: true
-      schema:
-        type: string
-    namespaceParam:
-      description: Retrieve all resources in this namespace
-      in: query
-      name: namespace
-      required: false
-      schema:
-        example: my_client_namespace
-        type: string
-    fieldsParam:
-      description: only return these fields, plus id,namespace, for each of the resource definitions
-      in: query
-      name: fields
-      required: false
-      schema:
-        example: title,description
-        type: string
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
-      in: query
-      name: name
-      required: false
-      schema:
-        example: MQUSTB20
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    debugParam:
-      description: turns on debugging information by injecting a debug section at the top level
-      in: query
-      name: debug
-      required: false
-      schema:
-        enum:
-        - 'true'
-        type: string
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
-        type: string
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
-      in: query
-      name: ids
-      required: false
-      schema:
-        example: abcd1234,wxyz4567
-        type: string
   schemas:
-    SecurityListPatchPutGet:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/SecurityListPost'
-      - $ref: '#/components/schemas/CrudExtra'
-      type: object
-    CrudExtra:
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        namespace:
-          type: string
-        status:
-          $ref: '#/components/schemas/Status'
-      required:
-      - id
-      - status
-      - namespace
-      type: object
     SecurityListPost:
       additionalProperties: false
       description: represents a list of securities
@@ -285,6 +191,33 @@ components:
       - name
       - securities
       type: object
+    CrudExtra:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+      required:
+      - id
+      - status
+      - namespace
+      type: object
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+    SecurityListPatchPutGet:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/SecurityListPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
     Status:
       properties:
         created_at:
@@ -302,14 +235,78 @@ components:
       required:
       - last_modified
       type: object
-    ErrorCodes:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      type: object
-x-refined-from:
-- merqube-api-openapi.json
-- merqube-api-raw.yaml
+  parameters:
+    debugParam:
+      description: turns on debugging information by injecting a debug section at the top level
+      in: query
+      name: debug
+      required: false
+      schema:
+        enum:
+        - 'true'
+        type: string
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
+      in: query
+      name: filter
+      required: false
+      schema:
+        example: MQU
+        type: string
+    fieldsParam:
+      description: only return these fields, plus id,namespace, for each of the resource definitions
+      in: query
+      name: fields
+      required: false
+      schema:
+        example: title,description
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
+    namespaceParam:
+      description: Retrieve all resources in this namespace
+      in: query
+      name: namespace
+      required: false
+      schema:
+        example: my_client_namespace
+        type: string
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
+      schema:
+        type: string
 x-internal: true

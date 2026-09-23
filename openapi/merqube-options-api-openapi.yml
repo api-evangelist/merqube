@@ -1,12 +1,12 @@
 openapi: 3.2.0
 info:
-  title: Merqube Options API
-  version: 4.40.0
   contact:
     email: support@merqube.com
     name: API Support
     url: https://www.merqube.com/contact
-  description: 'Operations tagged options across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+  description: MerQube APIs
+  title: MerQube Options API
+  version: 4.40.0
 servers:
 - description: Production server
   url: https://api.merqube.com
@@ -17,7 +17,7 @@ tags:
   externalDocs:
     description: More details at
     url: https://merqube.com/api
-  name: options
+  name: Options
 paths:
   /findstrike:
     servers:
@@ -103,7 +103,7 @@ paths:
           description: 200 response
       summary: Given budget and other criteria, find strike price
       tags:
-      - options
+      - Options
   /optionprice:
     servers:
     - url: https://api.merqurian.com
@@ -189,13 +189,12 @@ paths:
           description: 200 response
       summary: Custom option pricer
       tags:
-      - options
+      - Options
   /options/availability_dates/{fysm_id}/{country_code}:
     parameters:
     - $ref: '#/components/parameters/fsymIdParam'
     - $ref: '#/components/schemas/CountryCode'
     get:
-      description: Returns a collection of availablity dates for the provided underlier
       responses:
         '200':
           content:
@@ -209,21 +208,10 @@ paths:
           description: No data available for provided fysm/country code
       summary: Returns a collection of availablity dates for the provided underlier
       tags:
-      - options
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      - Options
+      operationId: getOptionsAvailabilityDatesByFysmIdByCountryCode
+      x-operation-id-source: derived
 components:
-  parameters:
-    fsymIdParam:
-      description: fsym id
-      in: path
-      name: fsym_id
-      required: true
-      schema:
-        type: string
   schemas:
     OptionResponse:
       properties:
@@ -273,25 +261,6 @@ components:
       title: Option Response Schema
       type: object
       x-examples: {}
-    FindStrikeResponse:
-      properties:
-        request_id:
-          description: Request ID sent in the request
-          type: string
-        spot:
-          description: Underlying spot price.
-          format: number
-          type: number
-        strike:
-          description: Strike that prices to the given budget.
-          format: number
-          type: number
-        strike_percentage:
-          description: Strike as a percentage of the underlying spot price that prices to the given budget.
-          format: number
-          type: number
-      title: Find Strike Response Schema
-      type: object
     CountryCode:
       description: ISO country codes
       enum:
@@ -365,7 +334,31 @@ components:
       - ZM
       example: US
       type: string
-x-refined-from:
-- merqube-api-openapi.json
-- merqube-api-raw.yaml
+    FindStrikeResponse:
+      properties:
+        request_id:
+          description: Request ID sent in the request
+          type: string
+        spot:
+          description: Underlying spot price.
+          format: number
+          type: number
+        strike:
+          description: Strike that prices to the given budget.
+          format: number
+          type: number
+        strike_percentage:
+          description: Strike as a percentage of the underlying spot price that prices to the given budget.
+          format: number
+          type: number
+      title: Find Strike Response Schema
+      type: object
+  parameters:
+    fsymIdParam:
+      description: fsym id
+      in: path
+      name: fsym_id
+      required: true
+      schema:
+        type: string
 x-internal: true

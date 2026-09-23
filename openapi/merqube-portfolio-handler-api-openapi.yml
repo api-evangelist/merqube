@@ -1,12 +1,12 @@
 openapi: 3.2.0
 info:
-  title: Merqube Portfolio Handler API
-  version: 4.40.0
   contact:
     email: support@merqube.com
     name: API Support
     url: https://www.merqube.com/contact
-  description: 'Operations tagged portfolio_handler across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+  description: MerQube APIs
+  title: MerQube Portfolio Handler API
+  version: 4.40.0
 servers:
 - description: Production server
   url: https://api.merqube.com
@@ -42,11 +42,12 @@ paths:
                     type: array
                 type: object
           description: 200 response
-      summary: Get all MerQube portfolio_handler.
+      summary: Get all MerQube portfolio_handler
       tags:
       - portfolio_handler
+      operationId: getTargetPortfolioHandler
+      x-operation-id-source: derived
     post:
-      description: Create a new MerQube portfolio_handler
       requestBody:
         content:
           application/json:
@@ -72,11 +73,8 @@ paths:
       summary: Create a new MerQube portfolio_handler
       tags:
       - portfolio_handler
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: postTargetPortfolioHandler
+      x-operation-id-source: derived
   /target_portfolio_handler/{uuid}:
     parameters:
     - $ref: '#/components/parameters/uuidParam'
@@ -89,11 +87,12 @@ paths:
           description: not authorized
         '404':
           description: portfolio_handler does not exist
-      summary: Delete a MerQube portfolio_handler.
+      summary: Delete a MerQube portfolio_handler
       tags:
       - portfolio_handler
+      operationId: deleteTargetPortfolioHandlerByUuid
+      x-operation-id-source: derived
     get:
-      description: Returns the MerQube portfolio_handler with this uuid
       responses:
         '200':
           content:
@@ -108,6 +107,8 @@ paths:
       summary: Returns the MerQube portfolio_handler with this uuid
       tags:
       - portfolio_handler
+      operationId: getTargetPortfolioHandlerByUuid
+      x-operation-id-source: derived
     patch:
       description: Partialy update a MerQube portfolio_handler.
       requestBody:
@@ -128,6 +129,8 @@ paths:
       summary: Partially update a MerQube portfolio_handler
       tags:
       - portfolio_handler
+      operationId: patchTargetPortfolioHandlerByUuid
+      x-operation-id-source: derived
     put:
       description: Replace a MerQube portfolio_handler.
       requestBody:
@@ -147,87 +150,111 @@ paths:
       summary: Replace a MerQube portfolio_handler
       tags:
       - portfolio_handler
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: putTargetPortfolioHandlerByUuid
+      x-operation-id-source: derived
 components:
-  parameters:
-    filterParam:
-      description: Search keyword for filtering; searches name and title for this substring
-      in: query
-      name: filter
-      required: false
-      schema:
-        example: MQU
-        type: string
-    uuidParam:
-      description: uuid of the resource
-      in: path
-      name: uuid
-      required: true
-      schema:
-        type: string
-    namespaceParam:
-      description: Retrieve all resources in this namespace
-      in: query
-      name: namespace
-      required: false
-      schema:
-        example: my_client_namespace
-        type: string
-    fieldsParam:
-      description: only return these fields, plus id,namespace, for each of the resource definitions
-      in: query
-      name: fields
-      required: false
-      schema:
-        example: title,description
-        type: string
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
-      in: query
-      name: name
-      required: false
-      schema:
-        example: MQUSTB20
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    debugParam:
-      description: turns on debugging information by injecting a debug section at the top level
-      in: query
-      name: debug
-      required: false
-      schema:
-        enum:
-        - 'true'
-        type: string
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
-        type: string
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
-      in: query
-      name: ids
-      required: false
-      schema:
-        example: abcd1234,wxyz4567
-        type: string
   schemas:
+    TargetPortfolioHandlerNotificationConfig:
+      additionalProperties: false
+      properties:
+        diss_destinations:
+          $ref: '#/components/schemas/DisseminationDestinations'
+        file_name_format:
+          type: string
+      type: object
+    DisseminationDestinations:
+      properties:
+        email_dissapi_configs:
+          items:
+            properties:
+              bcc_list:
+                items:
+                  type: string
+                type: array
+              cc_list:
+                items:
+                  type: string
+                type: array
+              content:
+                type: string
+              email_list:
+                items:
+                  type: string
+                type: array
+              file_keys:
+                items:
+                  type: string
+                type: array
+              recipient_list:
+                items:
+                  type: string
+                minItems: 1
+                type: array
+              subject:
+                type: string
+            required:
+            - recipient_list
+            - subject
+            type: object
+          minItems: 1
+          type: array
+        s3_dissapi_configs:
+          items:
+            properties:
+              bucket:
+                type: string
+              file_keys:
+                items:
+                  type: string
+                type: array
+              key_prefix:
+                type: string
+            required:
+            - bucket
+            - key_prefix
+            - file_keys
+            type: object
+          type: array
+        sftp_dissapi_configs:
+          items:
+            properties:
+              file_keys:
+                items:
+                  type: string
+                type: array
+              sftp_ids:
+                items:
+                  type: string
+                type: array
+            required:
+            - sftp_ids
+            - file_keys
+            type: object
+          type: array
+      type: object
+    TargetPortfolioHandlerPatchPutGet:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/TargetPortfolioHandlerPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
+    TimestampWindow:
+      additionalProperties: false
+      properties:
+        end_ts:
+          description: the time of day of the deadline
+          pattern: ^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$
+          type: string
+        start_ts:
+          description: the time of day of the deadline
+          pattern: ^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$
+          type: string
+        tzinfo:
+          description: Timezone of the window
+          type: string
+      required:
+      - end_ts
+      type: object
     TargetPortfolioHandlerPost:
       additionalProperties: false
       description: Describes how to handle the validation and selection of Target Portfolios
@@ -301,11 +328,12 @@ components:
       - status
       - namespace
       type: object
-    TargetPortfolioHandlerPatchPutGet:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/TargetPortfolioHandlerPost'
-      - $ref: '#/components/schemas/CrudExtra'
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
       type: object
     Status:
       properties:
@@ -324,109 +352,78 @@ components:
       required:
       - last_modified
       type: object
-    ErrorCodes:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      type: object
-    DisseminationDestinations:
-      properties:
-        email_dissapi_configs:
-          items:
-            properties:
-              bcc_list:
-                items:
-                  type: string
-                type: array
-              cc_list:
-                items:
-                  type: string
-                type: array
-              content:
-                type: string
-              email_list:
-                items:
-                  type: string
-                type: array
-              file_keys:
-                items:
-                  type: string
-                type: array
-              recipient_list:
-                items:
-                  type: string
-                minItems: 1
-                type: array
-              subject:
-                type: string
-            required:
-            - recipient_list
-            - subject
-            type: object
-          minItems: 1
-          type: array
-        s3_dissapi_configs:
-          items:
-            properties:
-              bucket:
-                type: string
-              file_keys:
-                items:
-                  type: string
-                type: array
-              key_prefix:
-                type: string
-            required:
-            - bucket
-            - key_prefix
-            - file_keys
-            type: object
-          type: array
-        sftp_dissapi_configs:
-          items:
-            properties:
-              file_keys:
-                items:
-                  type: string
-                type: array
-              sftp_ids:
-                items:
-                  type: string
-                type: array
-            required:
-            - sftp_ids
-            - file_keys
-            type: object
-          type: array
-      type: object
-    TargetPortfolioHandlerNotificationConfig:
-      additionalProperties: false
-      properties:
-        diss_destinations:
-          $ref: '#/components/schemas/DisseminationDestinations'
-        file_name_format:
-          type: string
-      type: object
-    TimestampWindow:
-      additionalProperties: false
-      properties:
-        end_ts:
-          description: the time of day of the deadline
-          pattern: ^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$
-          type: string
-        start_ts:
-          description: the time of day of the deadline
-          pattern: ^(?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)$
-          type: string
-        tzinfo:
-          description: Timezone of the window
-          type: string
-      required:
-      - end_ts
-      type: object
-x-refined-from:
-- merqube-api-openapi.json
-- merqube-api-raw.yaml
+  parameters:
+    debugParam:
+      description: turns on debugging information by injecting a debug section at the top level
+      in: query
+      name: debug
+      required: false
+      schema:
+        enum:
+        - 'true'
+        type: string
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    fieldsParam:
+      description: only return these fields, plus id,namespace, for each of the resource definitions
+      in: query
+      name: fields
+      required: false
+      schema:
+        example: title,description
+        type: string
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
+      in: query
+      name: filter
+      required: false
+      schema:
+        example: MQU
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
+    namespaceParam:
+      description: Retrieve all resources in this namespace
+      in: query
+      name: namespace
+      required: false
+      schema:
+        example: my_client_namespace
+        type: string
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
+      schema:
+        type: string
 x-internal: true

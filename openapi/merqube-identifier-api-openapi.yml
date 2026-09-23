@@ -1,12 +1,12 @@
 openapi: 3.2.0
 info:
-  title: Merqube Identifier API
-  version: 4.40.0
   contact:
     email: support@merqube.com
     name: API Support
     url: https://www.merqube.com/contact
-  description: 'Operations tagged identifier across 2 of this provider''s published API definitions: merqube-api-openapi.json, merqube-api-raw.yaml. Each path carries the servers of the definition it was published in.'
+  description: MerQube APIs
+  title: MerQube Identifier API
+  version: 4.40.0
 servers:
 - description: Production server
   url: https://api.merqube.com
@@ -18,7 +18,6 @@ tags:
 paths:
   /identifier:
     get:
-      description: return all currently supported identifier types
       responses:
         '200':
           content:
@@ -31,16 +30,12 @@ paths:
       summary: return all currently supported identifier types
       tags:
       - identifier
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: getIdentifier
+      x-operation-id-source: derived
   /identifier/{provider}:
     parameters:
     - $ref: '#/components/parameters/providerParam'
     get:
-      description: Get all identifiers for this provider
       parameters:
       - $ref: '#/components/parameters/filterParam'
       - $ref: '#/components/parameters/idsParam'
@@ -67,8 +62,9 @@ paths:
       summary: Get all identifiers for this provider
       tags:
       - identifier
+      operationId: getIdentifierByProvider
+      x-operation-id-source: derived
     post:
-      description: Create a new identifier for this provider
       requestBody:
         content:
           application/json:
@@ -94,17 +90,13 @@ paths:
       summary: Create a new identifier for this provider
       tags:
       - identifier
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: postIdentifierByProvider
+      x-operation-id-source: derived
   /identifier/{provider}/{uuid}:
     parameters:
     - $ref: '#/components/parameters/providerParam'
     - $ref: '#/components/parameters/uuidParam'
     delete:
-      description: Delete an identifier for this provider
       responses:
         '200':
           description: OK
@@ -115,8 +107,9 @@ paths:
       summary: Delete an identifier for this provider
       tags:
       - identifier
+      operationId: deleteIdentifierByProviderByUuid
+      x-operation-id-source: derived
     get:
-      description: Returns the identifier for this provider with this uuid
       responses:
         '200':
           content:
@@ -131,6 +124,8 @@ paths:
       summary: Returns the identifier for this provider with this uuid
       tags:
       - identifier
+      operationId: getIdentifierByProviderByUuid
+      x-operation-id-source: derived
     patch:
       description: Partialy update an identifier for this provider
       requestBody:
@@ -151,8 +146,9 @@ paths:
       summary: Partially update an identifier for this provider
       tags:
       - identifier
+      operationId: patchIdentifierByProviderByUuid
+      x-operation-id-source: derived
     put:
-      description: Replace an identifier for this provider
       requestBody:
         content:
           application/json:
@@ -170,32 +166,48 @@ paths:
       summary: Replace an identifier for this provider
       tags:
       - identifier
-    servers:
-    - description: Production server
-      url: https://api.merqube.com
-    - description: Testing server for next generation features
-      url: https://api.staging.merqube.com
+      operationId: putIdentifierByProviderByUuid
+      x-operation-id-source: derived
 components:
   schemas:
-    IdentifierUUIDPatchPutGet:
+    BloombergProviderKwargsPostType:
+      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      type: string
+    ReutersProviderKwargsPostType:
+      description: How to post the data to Reuters, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      - EOD_AND_RT_COMBINED
+      type: string
+    SecapiProviderKwargs:
       additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/IdentifierUUIDPost'
-      - $ref: '#/components/schemas/CrudExtra'
-      type: object
-    CrudExtra:
-      additionalProperties: false
+      description: Secapi provider custom arguments
       properties:
-        id:
+        metric:
           type: string
-        namespace:
+        security_name:
           type: string
-        status:
-          $ref: '#/components/schemas/Status'
+        security_type:
+          type: string
       required:
-      - id
-      - status
-      - namespace
+      - security_type
+      - security_name
+      - metric
+      type: object
+    BloombergProviderKwargs:
+      additionalProperties: false
+      description: Bloomberg provider custom arguments
+      properties:
+        post_type:
+          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
+      required:
+      - post_type
       type: object
     IdentifierUUIDPost:
       additionalProperties: false
@@ -243,30 +255,57 @@ components:
       - ticker
       - index_name
       type: object
-    ReutersProviderKwargsPostType:
-      description: How to post the data to Reuters, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
-      enum:
-      - EOD
-      - RT
-      - EOD_AND_RT
-      - EOD_AND_RT_COMBINED
-      type: string
-    BloombergProviderKwargs:
+    IdentifierUUIDPatchPutGet:
       additionalProperties: false
-      description: Bloomberg provider custom arguments
+      allOf:
+      - $ref: '#/components/schemas/IdentifierUUIDPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+    Status:
+      properties:
+        created_at:
+          type: string
+        created_by:
+          type: string
+        last_modified:
+          type: string
+        last_modified_by:
+          type: string
+        locked_after:
+          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
+          format: date-time
+          type: string
+      required:
+      - last_modified
+      type: object
+    CrudExtra:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+      required:
+      - id
+      - status
+      - namespace
+      type: object
+    ReutersProviderKwargs:
+      additionalProperties: false
+      description: Reuters provider custom arguments
       properties:
         post_type:
-          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
-      required:
-      - post_type
+          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
       type: object
-    BloombergProviderKwargsPostType:
-      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
-      enum:
-      - EOD
-      - RT
-      - EOD_AND_RT
-      type: string
     Provider:
       description: currently supported providers
       enum:
@@ -295,52 +334,6 @@ components:
       required:
       - nasdaq_env
       type: object
-    Status:
-      properties:
-        created_at:
-          type: string
-        created_by:
-          type: string
-        last_modified:
-          type: string
-        last_modified_by:
-          type: string
-        locked_after:
-          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
-          format: date-time
-          type: string
-      required:
-      - last_modified
-      type: object
-    ErrorCodes:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      type: object
-    ReutersProviderKwargs:
-      additionalProperties: false
-      description: Reuters provider custom arguments
-      properties:
-        post_type:
-          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
-      type: object
-    SecapiProviderKwargs:
-      additionalProperties: false
-      description: Secapi provider custom arguments
-      properties:
-        metric:
-          type: string
-        security_name:
-          type: string
-        security_type:
-          type: string
-      required:
-      - security_type
-      - security_name
-      - metric
-      type: object
   parameters:
     namespaceParam:
       description: Retrieve all resources in this namespace
@@ -350,6 +343,27 @@ components:
       schema:
         example: my_client_namespace
         type: string
+    providerParam:
+      in: path
+      name: provider
+      required: true
+      schema:
+        $ref: '#/components/schemas/Provider'
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
+      schema:
+        type: string
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
+      in: query
+      name: filter
+      required: false
+      schema:
+        example: MQU
+        type: string
     fieldsParam:
       description: only return these fields, plus id,namespace, for each of the resource definitions
       in: query
@@ -357,6 +371,14 @@ components:
       required: false
       schema:
         example: title,description
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
         type: string
     debugParam:
       description: turns on debugging information by injecting a debug section at the top level
@@ -367,14 +389,13 @@ components:
         enum:
         - 'true'
         type: string
-    formatParam:
-      description: choose csv (Default json)
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
       in: query
-      name: format
+      name: names
       required: false
       schema:
-        enum:
-        - csv
+        example: MQUSTB20,MQUSTRAV
         type: string
     nameParam:
       description: Taken as an *Exact* name to find a resource by
@@ -384,44 +405,13 @@ components:
       schema:
         example: MQUSTB20
         type: string
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+    formatParam:
+      description: choose csv (Default json)
       in: query
-      name: ids
+      name: format
       required: false
       schema:
-        example: abcd1234,wxyz4567
+        enum:
+        - csv
         type: string
-    uuidParam:
-      description: uuid of the resource
-      in: path
-      name: uuid
-      required: true
-      schema:
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    filterParam:
-      description: Search keyword for filtering; searches name and title for this substring
-      in: query
-      name: filter
-      required: false
-      schema:
-        example: MQU
-        type: string
-    providerParam:
-      in: path
-      name: provider
-      required: true
-      schema:
-        $ref: '#/components/schemas/Provider'
-x-refined-from:
-- merqube-api-openapi.json
-- merqube-api-raw.yaml
 x-internal: true
