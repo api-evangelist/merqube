@@ -325,52 +325,6 @@ components:
       - namespace
       - prov_ts
       type: object
-    SecurityMetricsDeletion:
-      description: like a SecurityMetric, but no value and an optional prov_ts; marks the deletion of an id/eff_ts/metric tuple.
-      properties:
-        eff_ts:
-          $ref: '#/components/schemas/MerqTimestamp'
-        id:
-          example: 0000699a-fcd7-45d4-8ce4-064a4ffeced0
-          type: string
-        metric:
-          example: Level
-          type: string
-        prov_ts:
-          $ref: '#/components/schemas/MerqTimestamp'
-        source:
-          example: some_gcp_feed
-          type: string
-      required:
-      - id
-      - eff_ts
-      - metric
-      type: object
-    MetricsSchema:
-      properties:
-        data_type:
-          enum:
-          - string
-          - number64
-          - datetime64
-          - int64
-          - bool
-          - object
-          type: string
-        description:
-          description: a description of what this metric represents
-          type: string
-        name:
-          description: metric name
-          type: string
-        object_schema:
-          description: optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.
-          type: object
-      required:
-      - data_type
-      - description
-      - name
-      type: object
     MerqTimestamp:
       anyOf:
       - format: date-time
@@ -383,13 +337,6 @@ components:
       - '2021-01-01'
       - '2021-01-01T01:01:01'
       - 2021-01-01T01:01:01.zzzzz
-    SecurityCreationResponse:
-      properties:
-        id:
-          type: string
-        inserts:
-          type: integer
-      type: object
     SecurityMetrics:
       properties:
         eff_ts:
@@ -424,6 +371,27 @@ components:
       - value
       - prov_ts
       type: object
+    SecurityMetricsDeletion:
+      description: like a SecurityMetric, but no value and an optional prov_ts; marks the deletion of an id/eff_ts/metric tuple.
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        id:
+          example: 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+          type: string
+        metric:
+          example: Level
+          type: string
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        source:
+          example: some_gcp_feed
+          type: string
+      required:
+      - id
+      - eff_ts
+      - metric
+      type: object
     ErrorCodes:
       properties:
         code:
@@ -431,37 +399,39 @@ components:
         message:
           type: string
       type: object
+    MetricsSchema:
+      properties:
+        data_type:
+          enum:
+          - string
+          - number64
+          - datetime64
+          - int64
+          - bool
+          - object
+          type: string
+        description:
+          description: a description of what this metric represents
+          type: string
+        name:
+          description: metric name
+          type: string
+        object_schema:
+          description: optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.
+          type: object
+      required:
+      - data_type
+      - description
+      - name
+      type: object
+    SecurityCreationResponse:
+      properties:
+        id:
+          type: string
+        inserts:
+          type: integer
+      type: object
   parameters:
-    sectypeParam:
-      description: the type of security (futures_root, intraday_index etc)
-      in: path
-      name: type
-      required: true
-      schema:
-        type: string
-    endDateParam:
-      description: End date for the results/computation
-      in: query
-      name: end_date
-      required: false
-      schema:
-        $ref: '#/components/schemas/MerqTimestamp'
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
-      in: query
-      name: name
-      required: false
-      schema:
-        example: MQUSTB20
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
     idsParam:
       description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
       in: query
@@ -486,6 +456,36 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/MerqTimestamp'
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    sectypeParam:
+      description: the type of security (futures_root, intraday_index etc)
+      in: path
+      name: type
+      required: true
+      schema:
+        type: string
+    endDateParam:
+      description: End date for the results/computation
+      in: query
+      name: end_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
     preferReadReplicaParam:
       description: Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and bypasses SecAPI full-query caches for stronger read-after-write consistency.
       in: query

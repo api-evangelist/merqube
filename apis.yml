@@ -44,7 +44,7 @@ created: '2026-08-25'
 modified: '2026-09-16'
 tags:
 - Company
-- Financial-Services
+- Financial Services
 - Index Data
 - Market Data
 - Capital Markets
@@ -66,32 +66,8 @@ tags_raw:
 - structured-products
 - quantitative-finance
 - openapi
+- Financial-Services
 apis:
-- aid: merqube:merqube-api-api
-  name: MerQube API
-  description: The api API from MerQube — 1 operation(s) for api.
-  humanURL: https://www.merqube.com/api
-  baseURL: https://api.merqube.com
-  tags: []
-  tags_raw:
-  - api
-  properties:
-  - type: OpenAPI
-    url: openapi/merqube-api-api-openapi.yml
-  - type: APIReference
-    url: https://www.merqube.com/api
-  - type: Documentation
-    url: https://merqube.stoplight.io/
-  - type: Authentication
-    url: authentication/merqube-authentication.yml
-  - type: Conventions
-    url: conventions/merqube-conventions.yml
-  - type: ErrorCatalog
-    url: errors/merqube-problem-types.yml
-  - type: DataModel
-    url: data-model/merqube-data-model.yml
-  - type: Sandbox
-    url: sandbox/merqube-sandbox.yml
 - aid: merqube:merqube-helper-api
   name: MerQube Helper API
   description: The helper API from MerQube — 14 operation(s) for helper.
@@ -281,6 +257,30 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/merqube-security-list-api-openapi.yml
+  - type: APIReference
+    url: https://www.merqube.com/api
+  - type: Documentation
+    url: https://merqube.stoplight.io/
+  - type: Authentication
+    url: authentication/merqube-authentication.yml
+  - type: Conventions
+    url: conventions/merqube-conventions.yml
+  - type: ErrorCatalog
+    url: errors/merqube-problem-types.yml
+  - type: DataModel
+    url: data-model/merqube-data-model.yml
+  - type: Sandbox
+    url: sandbox/merqube-sandbox.yml
+- aid: merqube:merqube-merqube-api-api
+  name: MerQube MerQube API
+  description: The MerQube API API from MerQube — 1 operation(s) for merqube api.
+  humanURL: https://www.merqube.com/api
+  baseURL: https://api.merqube.com
+  tags:
+  - MerQube API
+  properties:
+  - type: OpenAPI
+    url: openapi/merqube-merqube-api-api-openapi.yml
   - type: APIReference
     url: https://www.merqube.com/api
   - type: Documentation

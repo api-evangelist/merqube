@@ -4,7 +4,7 @@
     "_original/merqube-api-openapi.json"
   ],
   "outputs": [
-    "merqube-api-api-openapi.yml",
+    "merqube-merqube-api-api-openapi.yml",
     "merqube-helper-api-openapi.yml",
     "merqube-identifier-api-openapi.yml",
     "merqube-index-api-openapi.yml",
@@ -14,16 +14,20 @@
     "merqube-security-api-openapi.yml",
     "merqube-security-list-api-openapi.yml"
   ],
-  "archived": [],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
   "errors": [],
   "warnings": [],
   "notes": [
     "2 archived document(s) dropped as subsets of other archived documents",
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "merqube-api-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "merqube-api-openapi.json: declared missing tag: api",
+    "merqube-api-openapi.json: tagged paths GET /api -> MerQube API",
+    "merqube-api-openapi.json: declared missing tag: MerQube API",
     "merqube-api-openapi.json: declared missing tag: helper",
-    "apis.yml register: already-registered"
+    "superseded outputs removed: merqube-api-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 9 total)"
   ],
   "skipped": [
     "_original/merqube-stoplight-docs-openapi.yaml: archived document superseded by a larger archived document",

@@ -13,7 +13,7 @@ servers:
 - description: Testing server for next generation features
   url: https://api.staging.merqube.com
 tags:
-- name: api
+- name: MerQube API
 paths:
   /api:
     get:
@@ -26,7 +26,7 @@ paths:
                 type: object
           description: 200 response
       tags:
-      - api
+      - MerQube API
       summary: Get api
       x-summary-source: derived
       operationId: getApi
