@@ -153,87 +153,7 @@ paths:
       operationId: putSecurityListByUuid
       x-operation-id-source: derived
 components:
-  parameters:
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
-      in: query
-      name: ids
-      required: false
-      schema:
-        example: abcd1234,wxyz4567
-        type: string
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
-        type: string
-    namespaceParam:
-      description: Retrieve all resources in this namespace
-      in: query
-      name: namespace
-      required: false
-      schema:
-        example: my_client_namespace
-        type: string
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
-      in: query
-      name: name
-      required: false
-      schema:
-        example: MQUSTB20
-        type: string
-    filterParam:
-      description: Search keyword for filtering; searches name and title for this substring
-      in: query
-      name: filter
-      required: false
-      schema:
-        example: MQU
-        type: string
-    uuidParam:
-      description: uuid of the resource
-      in: path
-      name: uuid
-      required: true
-      schema:
-        type: string
-    debugParam:
-      description: turns on debugging information by injecting a debug section at the top level
-      in: query
-      name: debug
-      required: false
-      schema:
-        enum:
-        - 'true'
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    fieldsParam:
-      description: only return these fields, plus id,namespace, for each of the resource definitions
-      in: query
-      name: fields
-      required: false
-      schema:
-        example: title,description
-        type: string
   schemas:
-    SecurityListPatchPutGet:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/SecurityListPost'
-      - $ref: '#/components/schemas/CrudExtra'
-      type: object
     CrudExtra:
       additionalProperties: false
       properties:
@@ -247,6 +167,36 @@ components:
       - id
       - status
       - namespace
+      type: object
+    SecurityListPatchPutGet:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/SecurityListPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+    Status:
+      properties:
+        created_at:
+          type: string
+        created_by:
+          type: string
+        last_modified:
+          type: string
+        last_modified_by:
+          type: string
+        locked_after:
+          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
+          format: date-time
+          type: string
+      required:
+      - last_modified
       type: object
     SecurityListPost:
       additionalProperties: false
@@ -285,28 +235,78 @@ components:
       - name
       - securities
       type: object
-    Status:
-      properties:
-        created_at:
-          type: string
-        created_by:
-          type: string
-        last_modified:
-          type: string
-        last_modified_by:
-          type: string
-        locked_after:
-          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
-          format: date-time
-          type: string
-      required:
-      - last_modified
-      type: object
-    ErrorCodes:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      type: object
+  parameters:
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    debugParam:
+      description: turns on debugging information by injecting a debug section at the top level
+      in: query
+      name: debug
+      required: false
+      schema:
+        enum:
+        - 'true'
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    namespaceParam:
+      description: Retrieve all resources in this namespace
+      in: query
+      name: namespace
+      required: false
+      schema:
+        example: my_client_namespace
+        type: string
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
+      in: query
+      name: filter
+      required: false
+      schema:
+        example: MQU
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
+    fieldsParam:
+      description: only return these fields, plus id,namespace, for each of the resource definitions
+      in: query
+      name: fields
+      required: false
+      schema:
+        example: title,description
+        type: string
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
+      schema:
+        type: string
 x-internal: true

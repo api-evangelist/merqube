@@ -303,40 +303,70 @@ paths:
       operationId: getSecurityByTypeBySecidMetrics
       x-operation-id-source: derived
 components:
+  parameters:
+    sectypeParam:
+      description: the type of security (futures_root, intraday_index etc)
+      in: path
+      name: type
+      required: true
+      schema:
+        type: string
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    startDateParam:
+      description: Start date for the results/computation
+      in: query
+      name: start_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+    endDateParam:
+      description: End date for the results/computation
+      in: query
+      name: end_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    preferReadReplicaParam:
+      description: Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and bypasses SecAPI full-query caches for stronger read-after-write consistency.
+      in: query
+      name: prefer_read_replica
+      required: false
+      schema:
+        default: false
+        type: boolean
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
   schemas:
-    NewSecurity:
-      additionalProperties: false
-      properties:
-        eff_ts:
-          $ref: '#/components/schemas/MerqTimestamp'
-          description: 'DEPRECATED: this is no longer used for security creates, but allowed for backwards compatibility'
-        name:
-          pattern: ^[^!*'() ;:@&=+$,/?%#\[\]]
-          type: string
-        namespace:
-          description: the calling user must have permission to this namespace to create the security in this namespace
-          type: string
-        prov_ts:
-          $ref: '#/components/schemas/MerqTimestamp'
-        source:
-          type: string
-      required:
-      - name
-      - namespace
-      - prov_ts
-      type: object
-    MerqTimestamp:
-      anyOf:
-      - format: date-time
-        type: string
-      - format: date
-        type: string
-      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
-        type: string
-      example:
-      - '2021-01-01'
-      - '2021-01-01T01:01:01'
-      - 2021-01-01T01:01:01.zzzzz
     SecurityMetrics:
       properties:
         eff_ts:
@@ -392,6 +422,27 @@ components:
       - eff_ts
       - metric
       type: object
+    NewSecurity:
+      additionalProperties: false
+      properties:
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+          description: 'DEPRECATED: this is no longer used for security creates, but allowed for backwards compatibility'
+        name:
+          pattern: ^[^!*'() ;:@&=+$,/?%#\[\]]
+          type: string
+        namespace:
+          description: the calling user must have permission to this namespace to create the security in this namespace
+          type: string
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        source:
+          type: string
+      required:
+      - name
+      - namespace
+      - prov_ts
+      type: object
     ErrorCodes:
       properties:
         code:
@@ -399,6 +450,25 @@ components:
         message:
           type: string
       type: object
+    SecurityCreationResponse:
+      properties:
+        id:
+          type: string
+        inserts:
+          type: integer
+      type: object
+    MerqTimestamp:
+      anyOf:
+      - format: date-time
+        type: string
+      - format: date
+        type: string
+      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+        type: string
+      example:
+      - '2021-01-01'
+      - '2021-01-01T01:01:01'
+      - 2021-01-01T01:01:01.zzzzz
     MetricsSchema:
       properties:
         data_type:
@@ -424,74 +494,4 @@ components:
       - description
       - name
       type: object
-    SecurityCreationResponse:
-      properties:
-        id:
-          type: string
-        inserts:
-          type: integer
-      type: object
-  parameters:
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
-      in: query
-      name: ids
-      required: false
-      schema:
-        example: abcd1234,wxyz4567
-        type: string
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
-        type: string
-    startDateParam:
-      description: Start date for the results/computation
-      in: query
-      name: start_date
-      required: false
-      schema:
-        $ref: '#/components/schemas/MerqTimestamp'
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
-      in: query
-      name: name
-      required: false
-      schema:
-        example: MQUSTB20
-        type: string
-    sectypeParam:
-      description: the type of security (futures_root, intraday_index etc)
-      in: path
-      name: type
-      required: true
-      schema:
-        type: string
-    endDateParam:
-      description: End date for the results/computation
-      in: query
-      name: end_date
-      required: false
-      schema:
-        $ref: '#/components/schemas/MerqTimestamp'
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    preferReadReplicaParam:
-      description: Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and bypasses SecAPI full-query caches for stronger read-after-write consistency.
-      in: query
-      name: prefer_read_replica
-      required: false
-      schema:
-        default: false
-        type: boolean
 x-internal: true

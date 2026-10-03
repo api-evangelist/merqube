@@ -132,36 +132,13 @@ paths:
       - legacy_equity_security
 components:
   schemas:
-    MerqTimestamp:
-      anyOf:
-      - format: date-time
-        type: string
-      - format: date
-        type: string
-      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
-        type: string
-      example:
-      - '2021-01-01'
-      - '2021-01-01T01:01:01'
-      - 2021-01-01T01:01:01.zzzzz
-    MetricsArr:
-      items:
-        properties:
-          id:
-            example: price_return
-            type: string
-          value:
-            example: 1000.0000000000002
-            type: number
-        type: object
-      type: array
-    Metrics:
+    MetricsDef:
       properties:
-        metrics:
-          $ref: '#/components/schemas/MetricsArr'
-        ts:
-          description: iso8601 format
-          format: date-time
+        name:
+          example: daily_return
+          type: string
+        type:
+          example: double
           type: string
       type: object
     Stats:
@@ -188,25 +165,39 @@ components:
           type: number
         start_date:
           $ref: '#/components/schemas/MerqTimestamp'
-    MetricsDef:
+    Metrics:
       properties:
-        name:
-          example: daily_return
-          type: string
-        type:
-          example: double
+        metrics:
+          $ref: '#/components/schemas/MetricsArr'
+        ts:
+          description: iso8601 format
+          format: date-time
           type: string
       type: object
-  parameters:
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
+    MetricsArr:
+      items:
+        properties:
+          id:
+            example: price_return
+            type: string
+          value:
+            example: 1000.0000000000002
+            type: number
+        type: object
+      type: array
+    MerqTimestamp:
+      anyOf:
+      - format: date-time
         type: string
+      - format: date
+        type: string
+      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+        type: string
+      example:
+      - '2021-01-01'
+      - '2021-01-01T01:01:01'
+      - 2021-01-01T01:01:01.zzzzz
+  parameters:
     startDateParam:
       description: Start date for the results/computation
       in: query
@@ -227,5 +218,14 @@ components:
       name: secname
       required: true
       schema:
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
         type: string
 x-internal: true

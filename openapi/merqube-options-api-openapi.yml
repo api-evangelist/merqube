@@ -213,6 +213,54 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    OptionResponse:
+      properties:
+        bid_ask_spread:
+          description: Spread between Bid and Ask prices of the option being priced
+          format: number
+          type: number
+        delta:
+          description: Delta of this option
+          format: number
+          type: number
+        dividend_yield:
+          description: Implied Dividend Yield for the underlying
+          format: number
+          type: number
+        gamma:
+          description: Gamma of the option being priced
+          format: number
+          type: number
+        interest_rate:
+          description: Implied Interest Rate
+          format: number
+          type: number
+        price:
+          description: Option Price
+          format: number
+          type: number
+        request_id:
+          description: Request ID sent in the request
+          type: string
+        spot:
+          description: Underlying spot price
+          format: number
+          type: number
+        theta:
+          description: Theta of the option being priced
+          format: number
+          type: number
+        vega:
+          description: Vega of the option being priced
+          format: number
+          type: number
+        vol:
+          description: Implied Volatility
+          format: number
+          type: number
+      title: Option Response Schema
+      type: object
+      x-examples: {}
     FindStrikeResponse:
       properties:
         request_id:
@@ -305,54 +353,6 @@ components:
       - ZM
       example: US
       type: string
-    OptionResponse:
-      properties:
-        bid_ask_spread:
-          description: Spread between Bid and Ask prices of the option being priced
-          format: number
-          type: number
-        delta:
-          description: Delta of this option
-          format: number
-          type: number
-        dividend_yield:
-          description: Implied Dividend Yield for the underlying
-          format: number
-          type: number
-        gamma:
-          description: Gamma of the option being priced
-          format: number
-          type: number
-        interest_rate:
-          description: Implied Interest Rate
-          format: number
-          type: number
-        price:
-          description: Option Price
-          format: number
-          type: number
-        request_id:
-          description: Request ID sent in the request
-          type: string
-        spot:
-          description: Underlying spot price
-          format: number
-          type: number
-        theta:
-          description: Theta of the option being priced
-          format: number
-          type: number
-        vega:
-          description: Vega of the option being priced
-          format: number
-          type: number
-        vol:
-          description: Implied Volatility
-          format: number
-          type: number
-      title: Option Response Schema
-      type: object
-      x-examples: {}
   parameters:
     fsymIdParam:
       description: fsym id

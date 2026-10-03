@@ -170,6 +170,22 @@ paths:
       x-operation-id-source: derived
 components:
   parameters:
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
     idsParam:
       description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
       in: query
@@ -177,30 +193,6 @@ components:
       required: false
       schema:
         example: abcd1234,wxyz4567
-        type: string
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
-        type: string
-    filterParam:
-      description: Search keyword for filtering; searches name and title for this substring
-      in: query
-      name: filter
-      required: false
-      schema:
-        example: MQU
-        type: string
-    uuidParam:
-      description: uuid of the resource
-      in: path
-      name: uuid
-      required: true
-      schema:
         type: string
     providerParam:
       in: path
@@ -216,21 +208,20 @@ components:
       schema:
         example: title,description
         type: string
-    namespaceParam:
-      description: Retrieve all resources in this namespace
-      in: query
-      name: namespace
-      required: false
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
       schema:
-        example: my_client_namespace
         type: string
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
       in: query
-      name: name
+      name: filter
       required: false
       schema:
-        example: MQUSTB20
+        example: MQU
         type: string
     debugParam:
       description: turns on debugging information by injecting a debug section at the top level
@@ -241,85 +232,36 @@ components:
         enum:
         - 'true'
         type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+    namespaceParam:
+      description: Retrieve all resources in this namespace
       in: query
-      name: names
+      name: namespace
       required: false
       schema:
-        example: MQUSTB20,MQUSTRAV
+        example: my_client_namespace
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
         type: string
   schemas:
-    CrudExtra:
-      additionalProperties: false
+    ErrorCodes:
       properties:
-        id:
+        code:
           type: string
-        namespace:
+        message:
           type: string
-        status:
-          $ref: '#/components/schemas/Status'
-      required:
-      - id
-      - status
-      - namespace
       type: object
     IdentifierUUIDPatchPutGet:
       additionalProperties: false
       allOf:
       - $ref: '#/components/schemas/IdentifierUUIDPost'
       - $ref: '#/components/schemas/CrudExtra'
-      type: object
-    ReutersProviderKwargsPostType:
-      description: How to post the data to Reuters, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
-      enum:
-      - EOD
-      - RT
-      - EOD_AND_RT
-      - EOD_AND_RT_COMBINED
-      type: string
-    Provider:
-      description: currently supported providers
-      enum:
-      - bloomberg
-      - reuters
-      - morningstar
-      - factset
-      - nasdaq
-      - wind
-      - secapi
-      example: bloomberg
-      type: string
-    BloombergProviderKwargsPostType:
-      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
-      enum:
-      - EOD
-      - RT
-      - EOD_AND_RT
-      type: string
-    SecapiProviderKwargs:
-      additionalProperties: false
-      description: Secapi provider custom arguments
-      properties:
-        metric:
-          type: string
-        security_name:
-          type: string
-        security_type:
-          type: string
-      required:
-      - security_type
-      - security_name
-      - metric
-      type: object
-    BloombergProviderKwargs:
-      additionalProperties: false
-      description: Bloomberg provider custom arguments
-      properties:
-        post_type:
-          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
-      required:
-      - post_type
       type: object
     Status:
       properties:
@@ -338,6 +280,73 @@ components:
       required:
       - last_modified
       type: object
+    CrudExtra:
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        namespace:
+          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+      required:
+      - id
+      - status
+      - namespace
+      type: object
+    ReutersProviderKwargs:
+      additionalProperties: false
+      description: Reuters provider custom arguments
+      properties:
+        post_type:
+          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
+      type: object
+    NasdaqProviderKwargs:
+      additionalProperties: false
+      description: Nasdaq provider custom arguments
+      properties:
+        eod_date_delta:
+          description: How many days to offset the Nasdaq date (T if before 6:30pm EST otherwise T + 1) when getting EOD data from the Index
+          type: integer
+        nasdaq_env:
+          description: Which Nasdaq environment to send data to
+          enum:
+          - testing
+          - production
+          type: string
+      required:
+      - nasdaq_env
+      type: object
+    ReutersProviderKwargsPostType:
+      description: How to post the data to Reuters, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      - EOD_AND_RT_COMBINED
+      type: string
+    SecapiProviderKwargs:
+      additionalProperties: false
+      description: Secapi provider custom arguments
+      properties:
+        metric:
+          type: string
+        security_name:
+          type: string
+        security_type:
+          type: string
+      required:
+      - security_type
+      - security_name
+      - metric
+      type: object
+    BloombergProviderKwargsPostType:
+      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      type: string
     IdentifierUUIDPost:
       additionalProperties: false
       description: Identifier for a given provider. Will be referenced via the name field of the Identifier section
@@ -384,34 +393,25 @@ components:
       - ticker
       - index_name
       type: object
-    ReutersProviderKwargs:
+    BloombergProviderKwargs:
       additionalProperties: false
-      description: Reuters provider custom arguments
+      description: Bloomberg provider custom arguments
       properties:
         post_type:
-          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
-      type: object
-    NasdaqProviderKwargs:
-      additionalProperties: false
-      description: Nasdaq provider custom arguments
-      properties:
-        eod_date_delta:
-          description: How many days to offset the Nasdaq date (T if before 6:30pm EST otherwise T + 1) when getting EOD data from the Index
-          type: integer
-        nasdaq_env:
-          description: Which Nasdaq environment to send data to
-          enum:
-          - testing
-          - production
-          type: string
+          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
       required:
-      - nasdaq_env
+      - post_type
       type: object
-    ErrorCodes:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      type: object
+    Provider:
+      description: currently supported providers
+      enum:
+      - bloomberg
+      - reuters
+      - morningstar
+      - factset
+      - nasdaq
+      - wind
+      - secapi
+      example: bloomberg
+      type: string
 x-internal: true
