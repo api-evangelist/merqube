@@ -304,12 +304,21 @@ paths:
       x-operation-id-source: derived
 components:
   parameters:
-    sectypeParam:
-      description: the type of security (futures_root, intraday_index etc)
-      in: path
-      name: type
-      required: true
+    preferReadReplicaParam:
+      description: Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and bypasses SecAPI full-query caches for stronger read-after-write consistency.
+      in: query
+      name: prefer_read_replica
+      required: false
       schema:
+        default: false
+        type: boolean
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
         type: string
     nameParam:
       description: Taken as an *Exact* name to find a resource by
@@ -326,37 +335,13 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/MerqTimestamp'
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
-      in: query
-      name: ids
-      required: false
+    sectypeParam:
+      description: the type of security (futures_root, intraday_index etc)
+      in: path
+      name: type
+      required: true
       schema:
-        example: abcd1234,wxyz4567
         type: string
-    endDateParam:
-      description: End date for the results/computation
-      in: query
-      name: end_date
-      required: false
-      schema:
-        $ref: '#/components/schemas/MerqTimestamp'
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    preferReadReplicaParam:
-      description: Opt into replica/cache-tolerant reads. Defaults to false, which keeps DB reads on the writer and bypasses SecAPI full-query caches for stronger read-after-write consistency.
-      in: query
-      name: prefer_read_replica
-      required: false
-      schema:
-        default: false
-        type: boolean
     formatParam:
       description: choose csv (Default json)
       in: query
@@ -366,40 +351,46 @@ components:
         enum:
         - csv
         type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    endDateParam:
+      description: End date for the results/computation
+      in: query
+      name: end_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
   schemas:
-    SecurityMetrics:
+    MetricsSchema:
       properties:
-        eff_ts:
-          $ref: '#/components/schemas/MerqTimestamp'
-        id:
-          example: 0000699a-fcd7-45d4-8ce4-064a4ffeced0
+        data_type:
+          enum:
+          - string
+          - number64
+          - datetime64
+          - int64
+          - bool
+          - object
           type: string
-        lineage:
-          description: data lineage information, for MerQube use only.
+        description:
+          description: a description of what this metric represents
+          type: string
+        name:
+          description: metric name
+          type: string
+        object_schema:
+          description: optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.
           type: object
-        metric:
-          example: Level
-          type: string
-        prov_ts:
-          $ref: '#/components/schemas/MerqTimestamp'
-        source:
-          example: some_gcp_feed
-          type: string
-        value:
-          anyOf:
-          - type: string
-          - type: number
-          - type: integer
-          - type: boolean
-          - items: {}
-            type: array
-          - type: object
       required:
-      - eff_ts
-      - id
-      - metric
-      - value
-      - prov_ts
+      - data_type
+      - description
+      - name
       type: object
     SecurityMetricsDeletion:
       description: like a SecurityMetric, but no value and an optional prov_ts; marks the deletion of an id/eff_ts/metric tuple.
@@ -443,6 +434,18 @@ components:
       - namespace
       - prov_ts
       type: object
+    MerqTimestamp:
+      anyOf:
+      - format: date-time
+        type: string
+      - format: date
+        type: string
+      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
+        type: string
+      example:
+      - '2021-01-01'
+      - '2021-01-01T01:01:01'
+      - 2021-01-01T01:01:01.zzzzz
     ErrorCodes:
       properties:
         code:
@@ -457,41 +460,38 @@ components:
         inserts:
           type: integer
       type: object
-    MerqTimestamp:
-      anyOf:
-      - format: date-time
-        type: string
-      - format: date
-        type: string
-      - pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9]{2}:[0-9]{2}:[0-9]{2})?(?:[.][0-9]{1,6})?$
-        type: string
-      example:
-      - '2021-01-01'
-      - '2021-01-01T01:01:01'
-      - 2021-01-01T01:01:01.zzzzz
-    MetricsSchema:
+    SecurityMetrics:
       properties:
-        data_type:
-          enum:
-          - string
-          - number64
-          - datetime64
-          - int64
-          - bool
-          - object
+        eff_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        id:
+          example: 0000699a-fcd7-45d4-8ce4-064a4ffeced0
           type: string
-        description:
-          description: a description of what this metric represents
-          type: string
-        name:
-          description: metric name
-          type: string
-        object_schema:
-          description: optional - this supports complex objects, ie you can specify the  metric is of this schema. THis allows you to upload a json schema itself of this metric. THis is for downstream users of this metric.
+        lineage:
+          description: data lineage information, for MerQube use only.
           type: object
+        metric:
+          example: Level
+          type: string
+        prov_ts:
+          $ref: '#/components/schemas/MerqTimestamp'
+        source:
+          example: some_gcp_feed
+          type: string
+        value:
+          anyOf:
+          - type: string
+          - type: number
+          - type: integer
+          - type: boolean
+          - items: {}
+            type: array
+          - type: object
       required:
-      - data_type
-      - description
-      - name
+      - eff_ts
+      - id
+      - metric
+      - value
+      - prov_ts
       type: object
 x-internal: true

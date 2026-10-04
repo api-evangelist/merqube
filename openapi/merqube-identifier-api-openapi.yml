@@ -170,6 +170,15 @@ paths:
       x-operation-id-source: derived
 components:
   parameters:
+    debugParam:
+      description: turns on debugging information by injecting a debug section at the top level
+      in: query
+      name: debug
+      required: false
+      schema:
+        enum:
+        - 'true'
+        type: string
     nameParam:
       description: Taken as an *Exact* name to find a resource by
       in: query
@@ -177,14 +186,6 @@ components:
       required: false
       schema:
         example: MQUSTB20
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
         type: string
     idsParam:
       description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
@@ -223,15 +224,6 @@ components:
       schema:
         example: MQU
         type: string
-    debugParam:
-      description: turns on debugging information by injecting a debug section at the top level
-      in: query
-      name: debug
-      required: false
-      schema:
-        enum:
-        - 'true'
-        type: string
     namespaceParam:
       description: Retrieve all resources in this namespace
       in: query
@@ -249,37 +241,15 @@ components:
         enum:
         - csv
         type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
   schemas:
-    ErrorCodes:
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-      type: object
-    IdentifierUUIDPatchPutGet:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/IdentifierUUIDPost'
-      - $ref: '#/components/schemas/CrudExtra'
-      type: object
-    Status:
-      properties:
-        created_at:
-          type: string
-        created_by:
-          type: string
-        last_modified:
-          type: string
-        last_modified_by:
-          type: string
-        locked_after:
-          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
-          format: date-time
-          type: string
-      required:
-      - last_modified
-      type: object
     CrudExtra:
       additionalProperties: false
       properties:
@@ -293,13 +263,6 @@ components:
       - id
       - status
       - namespace
-      type: object
-    ReutersProviderKwargs:
-      additionalProperties: false
-      description: Reuters provider custom arguments
-      properties:
-        post_type:
-          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
       type: object
     NasdaqProviderKwargs:
       additionalProperties: false
@@ -325,6 +288,33 @@ components:
       - EOD_AND_RT
       - EOD_AND_RT_COMBINED
       type: string
+    Provider:
+      description: currently supported providers
+      enum:
+      - bloomberg
+      - reuters
+      - morningstar
+      - factset
+      - nasdaq
+      - wind
+      - secapi
+      example: bloomberg
+      type: string
+    BloombergProviderKwargs:
+      additionalProperties: false
+      description: Bloomberg provider custom arguments
+      properties:
+        post_type:
+          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
+      required:
+      - post_type
+      type: object
+    IdentifierUUIDPatchPutGet:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/IdentifierUUIDPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
     SecapiProviderKwargs:
       additionalProperties: false
       description: Secapi provider custom arguments
@@ -340,13 +330,6 @@ components:
       - security_name
       - metric
       type: object
-    BloombergProviderKwargsPostType:
-      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
-      enum:
-      - EOD
-      - RT
-      - EOD_AND_RT
-      type: string
     IdentifierUUIDPost:
       additionalProperties: false
       description: Identifier for a given provider. Will be referenced via the name field of the Identifier section
@@ -393,25 +376,42 @@ components:
       - ticker
       - index_name
       type: object
-    BloombergProviderKwargs:
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+    Status:
+      properties:
+        created_at:
+          type: string
+        created_by:
+          type: string
+        last_modified:
+          type: string
+        last_modified_by:
+          type: string
+        locked_after:
+          description: If this is set (non null), the manifest is locked for all edits to any other field after this timestamp. A PUT/PATCH may be used to first unlock the manifest, by setting this field (to a max of one hour in the future), or to `null` again, to make other edits.
+          format: date-time
+          type: string
+      required:
+      - last_modified
+      type: object
+    BloombergProviderKwargsPostType:
+      description: How to post the data to Bloomberg, either the end of day method (EOD), real time method (RT) or both (EOD_AND_RT)
+      enum:
+      - EOD
+      - RT
+      - EOD_AND_RT
+      type: string
+    ReutersProviderKwargs:
       additionalProperties: false
-      description: Bloomberg provider custom arguments
+      description: Reuters provider custom arguments
       properties:
         post_type:
-          $ref: '#/components/schemas/BloombergProviderKwargsPostType'
-      required:
-      - post_type
+          $ref: '#/components/schemas/ReutersProviderKwargsPostType'
       type: object
-    Provider:
-      description: currently supported providers
-      enum:
-      - bloomberg
-      - reuters
-      - morningstar
-      - factset
-      - nasdaq
-      - wind
-      - secapi
-      example: bloomberg
-      type: string
 x-internal: true

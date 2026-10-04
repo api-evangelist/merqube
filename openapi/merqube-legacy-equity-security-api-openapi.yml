@@ -132,15 +132,17 @@ paths:
       - legacy_equity_security
 components:
   schemas:
-    MetricsDef:
-      properties:
-        name:
-          example: daily_return
-          type: string
-        type:
-          example: double
-          type: string
-      type: object
+    MetricsArr:
+      items:
+        properties:
+          id:
+            example: price_return
+            type: string
+          value:
+            example: 1000.0000000000002
+            type: number
+        type: object
+      type: array
     Stats:
       properties:
         annual_volatility:
@@ -165,26 +167,6 @@ components:
           type: number
         start_date:
           $ref: '#/components/schemas/MerqTimestamp'
-    Metrics:
-      properties:
-        metrics:
-          $ref: '#/components/schemas/MetricsArr'
-        ts:
-          description: iso8601 format
-          format: date-time
-          type: string
-      type: object
-    MetricsArr:
-      items:
-        properties:
-          id:
-            example: price_return
-            type: string
-          value:
-            example: 1000.0000000000002
-            type: number
-        type: object
-      type: array
     MerqTimestamp:
       anyOf:
       - format: date-time
@@ -197,21 +179,25 @@ components:
       - '2021-01-01'
       - '2021-01-01T01:01:01'
       - 2021-01-01T01:01:01.zzzzz
+    MetricsDef:
+      properties:
+        name:
+          example: daily_return
+          type: string
+        type:
+          example: double
+          type: string
+      type: object
+    Metrics:
+      properties:
+        metrics:
+          $ref: '#/components/schemas/MetricsArr'
+        ts:
+          description: iso8601 format
+          format: date-time
+          type: string
+      type: object
   parameters:
-    startDateParam:
-      description: Start date for the results/computation
-      in: query
-      name: start_date
-      required: false
-      schema:
-        $ref: '#/components/schemas/MerqTimestamp'
-    endDateParam:
-      description: End date for the results/computation
-      in: query
-      name: end_date
-      required: false
-      schema:
-        $ref: '#/components/schemas/MerqTimestamp'
     secnameParam:
       description: name of the security for which the data is requested
       in: path
@@ -219,6 +205,13 @@ components:
       required: true
       schema:
         type: string
+    startDateParam:
+      description: Start date for the results/computation
+      in: query
+      name: start_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
     formatParam:
       description: choose csv (Default json)
       in: query
@@ -228,4 +221,11 @@ components:
         enum:
         - csv
         type: string
+    endDateParam:
+      description: End date for the results/computation
+      in: query
+      name: end_date
+      required: false
+      schema:
+        $ref: '#/components/schemas/MerqTimestamp'
 x-internal: true

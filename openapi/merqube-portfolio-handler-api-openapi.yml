@@ -153,7 +153,89 @@ paths:
       operationId: putTargetPortfolioHandlerByUuid
       x-operation-id-source: derived
 components:
+  parameters:
+    filterParam:
+      description: Search keyword for filtering; searches name and title for this substring
+      in: query
+      name: filter
+      required: false
+      schema:
+        example: MQU
+        type: string
+    debugParam:
+      description: turns on debugging information by injecting a debug section at the top level
+      in: query
+      name: debug
+      required: false
+      schema:
+        enum:
+        - 'true'
+        type: string
+    nameParam:
+      description: Taken as an *Exact* name to find a resource by
+      in: query
+      name: name
+      required: false
+      schema:
+        example: MQUSTB20
+        type: string
+    fieldsParam:
+      description: only return these fields, plus id,namespace, for each of the resource definitions
+      in: query
+      name: fields
+      required: false
+      schema:
+        example: title,description
+        type: string
+    idsParam:
+      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
+      in: query
+      name: ids
+      required: false
+      schema:
+        example: abcd1234,wxyz4567
+        type: string
+    uuidParam:
+      description: uuid of the resource
+      in: path
+      name: uuid
+      required: true
+      schema:
+        type: string
+    namespaceParam:
+      description: Retrieve all resources in this namespace
+      in: query
+      name: namespace
+      required: false
+      schema:
+        example: my_client_namespace
+        type: string
+    namesParam:
+      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
+      in: query
+      name: names
+      required: false
+      schema:
+        example: MQUSTB20,MQUSTRAV
+        type: string
+    formatParam:
+      description: choose csv (Default json)
+      in: query
+      name: format
+      required: false
+      schema:
+        enum:
+        - csv
+        type: string
   schemas:
+    TargetPortfolioHandlerNotificationConfig:
+      additionalProperties: false
+      properties:
+        diss_destinations:
+          $ref: '#/components/schemas/DisseminationDestinations'
+        file_name_format:
+          type: string
+      type: object
     TimestampWindow:
       additionalProperties: false
       properties:
@@ -170,20 +252,6 @@ components:
           type: string
       required:
       - end_ts
-      type: object
-    CrudExtra:
-      additionalProperties: false
-      properties:
-        id:
-          type: string
-        namespace:
-          type: string
-        status:
-          $ref: '#/components/schemas/Status'
-      required:
-      - id
-      - status
-      - namespace
       type: object
     DisseminationDestinations:
       properties:
@@ -255,26 +323,19 @@ components:
             type: object
           type: array
       type: object
-    TargetPortfolioHandlerPatchPutGet:
-      additionalProperties: false
-      allOf:
-      - $ref: '#/components/schemas/TargetPortfolioHandlerPost'
-      - $ref: '#/components/schemas/CrudExtra'
-      type: object
-    TargetPortfolioHandlerNotificationConfig:
+    CrudExtra:
       additionalProperties: false
       properties:
-        diss_destinations:
-          $ref: '#/components/schemas/DisseminationDestinations'
-        file_name_format:
+        id:
           type: string
-      type: object
-    ErrorCodes:
-      properties:
-        code:
+        namespace:
           type: string
-        message:
-          type: string
+        status:
+          $ref: '#/components/schemas/Status'
+      required:
+      - id
+      - status
+      - namespace
       type: object
     Status:
       properties:
@@ -292,6 +353,13 @@ components:
           type: string
       required:
       - last_modified
+      type: object
+    ErrorCodes:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
       type: object
     TargetPortfolioHandlerPost:
       additionalProperties: false
@@ -352,78 +420,10 @@ components:
       - name
       - namespace
       type: object
-  parameters:
-    nameParam:
-      description: Taken as an *Exact* name to find a resource by
-      in: query
-      name: name
-      required: false
-      schema:
-        example: MQUSTB20
-        type: string
-    debugParam:
-      description: turns on debugging information by injecting a debug section at the top level
-      in: query
-      name: debug
-      required: false
-      schema:
-        enum:
-        - 'true'
-        type: string
-    idsParam:
-      description: Taken as a comma delimited list of ids to pull. ignored if ?names is specified.
-      in: query
-      name: ids
-      required: false
-      schema:
-        example: abcd1234,wxyz4567
-        type: string
-    namesParam:
-      description: Taken as a comma delimited list of *Exact* names to find a list if resources by
-      in: query
-      name: names
-      required: false
-      schema:
-        example: MQUSTB20,MQUSTRAV
-        type: string
-    namespaceParam:
-      description: Retrieve all resources in this namespace
-      in: query
-      name: namespace
-      required: false
-      schema:
-        example: my_client_namespace
-        type: string
-    filterParam:
-      description: Search keyword for filtering; searches name and title for this substring
-      in: query
-      name: filter
-      required: false
-      schema:
-        example: MQU
-        type: string
-    formatParam:
-      description: choose csv (Default json)
-      in: query
-      name: format
-      required: false
-      schema:
-        enum:
-        - csv
-        type: string
-    fieldsParam:
-      description: only return these fields, plus id,namespace, for each of the resource definitions
-      in: query
-      name: fields
-      required: false
-      schema:
-        example: title,description
-        type: string
-    uuidParam:
-      description: uuid of the resource
-      in: path
-      name: uuid
-      required: true
-      schema:
-        type: string
+    TargetPortfolioHandlerPatchPutGet:
+      additionalProperties: false
+      allOf:
+      - $ref: '#/components/schemas/TargetPortfolioHandlerPost'
+      - $ref: '#/components/schemas/CrudExtra'
+      type: object
 x-internal: true
